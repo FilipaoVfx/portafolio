@@ -92,34 +92,42 @@ export const projects: Project[] = [
   {
     slug: 'indexer',
     title: 'Indexer',
-    tagline: 'Descubrimiento de comunidades — clasificación visual tipo grafo',
+    tagline: 'Motor de conocimiento técnico para convertir recursos dispersos en rutas accionables',
     description:
-      'Buscador y mapa visual de comunidades / repos: en lugar de listas, un grafo navegable inspirado en visualizaciones de burbujas cripto.',
+      'Indexer nace como una respuesta a un problema muy común en equipos técnicos: la información útil queda dispersa entre bookmarks, repositorios, READMEs, hilos, herramientas y recursos compartidos por comunidad. El objetivo no es guardar enlaces, sino transformar esos recursos en una base de conocimiento navegable capaz de responder qué piezas hacen falta para construir un sistema concreto y en qué orden conviene usarlas.',
     stack: ['React', 'Node', 'Postgres', 'D3.js', 'Supabase'],
     problem:
-      'Las listas de "mejores repos / comunidades" son estáticas, sesgadas y no comunican relaciones. Descubrir es navegar, no solo leer.',
+      'La información técnica valiosa está fragmentada en bookmarks, repos y READMEs. El reto real no es encontrar enlaces, sino conectar recursos, capacidades y objetivos.',
     solution:
-      'Embeddings + renderizado de grafo: cada nodo es una comunidad, su tamaño es actividad, su posición es similitud semántica.',
+      'Diseñé un sistema que captura recursos, extrae metadatos, clasifica repos y los organiza como rutas por objetivo: de una necesidad técnica a una secuencia de herramientas compatibles.',
     architecture: [
-      'Proceso de ingestión Node (GitHub API + extractores)',
-      'Embeddings → Postgres + pgvector',
-      'Renderizador D3 con layout de fuerza dirigida',
-      'Filtros semánticos en cliente',
+      'Captura de bookmarks, repos, links y READMEs desde múltiples fuentes',
+      'Backend Node para ingesta, deduplicación, parsing y enriquecimiento',
+      'Postgres como grafo relacional de recursos, entidades y capacidades',
+      'Búsqueda por objetivo: necesidad → pasos → herramientas → alternativas',
     ],
     decisions: [
       {
-        title: 'Visual antes que textual',
-        body: 'Mostrar 200 comunidades como grafo comunica más que un top-10 con descripciones.',
+        title: 'De buscador a motor de rutas',
+        body: 'La decisión central fue evitar una lista de resultados. Indexer apunta a responder: estas son las piezas que necesitas, este es el orden recomendado y estas son las alternativas por paso.',
       },
       {
-        title: 'pgvector sobre vector DB dedicada',
-        body: 'Postgres + pgvector cubre el 95% del caso. Agregar Pinecone/Weaviate sería complejidad sin retorno inicial.',
+        title: 'README como contexto real',
+        body: 'Cuando detecta un repo, el sistema puede extraer su README, limpiarlo, dividirlo por secciones e indexar fragmentos. Eso mejora la precisión frente a depender solo del nombre o las keywords.',
+      },
+      {
+        title: 'Clasificación antes que IA generativa',
+        body: 'El primer enfoque prioriza reglas, taxonomías, búsqueda full-text, trigramas, co-ocurrencia y scoring. La meta es construir una base confiable antes de depender de un LLM.',
+      },
+      {
+        title: 'Datos conectados, no datos guardados',
+        body: 'La cadena clave es bookmark → repo → README → chunks → herramientas → capacidades → pasos → objetivo → ruta. Esa relación convierte recursos sueltos en conocimiento accionable.',
       },
     ],
     learnings: [
-      'El descubrimiento es un problema de interfaz, no solo de datos',
-      'pgvector elimina la necesidad de una base vectorial dedicada al inicio',
-      'Los layouts de fuerza dirigida requieren ajuste fino para no marear al usuario',
+      'El diferencial no está en guardar información, sino en modelar relaciones útiles para tomar decisiones técnicas',
+      'Un buen clasificador reduce ruido y permite rankear compatibilidad entre repos, herramientas y objetivos',
+      'La UX de discovery debe parecerse más a un pipeline o mapa de ruta que a una página de resultados',
     ],
     link: 'https://filipaovfx.github.io/indexer/',
     accent: 'magenta',

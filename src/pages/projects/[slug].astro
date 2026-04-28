@@ -1,0 +1,114 @@
+---
+import Base from '@/layouts/Base.astro';
+import { projects } from '@/data/projects';
+
+export function getStaticPaths() {
+  return projects.map((p) => ({ params: { slug: p.slug }, props: { project: p } }));
+}
+
+const { project } = Astro.props;
+
+const accentClass = {
+  lime: 'text-accent-lime',
+  electric: 'text-accent-electric',
+  magenta: 'text-accent-magenta',
+};
+const statusLabel = {
+  live: 'en vivo',
+  beta: 'beta',
+  wip: 'en proceso',
+};
+const a = accentClass[project.accent];
+---
+
+<Base title={`${project.title} — FilipaoVfx`} description={project.tagline}>
+  <article class="relative pt-12 pb-20">
+    <div class="mx-auto max-w-4xl px-4">
+      <a href="/#projects" class="font-mono text-xs uppercase tracking-[0.25em] text-white/50 hover:text-white transition">
+        ← back
+      </a>
+
+      <div class="mt-8 flex flex-wrap items-center gap-3">
+        <span class="chip uppercase">{statusLabel[project.status]}</span>
+        {project.stack.map((s) => (
+          <span class="chip">{s}</span>
+        ))}
+      </div>
+
+      <h1 class={`heading-display text-5xl md:text-7xl mt-6 ${a}`}>
+        {project.title}
+      </h1>
+      <p class="mt-4 text-xl text-white/70 max-w-2xl">{project.tagline}</p>
+
+      <div class="mt-12 prose-invert space-y-12">
+        <section>
+          <div class="label-mono">// contexto</div>
+          <p class="mt-3 text-white/80 leading-relaxed">{project.description}</p>
+        </section>
+
+        <section class="grid md:grid-cols-2 gap-5">
+          <div class="brutal-dark p-6">
+            <div class="label-mono mb-2">// problema</div>
+            <p class="text-sm leading-relaxed text-white/85">{project.problem}</p>
+          </div>
+          <div class="brutal-dark p-6">
+            <div class="label-mono mb-2">// solución</div>
+            <p class="text-sm leading-relaxed text-white/85">{project.solution}</p>
+          </div>
+        </section>
+
+        <section>
+          <div class="label-mono">// arquitectura</div>
+          <ol class="mt-4 space-y-2">
+            {project.architecture.map((step, i) => (
+              <li class="flex items-start gap-4 glass border border-white/10 px-5 py-3">
+                <span class={`font-mono text-sm font-bold ${a} min-w-[2rem]`}>
+                  {String(i + 1).padStart(2, '0')}
+                </span>
+                <span class="font-mono text-sm text-white/85 leading-relaxed">{step}</span>
+              </li>
+            ))}
+          </ol>
+        </section>
+
+        <section>
+          <div class="label-mono">// decisiones técnicas</div>
+          <div class="mt-4 grid md:grid-cols-2 gap-4">
+            {project.decisions.map((d) => (
+              <div class="glass-strong border border-white/15 p-6">
+                <h3 class={`heading-display text-lg ${a}`}>{d.title}</h3>
+                <p class="mt-2 text-sm text-white/75 leading-relaxed">{d.body}</p>
+              </div>
+            ))}
+          </div>
+        </section>
+
+        <section>
+          <div class="label-mono">// aprendizajes</div>
+          <ul class="mt-4 space-y-2">
+            {project.learnings.map((l) => (
+              <li class="flex items-start gap-3 px-4 py-3 brutal-dark">
+                <span class={`mt-1.5 inline-block w-2 h-2 ${project.accent === 'lime' ? 'bg-accent-lime' : project.accent === 'electric' ? 'bg-accent-electric' : 'bg-accent-magenta'}`} />
+                <span class="text-sm text-white/85 leading-relaxed">{l}</span>
+              </li>
+            ))}
+          </ul>
+        </section>
+
+        <section class="pt-8 border-t border-white/10 flex flex-wrap gap-3">
+          {project.link && (
+            <a href={project.link} class="btn-brutal" target="_blank" rel="noreferrer">
+              Ver demo ↗
+            </a>
+          )}
+          {project.repo && (
+            <a href={project.repo} class="btn-ghost" target="_blank" rel="noreferrer">
+              Código ↗
+            </a>
+          )}
+          <a href="/#contact" class="btn-ghost">Contactar →</a>
+        </section>
+      </div>
+    </div>
+  </article>
+</Base>

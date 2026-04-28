@@ -1,0 +1,61 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    color-scheme: dark;
+  }
+  html, body {
+    @apply bg-ink-950 text-white font-display antialiased;
+    background-image:
+      radial-gradient(circle at 15% 10%, rgba(198,255,61,0.10), transparent 45%),
+      radial-gradient(circle at 85% 80%, rgba(61,240,255,0.10), transparent 45%),
+      radial-gradient(circle at 50% 50%, rgba(255,61,209,0.05), transparent 60%);
+  }
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    background-image:
+      linear-gradient(rgba(255,255,255,0.04) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255,255,255,0.04) 1px, transparent 1px);
+    background-size: 48px 48px;
+    mask-image: radial-gradient(ellipse at center, black 30%, transparent 80%);
+    z-index: 0;
+  }
+  ::selection {
+    @apply bg-accent-lime text-ink-950;
+  }
+}
+
+@layer components {
+  .glass {
+    @apply bg-white/[0.04] backdrop-blur-xl border border-white/10;
+  }
+  .glass-strong {
+    @apply bg-white/[0.07] backdrop-blur-2xl border border-white/15;
+  }
+  .brutal {
+    @apply border-2 border-black bg-white text-ink-950 shadow-brutal;
+  }
+  .brutal-dark {
+    @apply border-2 border-white/80 bg-ink-900 text-white shadow-[6px_6px_0_0_rgba(255,255,255,0.85)];
+  }
+  .chip {
+    @apply inline-flex items-center gap-1.5 px-2.5 py-1 text-[11px] font-mono uppercase tracking-wider border border-white/15 bg-white/5 rounded;
+  }
+  .btn-brutal {
+    @apply inline-flex items-center gap-2 px-5 py-3 font-bold uppercase tracking-wide border-2 border-black bg-accent-lime text-ink-950 shadow-brutal transition-transform hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-brutal-lg active:translate-x-0 active:translate-y-0 active:shadow-none;
+  }
+  .btn-ghost {
+    @apply inline-flex items-center gap-2 px-5 py-3 font-bold uppercase tracking-wide border-2 border-white/30 bg-white/5 text-white backdrop-blur-md transition hover:border-white/60 hover:bg-white/10;
+  }
+  .heading-display {
+    @apply font-display font-bold tracking-tight;
+  }
+  .label-mono {
+    @apply font-mono uppercase tracking-[0.2em] text-xs text-white/50;
+  }
+}

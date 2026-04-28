@@ -1,0 +1,37 @@
+---
+import Base from '@/layouts/Base.astro';
+import Hero from '@/components/Hero.tsx';
+import TimelineGraph from '@/components/TimelineGraph.tsx';
+import ProjectCard from '@/components/ProjectCard.tsx';
+import HowIThink from '@/components/HowIThink.astro';
+import Contact from '@/components/Contact.astro';
+import { projects } from '@/data/projects';
+---
+
+<Base>
+  <Hero client:load />
+
+  <TimelineGraph client:visible projects={projects} />
+
+  <section id="projects" class="relative py-28 md:py-36 scroll-mt-24">
+    <div class="mx-auto max-w-6xl px-6 sm:px-8 md:px-12 lg:px-14">
+      <div class="mb-14 md:mb-20">
+        <div class="label-mono">/ proyectos</div>
+        <h2 class="heading-display text-3xl md:text-5xl mt-3">Sistemas, no demos.</h2>
+        <p class="mt-4 text-white/60 max-w-xl text-lg">
+          Tres proyectos. Tres decisiones. Cada uno resuelve un problema real
+          con arquitectura intencional.
+        </p>
+      </div>
+
+      <div class="flex flex-col gap-24 md:gap-32">
+        {projects.map((project, i) => (
+          <ProjectCard client:visible project={project} index={i} />
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <HowIThink />
+  <Contact />
+</Base>

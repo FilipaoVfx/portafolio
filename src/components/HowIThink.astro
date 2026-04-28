@@ -1,0 +1,63 @@
+---
+const principles = [
+  {
+    n: '01',
+    title: 'Sistemas, no features',
+    body: 'Una feature aislada es un parche. Un sistema bien diseñado absorbe nuevas features sin reescribirse.',
+    accent: 'lime',
+  },
+  {
+    n: '02',
+    title: 'Performance es producto',
+    body: 'Cada 100ms de latencia es una decisión de UX. La velocidad no es optimización — es feature.',
+    accent: 'electric',
+  },
+  {
+    n: '03',
+    title: 'Decisiones > demos',
+    body: 'Cualquiera clona un tutorial. Lo que importa es por qué elegiste este stack y descartaste otros.',
+    accent: 'magenta',
+  },
+  {
+    n: '04',
+    title: 'Edge-first mindset',
+    body: 'Static + edge supera a SSR continuo en 90% de los casos. Optimiza para distribución, no para servidor.',
+    accent: 'amber',
+  },
+];
+
+const accentClass = {
+  lime: 'text-accent-lime',
+  electric: 'text-accent-electric',
+  magenta: 'text-accent-magenta',
+  amber: 'text-accent-amber',
+};
+---
+
+<section id="how-i-think" class="relative py-24">
+  <div class="mx-auto max-w-6xl px-4">
+    <div class="mb-12">
+      <div class="label-mono">/ how I think</div>
+      <h2 class="heading-display text-3xl md:text-5xl mt-3 max-w-2xl">
+        Principios que guían cada decisión técnica.
+      </h2>
+    </div>
+
+    <div class="grid md:grid-cols-2 gap-5">
+      {principles.map((p) => (
+        <div class="group brutal-dark p-6 md:p-8 hover:border-white transition relative overflow-hidden">
+          <div class="absolute -right-4 -top-4 font-display text-[120px] leading-none font-bold text-white/5 group-hover:text-white/10 transition select-none">
+            {p.n}
+          </div>
+          <div class={`relative font-mono text-xs uppercase tracking-[0.3em] ${accentClass[p.accent as keyof typeof accentClass]}`}>
+            principio · {p.n}
+          </div>
+          <h3 class="relative heading-display text-2xl mt-3">{p.title}</h3>
+          <p class="relative mt-3 text-white/70 leading-relaxed text-sm">
+            {p.body}
+          </p>
+        </div>
+      ))}
+    </div>
+  </div>
+</section>

@@ -1,5 +1,3 @@
-import { motion } from 'framer-motion';
-
 const stackPalette = [
   { color: '#c6ff3d', label: 'Astro · React · TS' },
   { color: '#3df0ff', label: 'Node · Postgres' },
@@ -17,24 +15,14 @@ export default function Hero() {
         <div className="grid lg:grid-cols-12 gap-10 lg:gap-14 items-start">
           {/* Left — copy */}
           <div className="lg:col-span-8">
-            <motion.div
-              initial={{ opacity: 0, y: 12 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, ease: 'easeOut' }}
-              className="flex items-center gap-3 mb-6"
-            >
+            <div className="flex items-center gap-3 mb-6">
               <span className="inline-block w-2 h-2 bg-accent-lime animate-pulse-glow" />
               <span className="font-mono text-xs uppercase tracking-[0.3em] text-white/60">
                 Sistemas / Producto / Arquitectura
               </span>
-            </motion.div>
+            </div>
 
-            <motion.h1
-              initial={{ opacity: 0, y: 18 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.7, delay: 0.05 }}
-              className="heading-display text-5xl md:text-7xl lg:text-[5.5rem] leading-[0.95]"
-            >
+            <h1 className="heading-display text-5xl md:text-7xl lg:text-[5.5rem] leading-[0.95]">
               Las apps son funcionalidades.{' '}
               <span className="relative inline-block">
                 <span className="relative z-10 bg-accent-lime text-ink-950 px-3 -rotate-1 inline-block border-2 border-black shadow-brutal-lg">
@@ -43,14 +31,9 @@ export default function Hero() {
               </span>
               <br />
               sistemas
-            </motion.h1>
+            </h1>
 
-            <motion.div
-              initial={{ opacity: 0, y: 18 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.7, delay: 0.15 }}
-              className="mt-8 max-w-2xl space-y-4 text-lg text-white/75 leading-relaxed"
-            >
+            <div className="mt-8 max-w-2xl space-y-4 text-lg text-white/75 leading-relaxed">
               <p>
                 No se trata de escribir código, sino de{' '}
                 <span className="text-white font-semibold">
@@ -64,29 +47,18 @@ export default function Hero() {
                 <span className="text-accent-magenta">rendimiento</span>,
                 construyendo sistemas pensados para escalar desde el día uno.
               </p>
-            </motion.div>
+            </div>
 
-            <motion.div
-              initial={{ opacity: 0, y: 18 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.7, delay: 0.25 }}
-              className="mt-10 flex flex-wrap items-center gap-4"
-            >
+            <div className="mt-10 flex flex-wrap items-center gap-4">
               <a href="#projects" className="btn-brutal">
                 Ver proyectos →
               </a>
               <a href="#how-i-think" className="btn-ghost">
                 Cómo pienso
               </a>
-            </motion.div>
+            </div>
 
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ duration: 1, delay: 0.5 }}
-              className="mt-12 flex flex-wrap items-center gap-x-6 gap-y-3"
-              aria-label="Stack técnico"
-            >
+            <div className="mt-12 flex flex-wrap items-center gap-x-6 gap-y-3" aria-label="Stack técnico">
               {stackPalette.map((s) => (
                 <div
                   key={s.label}
@@ -105,16 +77,11 @@ export default function Hero() {
                   </span>
                 </div>
               ))}
-            </motion.div>
+            </div>
           </div>
 
           {/* Right — profile */}
-          <motion.aside
-            initial={{ opacity: 0, scale: 0.95, rotate: -2 }}
-            animate={{ opacity: 1, scale: 1, rotate: 0 }}
-            transition={{ duration: 0.8, delay: 0.2, ease: 'easeOut' }}
-            className="lg:col-span-4 lg:pt-2"
-          >
+          <aside className="lg:col-span-4 lg:pt-2">
             <div className="relative max-w-sm mx-auto lg:ml-auto">
               {/* Brutal stacked frame */}
               <div className="absolute inset-0 translate-x-3 translate-y-3 bg-accent-lime border-2 border-black" />
@@ -161,7 +128,7 @@ export default function Hero() {
                 </div>
               </div>
             </div>
-          </motion.aside>
+          </aside>
         </div>
       </div>
     </section>

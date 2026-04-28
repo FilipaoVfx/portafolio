@@ -9,9 +9,9 @@ import { projects } from '@/data/projects';
 ---
 
 <Base>
-  <Hero client:load />
+  <Hero />
 
-  <TimelineGraph client:visible projects={projects} />
+  <TimelineGraph projects={projects} />
 
   <section id="projects" class="relative py-28 md:py-36 scroll-mt-24">
     <div class="mx-auto max-w-6xl px-6 sm:px-8 md:px-12 lg:px-14">
@@ -26,7 +26,7 @@ import { projects } from '@/data/projects';
 
       <div class="flex flex-col gap-24 md:gap-32">
         {projects.map((project, i) => (
-          <ProjectCard client:visible project={project} index={i} />
+          <ProjectCard project={project} index={i} />
         ))}
       </div>
     </div>

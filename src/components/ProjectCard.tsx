@@ -1,4 +1,3 @@
-import { motion } from 'framer-motion';
 import type { Project } from '@/data/projects';
 
 const accentMap: Record<Project['accent'], { bg: string; text: string; shadow: string; hex: string }> = {
@@ -44,12 +43,8 @@ export default function ProjectCard({ project, index }: { project: Project; inde
   const a = accentMap[project.accent];
 
   return (
-    <motion.article
+    <article
       id={project.slug}
-      initial={{ opacity: 0, y: 30 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true, margin: '-100px' }}
-      transition={{ duration: 0.55, delay: index * 0.05 }}
       className="scroll-mt-28 mb-24 md:mb-32 last:mb-0"
     >
       <div
@@ -165,18 +160,19 @@ export default function ProjectCard({ project, index }: { project: Project; inde
                   className="relative flex-1 block overflow-hidden border-2 border-black bg-ink-950 group/preview"
                   style={{ boxShadow: `4px 4px 0 0 ${a.hex}` }}
                 >
-                  <div className="absolute inset-0 flex items-center justify-center font-mono text-[10px] uppercase tracking-[0.25em] text-white/30">
-                    cargando {project.slug}…
+                  <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.06)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.06)_1px,transparent_1px)] bg-[size:22px_22px] opacity-40" />
+                  <div className="relative h-full min-h-[260px] flex flex-col justify-end p-5">
+                    <div className={`font-mono text-[10px] uppercase tracking-[0.25em] ${a.text}`}>
+                      demo externa
+                    </div>
+                    <div className="mt-2 heading-display text-2xl text-white">
+                      {project.title}
+                    </div>
+                    <div className="mt-3 text-xs font-mono text-white/45 break-all">
+                      {project.link.replace(/^https?:\/\//, '')}
+                    </div>
                   </div>
-                  <iframe
-                    src={project.link}
-                    title={`${project.title} vista previa`}
-                    loading="lazy"
-                    sandbox="allow-scripts allow-same-origin"
-                    className="relative w-[200%] h-[200%] origin-top-left scale-50 pointer-events-none bg-ink-950"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-ink-950/90 via-transparent to-transparent opacity-60 group-hover/preview:opacity-30 transition pointer-events-none" />
-                  <div className="absolute bottom-3 right-3 chip opacity-0 group-hover/preview:opacity-100 transition">
+                  <div className="absolute bottom-3 right-3 chip">
                     abrir ↗
                   </div>
                 </a>
@@ -189,6 +185,6 @@ export default function ProjectCard({ project, index }: { project: Project; inde
           )}
         </div>
       </div>
-    </motion.article>
+    </article>
   );
 }

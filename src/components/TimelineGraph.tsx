@@ -1,4 +1,3 @@
-import { motion } from 'framer-motion';
 import type { Project } from '@/data/projects';
 
 const accentMap: Record<Project['accent'], { bg: string; ring: string; text: string }> = {
@@ -64,13 +63,9 @@ export default function TimelineGraph({ projects }: { projects: Project[] }) {
             {projects.map((p, i) => {
               const a = accentMap[p.accent];
               return (
-                <motion.a
+                <a
                   key={p.slug}
                   href={`#${p.slug}`}
-                  initial={{ opacity: 0, y: 20 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true, margin: '-80px' }}
-                  transition={{ duration: 0.5, delay: i * 0.1 }}
                   className="group relative block"
                 >
                   <div className="flex items-center gap-3 mb-4">
@@ -101,7 +96,7 @@ export default function TimelineGraph({ projects }: { projects: Project[] }) {
                       </span>
                     </div>
                   </div>
-                </motion.a>
+                </a>
               );
             })}
           </div>

@@ -13,13 +13,13 @@ export default function TimelineGraph({ projects }: { projects: Project[] }) {
       <div className="mx-auto max-w-6xl px-4">
         <div className="flex items-end justify-between mb-10">
           <div>
-            <div className="label-mono">/ workflow</div>
+            <div className="label-mono">/ flujo</div>
             <h2 className="heading-display text-3xl md:text-5xl mt-3">
               Ruta del desarrollador
             </h2>
             <p className="mt-3 text-white/60 max-w-xl">
               Cada nodo es un sistema. Cada conexión, una decisión. Navega el
-              workflow como leerías un grafo: problema → arquitectura →
+              flujo como leerías un grafo: problema → arquitectura →
               aprendizaje.
             </p>
           </div>
@@ -78,7 +78,7 @@ export default function TimelineGraph({ projects }: { projects: Project[] }) {
                       className={`relative inline-flex w-4 h-4 ${a.bg} border-2 border-black ring-4 ${a.ring} group-hover:scale-125 transition`}
                     />
                     <span className="font-mono text-[10px] uppercase tracking-[0.25em] text-white/50">
-                      Node 0{i + 1}
+                      Nodo 0{i + 1}
                     </span>
                     <span className="ml-auto chip uppercase">{p.status}</span>
                   </div>
@@ -94,7 +94,7 @@ export default function TimelineGraph({ projects }: { projects: Project[] }) {
                     </div>
                     <div className="mt-5 flex items-center justify-between border-t border-white/10 pt-3">
                       <span className="font-mono text-[11px] text-white/40 uppercase tracking-wider">
-                        explore →
+                        explorar →
                       </span>
                       <span className={`font-mono text-xs ${a.text}`}>
                         /{p.slug}

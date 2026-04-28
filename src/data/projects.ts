@@ -29,7 +29,7 @@ export const projects: Project[] = [
       'Construí un sitio experimental de enfoque estático con contenido indexable, distribución optimizada de imágenes, taxonomía por estilos y módulos dinámicos para explorar análisis visual con IA.',
     architecture: [
       'Astro + Cloudflare Pages para entrega en edge',
-      'Supabase como backend de metadatos',
+      'Supabase como servidor de metadatos',
       'SEO programático con sitemap dinámico',
       'Proceso de imágenes optimizado para rendimiento',
       'Funciones Edge/API para funcionalidades experimentales con IA',
@@ -67,7 +67,7 @@ export const projects: Project[] = [
     architecture: [
       'Agente en segundo plano (Win/Mac/Linux)',
       'Node + WebSockets como bus de eventos en tiempo real',
-      'Postgres con triggers para fan-out (Supabase Realtime opcional)',
+      'Postgres con triggers para distribución de eventos (Supabase Realtime opcional)',
       'Encriptación E2E por usuario',
     ],
     decisions: [
@@ -76,14 +76,14 @@ export const projects: Project[] = [
         body: 'Una herramienta que necesita interfaz para usarse, fracasó. Clippy gana cuando el usuario la olvida.',
       },
       {
-        title: 'Realtime > pull',
-        body: 'Polling rompe la ilusión de continuidad. WebSocket persistente con reconexión exponencial.',
+        title: 'Tiempo real > consulta periódica',
+        body: 'Consultar cada cierto tiempo rompe la ilusión de continuidad. WebSocket persistente con reconexión exponencial.',
       },
     ],
     learnings: [
       'El mejor producto de productividad es invisible',
       'El tiempo real no es una funcionalidad, es una expectativa',
-      'Cross-platform sin Electron es viable cuando el daemon hace el trabajo pesado',
+      'Multiplataforma sin Electron es viable cuando el daemon hace el trabajo pesado',
     ],
     link: 'https://clippy-pages.pages.dev/',
     accent: 'electric',
@@ -101,9 +101,9 @@ export const projects: Project[] = [
     solution:
       'Embeddings + renderizado de grafo: cada nodo es una comunidad, su tamaño es actividad, su posición es similitud semántica.',
     architecture: [
-      'Pipeline de ingestión Node (GitHub API + scrapers)',
+      'Proceso de ingestión Node (GitHub API + extractores)',
       'Embeddings → Postgres + pgvector',
-      'Renderer D3 con force-directed layout',
+      'Renderizador D3 con layout de fuerza dirigida',
       'Filtros semánticos en cliente',
     ],
     decisions: [
@@ -113,7 +113,7 @@ export const projects: Project[] = [
       },
       {
         title: 'pgvector sobre vector DB dedicada',
-        body: 'Postgres + pgvector cubre el 95% del caso. Agregar Pinecone/Weaviate sería complejidad sin payoff inicial.',
+        body: 'Postgres + pgvector cubre el 95% del caso. Agregar Pinecone/Weaviate sería complejidad sin retorno inicial.',
       },
     ],
     learnings: [
@@ -128,8 +128,8 @@ export const projects: Project[] = [
 ];
 
 export const stackTokens = {
-  frontend: { color: '#c6ff3d', label: 'Frontend' },
-  backend: { color: '#3df0ff', label: 'Backend' },
-  infra: { color: '#ff3dd1', label: 'Infra' },
-  data: { color: '#ffb13d', label: 'Data' },
+  frontend: { color: '#c6ff3d', label: 'Interfaz' },
+  backend: { color: '#3df0ff', label: 'Servidor' },
+  infra: { color: '#ff3dd1', label: 'Infraestructura' },
+  data: { color: '#ffb13d', label: 'Datos' },
 } as const;

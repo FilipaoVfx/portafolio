@@ -1,7 +1,7 @@
 ---
 import Base from '@/layouts/Base.astro';
 
-const homePath = import.meta.env.BASE_URL;
+const homePath = import.meta.env.BASE_URL.replace(/\/?$/, '/');
 ---
 
 <Base title="404 — FilipaoVfx" description="Página no encontrada">
@@ -12,7 +12,7 @@ const homePath = import.meta.env.BASE_URL;
       </div>
       <h1 class="heading-display text-2xl md:text-3xl mt-2">Nodo no encontrado.</h1>
       <p class="mt-4 text-white/60">
-        La ruta que buscas no existe en el grafo. Vuelve al workflow.
+        La ruta que buscas no existe en el grafo. Vuelve al flujo principal.
       </p>
       <a href={homePath} class="btn-brutal mt-8">← volver al inicio</a>
     </div>

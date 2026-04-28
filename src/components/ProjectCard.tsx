@@ -13,7 +13,8 @@ const statusLabel: Record<Project['status'], string> = {
   wip: 'en proceso',
 };
 
-const routePath = (path: string) => `${import.meta.env.BASE_URL}${path.replace(/^\/+/, '')}`;
+const baseUrl = import.meta.env.BASE_URL.replace(/\/?$/, '/');
+const routePath = (path: string) => `${baseUrl}${path.replace(/^\/+/, '')}`;
 
 const stackColor: Record<string, string> = {
   // frontend → lime
@@ -169,7 +170,7 @@ export default function ProjectCard({ project, index }: { project: Project; inde
                   </div>
                   <iframe
                     src={project.link}
-                    title={`${project.title} preview`}
+                    title={`${project.title} vista previa`}
                     loading="lazy"
                     sandbox="allow-scripts allow-same-origin"
                     className="relative w-[200%] h-[200%] origin-top-left scale-50 pointer-events-none bg-ink-950"

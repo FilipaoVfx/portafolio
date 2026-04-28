@@ -1,11 +1,11 @@
 ---
-const baseUrl = import.meta.env.BASE_URL;
+const baseUrl = import.meta.env.BASE_URL.replace(/\/?$/, '/');
 const sectionPath = (id: string) => `${baseUrl}#${id}`;
 
 const links = [
-  { href: sectionPath('workflow'), label: 'Workflow' },
+  { href: sectionPath('workflow'), label: 'Flujo' },
   { href: sectionPath('projects'), label: 'Proyectos' },
-  { href: sectionPath('how-i-think'), label: 'How I Think' },
+  { href: sectionPath('how-i-think'), label: 'Cómo pienso' },
   { href: sectionPath('contact'), label: 'Contacto' },
 ];
 ---
@@ -30,7 +30,7 @@ const links = [
         ))}
       </ul>
       <a href={sectionPath('contact')} class="hidden md:inline-flex items-center gap-2 px-3 py-1.5 text-xs font-mono font-bold uppercase tracking-wider border-2 border-black bg-accent-lime text-ink-950 shadow-[3px_3px_0_0_#000] hover:translate-x-[-1px] hover:translate-y-[-1px] hover:shadow-[5px_5px_0_0_#000] transition-transform">
-        Hire me →
+        Contactar →
       </a>
     </nav>
   </div>

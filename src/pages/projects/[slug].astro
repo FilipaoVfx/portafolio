@@ -19,14 +19,15 @@ const statusLabel = {
   wip: 'en proceso',
 };
 const a = accentClass[project.accent];
-const sectionPath = (id: string) => `${import.meta.env.BASE_URL}#${id}`;
+const baseUrl = import.meta.env.BASE_URL.replace(/\/?$/, '/');
+const sectionPath = (id: string) => `${baseUrl}#${id}`;
 ---
 
 <Base title={`${project.title} — FilipaoVfx`} description={project.tagline}>
   <article class="relative pt-12 pb-20">
     <div class="mx-auto max-w-4xl px-4">
       <a href={sectionPath('projects')} class="font-mono text-xs uppercase tracking-[0.25em] text-white/50 hover:text-white transition">
-        ← back
+        ← volver
       </a>
 
       <div class="mt-8 flex flex-wrap items-center gap-3">
@@ -73,7 +74,7 @@ const sectionPath = (id: string) => `${import.meta.env.BASE_URL}#${id}`;
         </section>
 
         <section>
-          <div class="label-mono">// decisiones técnicas</div>
+              <div class="label-mono">// decisiones técnicas</div>
           <div class="mt-4 grid md:grid-cols-2 gap-4">
             {project.decisions.map((d) => (
               <div class="glass-strong border border-white/15 p-6">

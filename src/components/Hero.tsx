@@ -7,7 +7,8 @@ const stackPalette = [
   { color: '#ffb13d', label: 'Supabase +' },
 ];
 
-const assetPath = (path: string) => `${import.meta.env.BASE_URL}${path.replace(/^\/+/, '')}`;
+const baseUrl = import.meta.env.BASE_URL.replace(/\/?$/, '/');
+const assetPath = (path: string) => `${baseUrl}${path.replace(/^\/+/, '')}`;
 
 export default function Hero() {
   return (
@@ -34,7 +35,7 @@ export default function Hero() {
               transition={{ duration: 0.7, delay: 0.05 }}
               className="heading-display text-5xl md:text-7xl lg:text-[5.5rem] leading-[0.95]"
             >
-              Las apps son feature .{' '}
+              Las apps son funcionalidades.{' '}
               <span className="relative inline-block">
                 <span className="relative z-10 bg-accent-lime text-ink-950 px-3 -rotate-1 inline-block border-2 border-black shadow-brutal-lg">
                   Yo construyo
@@ -60,7 +61,7 @@ export default function Hero() {
                 Trabajo en la intersección de{' '}
                 <span className="text-accent-lime">arquitectura</span>,{' '}
                 <span className="text-accent-electric">producto</span> y{' '}
-                <span className="text-accent-magenta">performance</span>,
+                <span className="text-accent-magenta">rendimiento</span>,
                 construyendo sistemas pensados para escalar desde el día uno.
               </p>
             </motion.div>
@@ -84,7 +85,7 @@ export default function Hero() {
               animate={{ opacity: 1 }}
               transition={{ duration: 1, delay: 0.5 }}
               className="mt-12 flex flex-wrap items-center gap-x-6 gap-y-3"
-              aria-label="Stack"
+              aria-label="Stack técnico"
             >
               {stackPalette.map((s) => (
                 <div
@@ -136,13 +137,13 @@ export default function Hero() {
                     </span>
                     <span className="flex items-center gap-1.5 px-1.5 py-0.5 bg-ink-950/70 border border-accent-lime/40 text-accent-lime">
                       <span className="w-1.5 h-1.5 bg-accent-lime rounded-full animate-pulse-glow" />
-                      live
+                      en vivo
                     </span>
                   </div>
 
                   <div className="absolute bottom-3 left-3 right-3 font-mono">
                     <div className="text-[10px] uppercase tracking-[0.25em] text-accent-lime">
-                      / operator
+                      / operador
                     </div>
                     <div className="text-base text-white font-semibold mt-0.5">
                       Filipao
@@ -151,7 +152,7 @@ export default function Hero() {
                 </div>
 
                 <div className="mt-2 px-1 flex items-center justify-between font-mono text-[10px] uppercase tracking-wider text-white/50">
-                  <span>build · 04.26</span>
+                  <span>versión · 04.26</span>
                   <span className="flex items-center gap-1">
                     <span className="w-1 h-1 bg-accent-magenta" />
                     <span className="w-1 h-1 bg-accent-electric" />

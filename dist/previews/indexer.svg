@@ -1,0 +1,38 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 960" role="img" aria-label="Vista previa de Indexer">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#110816"/>
+      <stop offset=".5" stop-color="#120b20"/>
+      <stop offset="1" stop-color="#071014"/>
+    </linearGradient>
+    <filter id="glow"><feGaussianBlur stdDeviation="9" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+  </defs>
+  <rect width="720" height="960" fill="url(#bg)"/>
+  <text x="58" y="96" fill="#ff3dd1" font-family="monospace" font-size="32" font-weight="700">INDEXER</text>
+  <text x="58" y="130" fill="#ffffff" opacity=".62" font-family="monospace" font-size="17">bookmarks · repos · READMEs → rutas</text>
+  <g stroke="#ffffff" stroke-opacity=".12">
+    <path d="M0 180h720M0 300h720M0 420h720M0 540h720M0 660h720M0 780h720"/>
+    <path d="M120 0v960M240 0v960M360 0v960M480 0v960M600 0v960"/>
+  </g>
+  <g filter="url(#glow)">
+    <path d="M146 308L306 224L500 306L404 482L216 516Z" fill="none" stroke="#ff3dd1" stroke-width="4" opacity=".65"/>
+    <path d="M306 224L404 482M146 308L500 306M216 516L306 224M404 482L500 306" stroke="#3df0ff" stroke-width="3" opacity=".45"/>
+    <circle cx="146" cy="308" r="34" fill="#ff3dd1"/>
+    <circle cx="306" cy="224" r="44" fill="#3df0ff"/>
+    <circle cx="500" cy="306" r="38" fill="#c6ff3d"/>
+    <circle cx="404" cy="482" r="50" fill="#ff3dd1"/>
+    <circle cx="216" cy="516" r="30" fill="#3df0ff"/>
+  </g>
+  <rect x="58" y="618" width="604" height="68" fill="#05070a" stroke="#ff3dd1" stroke-opacity=".55"/>
+  <text x="88" y="660" fill="#ffffff" font-family="monospace" font-size="21">Objetivo: construir sistema tecnico</text>
+  <g transform="translate(58 730)" font-family="monospace">
+    <rect width="136" height="78" fill="#05070a" stroke="#ff3dd1"/>
+    <text x="20" y="45" fill="#ff3dd1" font-size="18">captura</text>
+    <rect x="156" width="136" height="78" fill="#05070a" stroke="#3df0ff"/>
+    <text x="176" y="45" fill="#3df0ff" font-size="18">clasifica</text>
+    <rect x="312" width="136" height="78" fill="#05070a" stroke="#c6ff3d"/>
+    <text x="332" y="45" fill="#c6ff3d" font-size="18">conecta</text>
+    <rect x="468" width="136" height="78" fill="#05070a" stroke="#ff3dd1"/>
+    <text x="488" y="45" fill="#ff3dd1" font-size="18">ruta</text>
+  </g>
+</svg>

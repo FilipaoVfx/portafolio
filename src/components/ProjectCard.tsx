@@ -14,6 +14,7 @@ const statusLabel: Record<Project['status'], string> = {
 
 const baseUrl = import.meta.env.BASE_URL.replace(/\/?$/, '/');
 const routePath = (path: string) => `${baseUrl}${path.replace(/^\/+/, '')}`;
+const assetPath = (path: string) => `${baseUrl}${path.replace(/^\/+/, '')}`;
 
 const stackColor: Record<string, string> = {
   // frontend → lime
@@ -160,10 +161,21 @@ export default function ProjectCard({ project, index }: { project: Project; inde
                   className="relative flex-1 block overflow-hidden border-2 border-black bg-ink-950 group/preview"
                   style={{ boxShadow: `4px 4px 0 0 ${a.hex}` }}
                 >
-                  <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.06)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.06)_1px,transparent_1px)] bg-[size:22px_22px] opacity-40" />
+                  {project.previewImage ? (
+                    <img
+                      src={assetPath(project.previewImage)}
+                      alt={`Vista previa de ${project.title}`}
+                      loading={index === 0 ? 'eager' : 'lazy'}
+                      decoding="async"
+                      className="absolute inset-0 w-full h-full object-cover transition duration-500 group-hover/preview:scale-[1.03]"
+                    />
+                  ) : (
+                    <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.06)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.06)_1px,transparent_1px)] bg-[size:22px_22px] opacity-40" />
+                  )}
+                  <div className="absolute inset-0 bg-gradient-to-t from-ink-950 via-ink-950/25 to-transparent opacity-85" />
                   <div className="relative h-full min-h-[260px] flex flex-col justify-end p-5">
                     <div className={`font-mono text-[10px] uppercase tracking-[0.25em] ${a.text}`}>
-                      demo externa
+                      preview visual
                     </div>
                     <div className="mt-2 heading-display text-2xl text-white">
                       {project.title}

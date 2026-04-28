@@ -11,6 +11,7 @@ export type Project = {
   learnings: string[];
   link?: string;
   repo?: string;
+  previewImage?: string;
   accent: 'lime' | 'electric' | 'magenta';
   status: 'live' | 'beta' | 'wip';
 };
@@ -50,6 +51,7 @@ export const projects: Project[] = [
       'En nichos visuales, la arquitectura de metadatos pesa tanto como la interfaz',
     ],
     link: 'https://crakingculturewallpaperr.xyz/',
+    previewImage: '/previews/crackingwall.svg',
     accent: 'lime',
     status: 'live',
   },
@@ -86,6 +88,7 @@ export const projects: Project[] = [
       'Multiplataforma sin Electron es viable cuando el daemon hace el trabajo pesado',
     ],
     link: 'https://clippy-pages.pages.dev/',
+    previewImage: '/previews/clippy.svg',
     accent: 'electric',
     status: 'beta',
   },
@@ -130,6 +133,7 @@ export const projects: Project[] = [
       'La UX de discovery debe parecerse más a un pipeline o mapa de ruta que a una página de resultados',
     ],
     link: 'https://filipaovfx.github.io/indexer/',
+    previewImage: '/previews/indexer.svg',
     accent: 'magenta',
     status: 'wip',
   },

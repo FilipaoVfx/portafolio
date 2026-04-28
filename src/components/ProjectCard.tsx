@@ -13,6 +13,8 @@ const statusLabel: Record<Project['status'], string> = {
   wip: 'en proceso',
 };
 
+const routePath = (path: string) => `${import.meta.env.BASE_URL}${path.replace(/^\/+/, '')}`;
+
 const stackColor: Record<string, string> = {
   // frontend → lime
   Astro: '#c6ff3d',
@@ -118,7 +120,7 @@ export default function ProjectCard({ project, index }: { project: Project; inde
             </div>
 
             <div className="mt-8 flex flex-wrap gap-3">
-              <a href={`/projects/${project.slug}`} className="btn-brutal">
+              <a href={routePath(`/projects/${project.slug}`)} className="btn-brutal">
                 Ver caso completo →
               </a>
               {project.link && (

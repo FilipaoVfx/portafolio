@@ -7,6 +7,8 @@ const stackPalette = [
   { color: '#ffb13d', label: 'Supabase +' },
 ];
 
+const assetPath = (path: string) => `${import.meta.env.BASE_URL}${path.replace(/^\/+/, '')}`;
+
 export default function Hero() {
   return (
     <section className="relative pt-20 md:pt-28 pb-16">
@@ -120,7 +122,7 @@ export default function Hero() {
               <div className="relative border-2 border-black bg-ink-900 p-2 shadow-brutal-lg">
                 <div className="relative aspect-[4/5] overflow-hidden">
                   <img
-                    src="/profile.jpg"
+                    src={assetPath('/profile.jpg')}
                     alt="Filipao"
                     className="absolute inset-0 w-full h-full object-cover grayscale contrast-110 hover:grayscale-0 transition duration-500"
                     loading="eager"

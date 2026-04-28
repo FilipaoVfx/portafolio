@@ -1,5 +1,7 @@
 ---
 import Base from '@/layouts/Base.astro';
+
+const homePath = import.meta.env.BASE_URL;
 ---
 
 <Base title="404 — FilipaoVfx" description="Página no encontrada">
@@ -12,7 +14,7 @@ import Base from '@/layouts/Base.astro';
       <p class="mt-4 text-white/60">
         La ruta que buscas no existe en el grafo. Vuelve al workflow.
       </p>
-      <a href="/" class="btn-brutal mt-8">← back to workflow</a>
+      <a href={homePath} class="btn-brutal mt-8">← volver al inicio</a>
     </div>
   </section>
 </Base>

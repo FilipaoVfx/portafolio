@@ -3,8 +3,11 @@ import react from '@astrojs/react';
 import tailwind from '@astrojs/tailwind';
 import sitemap from '@astrojs/sitemap';
 
+const isGitHubPages = process.env.DEPLOY_TARGET === 'github-pages';
+
 export default defineConfig({
-  site: 'https://filipaovfx.dev',
+  site: isGitHubPages ? 'https://filipaovfx.github.io' : 'https://filipaovfx.dev',
+  base: isGitHubPages ? '/portafolio' : '/',
   integrations: [react(), tailwind({ applyBaseStyles: false }), sitemap()],
   output: 'static',
   vite: {

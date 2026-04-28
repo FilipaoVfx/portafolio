@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://filipaovfx.dev/sitemap-index.xml

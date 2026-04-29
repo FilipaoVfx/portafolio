@@ -57,7 +57,7 @@ export default function ProjectCard({ project, index }: { project: Project; inde
             <div className={`w-3 h-3 ${a.bg} border-2 border-black`} />
           </div>
 
-          <div className="lg:col-span-7 p-6 md:p-9 lg:p-10 xl:p-12">
+          <div className="lg:col-span-5 p-6 md:p-9 lg:p-10 xl:p-12 flex flex-col">
             <div className="flex flex-wrap items-center gap-2 mb-5">
               <span className="chip uppercase">{statusLabel[project.status]}</span>
               {project.stack.map((s) => (
@@ -81,28 +81,23 @@ export default function ProjectCard({ project, index }: { project: Project; inde
             <h3 className={`heading-display text-3xl md:text-5xl ${a.text}`}>
               {project.title}
             </h3>
-            <p className="mt-3 text-white/70 text-base md:text-lg leading-relaxed max-w-3xl">
+            <p className="mt-3 text-white/70 text-base md:text-lg leading-relaxed">
               {project.tagline}
             </p>
 
-            <div className="mt-7 grid md:grid-cols-2 gap-4">
-              <div className="brutal-dark p-4 md:p-5">
-                <div className="label-mono mb-2">// problema</div>
-                <p className="text-sm leading-relaxed text-white/80">{project.problem}</p>
+            <div className="mt-8">
+              <div className="flex items-center justify-between gap-4 mb-3">
+                <div className="label-mono">// arquitectura</div>
+                <div
+                  className="hidden sm:block h-px flex-1"
+                  style={{ backgroundColor: `${a.hex}55` }}
+                />
               </div>
-              <div className="brutal-dark p-4 md:p-5">
-                <div className="label-mono mb-2">// solución</div>
-                <p className="text-sm leading-relaxed text-white/80">{project.solution}</p>
-              </div>
-            </div>
-
-            <div className="mt-5">
-              <div className="label-mono mb-3">// arquitectura</div>
-              <ul className="grid md:grid-cols-2 gap-2">
+              <ul className="grid gap-2">
                 {project.architecture.map((step, i) => (
                   <li
                     key={i}
-                    className="flex items-start gap-3 px-3.5 py-2 glass border border-white/10 hover:border-white/30 transition"
+                    className="flex items-start gap-3 px-3.5 py-2.5 glass border border-white/10 hover:border-white/30 transition"
                   >
                     <span className={`mt-1.5 inline-block w-1.5 h-1.5 ${a.bg}`} />
                     <span className="font-mono text-xs text-white/80 leading-relaxed">
@@ -113,7 +108,7 @@ export default function ProjectCard({ project, index }: { project: Project; inde
               </ul>
             </div>
 
-            <div className="mt-7 flex flex-wrap gap-3">
+            <div className="mt-8 flex flex-wrap gap-3 lg:mt-auto lg:pt-8">
               <a href={routePath(`/projects/${project.slug}`)} className="btn-brutal">
                 Ver caso completo →
               </a>
@@ -131,14 +126,14 @@ export default function ProjectCard({ project, index }: { project: Project; inde
           </div>
 
           {project.link && (
-            <div className="lg:col-span-4 relative border-t lg:border-t-0 lg:border-l border-white/10 bg-black/25">
-              <div className="relative h-full p-4 md:p-6 lg:p-6 xl:p-7 flex flex-col justify-start lg:pt-12">
+            <div className="lg:col-span-6 relative border-t lg:border-t-0 lg:border-l border-white/10 bg-black/25">
+              <div className="relative h-full p-4 md:p-6 lg:p-8 xl:p-10 flex flex-col justify-center">
                 <a
                   href={project.link}
                   target="_blank"
                   rel="noreferrer"
                   aria-label={`Abrir demo de ${project.title}`}
-                  className="group/preview block w-[calc(100%-4px)] rounded-md border border-white/15 bg-ink-950/95 p-2 shadow-[0_18px_55px_rgba(0,0,0,0.34)] transition hover:border-white/35"
+                  className="group/preview block w-[calc(100%-4px)] rounded-md border border-white/15 bg-ink-950/95 p-2.5 shadow-[0_18px_55px_rgba(0,0,0,0.34)] transition hover:border-white/35"
                   style={{ boxShadow: `4px 4px 0 0 ${a.hex}` }}
                 >
                   <div className="flex items-center justify-between px-1 pb-2 font-mono text-[10px] uppercase tracking-wider">
@@ -158,14 +153,14 @@ export default function ProjectCard({ project, index }: { project: Project; inde
                     </span>
                   </div>
 
-                  <div className="relative aspect-[16/10] lg:aspect-[5/6] xl:aspect-[16/13] overflow-hidden rounded border border-white/10 bg-black">
+                  <div className="relative aspect-[16/10] lg:aspect-[16/11] xl:aspect-[16/10] overflow-hidden rounded border border-white/10 bg-black">
                     {project.previewImage ? (
                       <img
                         src={assetPath(project.previewImage)}
                         alt={`Captura de ${project.title}`}
                         loading={index === 0 ? 'eager' : 'lazy'}
                         decoding="async"
-                        sizes="(min-width: 1280px) 280px, (min-width: 1024px) 24vw, 100vw"
+                        sizes="(min-width: 1280px) 520px, (min-width: 1024px) 48vw, 100vw"
                         className="h-full w-full object-cover object-top transition duration-500 group-hover/preview:scale-[1.025]"
                       />
                     ) : (

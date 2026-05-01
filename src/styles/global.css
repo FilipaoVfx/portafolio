@@ -83,9 +83,6 @@
   }
   .achievement-paper {
     clip-path: polygon(0.7% 0, 15% 0.7%, 28% 0.1%, 41% 0.8%, 58% 0.2%, 72% 0.9%, 86% 0.1%, 99.2% 0.6%, 100% 99.2%, 84% 99.8%, 68% 99.1%, 53% 99.7%, 37% 99.2%, 22% 99.9%, 8% 99.3%, 0 99.8%);
-    background-image:
-      linear-gradient(135deg, rgba(255,255,255,0.08), transparent 38%),
-      repeating-linear-gradient(90deg, rgba(255,255,255,0.04) 0 1px, transparent 1px 12px);
   }
   .achievement-paper::before,
   .achievement-paper::after {
@@ -96,8 +93,8 @@
     height: 10px;
     z-index: 2;
     pointer-events: none;
-    background: repeating-linear-gradient(90deg, rgba(61,240,255,0.22) 0 6px, transparent 6px 14px);
-    opacity: 0.18;
+    background: transparent;
+    opacity: 0;
   }
   .achievement-paper::before {
     top: 0;
@@ -109,5 +106,39 @@
   .achievement-photo--repair {
     filter: contrast(1.22) saturate(1.08) brightness(1.08) blur(0.01px);
     image-rendering: auto;
+  }
+  .flip-card {
+    perspective: 900px;
+    outline: none;
+  }
+  .flip-card-inner {
+    position: relative;
+    min-height: 150px;
+    width: 100%;
+    transform-style: preserve-3d;
+    transition: transform 420ms ease;
+  }
+  .flip-card:hover .flip-card-inner,
+  .flip-card:focus .flip-card-inner,
+  .flip-card:focus-within .flip-card-inner {
+    transform: rotateY(180deg);
+  }
+  .flip-card-face {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    border: 1px solid rgba(255,255,255,0.14);
+    background:
+      linear-gradient(135deg, rgba(61,240,255,0.08), transparent 45%),
+      rgba(8,9,14,0.9);
+    padding: 1rem;
+    backface-visibility: hidden;
+    box-shadow: 5px 5px 0 0 rgba(255,255,255,0.08);
+  }
+  .flip-card-back {
+    transform: rotateY(180deg);
+    border-color: rgba(198,255,61,0.32);
   }
 }

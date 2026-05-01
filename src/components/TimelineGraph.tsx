@@ -1,104 +1,148 @@
-import type { Project } from '@/data/projects';
+const baseUrl = import.meta.env.BASE_URL.replace(/\/?$/, '/');
+const assetPath = (path: string) => `${baseUrl}${path.replace(/^\/+/, '')}`;
 
-const accentMap: Record<Project['accent'], { bg: string; ring: string; text: string }> = {
-  lime: { bg: 'bg-accent-lime', ring: 'ring-accent-lime/40', text: 'text-accent-lime' },
-  electric: { bg: 'bg-accent-electric', ring: 'ring-accent-electric/40', text: 'text-accent-electric' },
-  magenta: { bg: 'bg-accent-magenta', ring: 'ring-accent-magenta/40', text: 'text-accent-magenta' },
-};
+const achievements = [
+  {
+    title: 'Equipo ganador',
+    eyebrow: 'Hackathon Talento Tech',
+    src: '/ganadorv1.jpeg',
+    alt: 'Equipo ganador del hackathon Talento Tech en inteligencia artificial',
+    className: 'lg:col-span-7 rotate-[-0.7deg]',
+    imageClassName: 'max-h-[360px]',
+  },
+  {
+    title: 'Premio recibido',
+    eyebrow: 'Ganador',
+    src: '/ganadorv3.jpeg',
+    alt: 'Juan Felipe Gonzalez sosteniendo el premio del hackathon',
+    className: 'lg:col-span-5 rotate-[1deg]',
+    imageClassName: 'achievement-photo--repair max-h-[360px]',
+  },
+  {
+    title: 'Certificado oficial',
+    eyebrow: 'Ministerio TIC',
+    src: '/certificado.jpeg',
+    alt: 'Certificado de primer lugar en el reto de inteligencia artificial',
+    className: 'lg:col-span-7 rotate-[-0.35deg]',
+    imageClassName: 'max-h-[320px]',
+  },
+];
 
-export default function TimelineGraph({ projects }: { projects: Project[] }) {
+const impactPoints = [
+  'ETL con fuentes de comportamiento, transacciones y leads',
+  'Scoring de leads, churn y valor potencial',
+  'Supabase como capa operativa de datos',
+];
+
+const stack = ['ETL Pipeline', 'XGBoost', 'Random Forest', 'Data Augmentation', 'Supabase'];
+
+export default function TimelineGraph() {
   return (
-    <section id="workflow" className="relative py-20">
-      <div className="mx-auto max-w-6xl px-4">
-        <div className="flex items-end justify-between mb-10">
-          <div>
-            <div className="label-mono">/ flujo</div>
+    <section id="logros" className="relative py-24 md:py-28 scroll-mt-24 overflow-hidden">
+      <div className="absolute inset-x-0 top-10 h-px bg-gradient-to-r from-transparent via-accent-electric/45 to-transparent" />
+      <div className="mx-auto max-w-6xl px-6 sm:px-8 md:px-12 lg:px-14">
+        <div className="mb-10 grid gap-6 lg:grid-cols-12 lg:items-end">
+          <div className="lg:col-span-8">
+            <div className="label-mono">/ logros</div>
             <h2 className="heading-display text-3xl md:text-5xl mt-3">
-              Ruta del desarrollador
+              Trayectoria y reconocimiento
             </h2>
-            <p className="mt-3 text-white/60 max-w-xl">
-              Cada nodo es un sistema. Cada conexión, una decisión. Navega el
-              flujo como leerías un grafo: problema → arquitectura →
-              aprendizaje.
-            </p>
           </div>
-          <div className="hidden md:flex chip">
-            <span className="w-1.5 h-1.5 bg-accent-lime rounded-full" />
-            3 nodos activos
+          <p className="lg:col-span-4 text-white/62 leading-relaxed">
+            Un logro competitivo convertido en evidencia tecnica: diseno de
+            datos, modelado predictivo y decisiones de producto bajo presion.
+          </p>
+        </div>
+
+        <div className="relative achievement-editorial border-y border-white/10 py-6 md:py-8">
+          <div className="absolute left-4 top-0 -translate-y-1/2 bg-accent-lime px-3 py-1 font-mono text-[10px] uppercase tracking-[0.24em] text-ink-950 shadow-[3px_3px_0_0_#000]">
+            hackathon / IA
+          </div>
+          <div className="grid auto-rows-auto gap-5 lg:grid-cols-12 lg:items-stretch">
+            <article className="achievement-bento lg:col-span-5 lg:row-span-2">
+              <div className="label-mono text-accent-lime/80">/ solucion ganadora</div>
+              <h3 className="heading-display mt-3 text-2xl md:text-4xl leading-tight">
+                Ecosistema Predictivo ETL: de datos brutos a inteligencia comercial.
+              </h3>
+              <p className="mt-5 text-white/72 leading-relaxed">
+                Desarrollamos un pipeline integral de ciencia de datos que unifica
+                comportamiento, transacciones y leads en Supabase para construir
+                una vision 360 del ciclo de vida del cliente.
+              </p>
+              <p className="mt-4 text-white/62 leading-relaxed">
+                La solucion combina scoring de leads, prediccion de churn y
+                estimacion de valor potencial para convertir datos comerciales
+                complejos en priorizacion accionable.
+              </p>
+              <div className="mt-6 grid grid-cols-2 gap-3">
+                <div className="border border-white/10 bg-white/[0.04] p-4">
+                  <div className="heading-display text-4xl text-accent-lime">92%</div>
+                  <div className="mt-2 font-mono text-[10px] uppercase tracking-[0.2em] text-white/45">
+                    precision leads
+                  </div>
+                </div>
+                <div className="border border-white/10 bg-white/[0.04] p-4">
+                  <div className="heading-display text-4xl text-accent-electric">3</div>
+                  <div className="mt-2 font-mono text-[10px] uppercase tracking-[0.2em] text-white/45">
+                    modelos IA
+                  </div>
+                </div>
+              </div>
+            </article>
+
+            <article className="achievement-bento lg:col-span-7">
+              <div className="grid gap-4 md:grid-cols-3">
+                {impactPoints.map((point, index) => (
+                  <div className="border-l-2 border-accent-lime/70 bg-black/20 p-4">
+                    <div className="font-mono text-[10px] uppercase tracking-[0.22em] text-accent-electric">
+                      0{index + 1}
+                    </div>
+                    <p className="mt-3 text-sm leading-relaxed text-white/72">{point}</p>
+                  </div>
+                ))}
+              </div>
+              <div className="mt-5 flex flex-wrap gap-2">
+                {stack.map((item) => (
+                  <span className="chip" key={item}>{item}</span>
+                ))}
+              </div>
+            </article>
+
+            {achievements.map((item) => (
+              <figure
+                key={item.src}
+                className={`achievement-paper group relative overflow-hidden border-2 border-white/18 bg-ink-900 p-2.5 shadow-[10px_12px_0_0_rgba(0,0,0,0.78)] transition duration-300 hover:rotate-0 hover:-translate-y-1 ${item.className}`}
+              >
+                <div className="relative overflow-hidden border border-white/10 bg-ink-950">
+                  <img
+                    src={assetPath(item.src)}
+                    alt={item.alt}
+                    loading="lazy"
+                    className={`h-full min-h-[220px] w-full object-cover opacity-90 contrast-110 saturate-[0.92] transition duration-500 group-hover:scale-[1.015] group-hover:opacity-100 ${item.imageClassName ?? ''}`}
+                  />
+                  <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(115deg,rgba(61,240,255,0.12),transparent_30%,rgba(0,0,0,0.46)_82%)] mix-blend-soft-light" />
+                  <div className="pointer-events-none absolute inset-0 bg-[repeating-linear-gradient(0deg,rgba(255,255,255,0.035)_0_1px,transparent_1px_6px)] opacity-45" />
+                </div>
+                <figcaption className="flex flex-col gap-1 border-t border-white/10 bg-ink-950 px-3 py-3 text-white sm:flex-row sm:items-center sm:justify-between">
+                  <span className="font-mono text-[10px] uppercase tracking-[0.22em] text-accent-electric/80">
+                    {item.eyebrow}
+                  </span>
+                  <span className="heading-display text-lg leading-none text-white/90">
+                    {item.title}
+                  </span>
+                </figcaption>
+              </figure>
+            ))}
           </div>
         </div>
 
-        <div className="relative glass-strong border-2 border-white/15 shadow-brutal-lg p-6 md:p-10 rounded-lg overflow-hidden">
-          <div
-            className="absolute inset-0 opacity-30 pointer-events-none"
-            style={{
-              backgroundImage:
-                'linear-gradient(rgba(255,255,255,0.05) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.05) 1px, transparent 1px)',
-              backgroundSize: '24px 24px',
-            }}
-          />
-
-          <svg
-            className="absolute inset-0 w-full h-full pointer-events-none"
-            preserveAspectRatio="none"
-            viewBox="0 0 100 100"
-          >
-            <defs>
-              <linearGradient id="line-grad" x1="0" y1="0" x2="1" y2="0">
-                <stop offset="0%" stopColor="#c6ff3d" stopOpacity="0.6" />
-                <stop offset="50%" stopColor="#3df0ff" stopOpacity="0.6" />
-                <stop offset="100%" stopColor="#ff3dd1" stopOpacity="0.6" />
-              </linearGradient>
-            </defs>
-            <path
-              d="M 8 50 Q 30 20, 50 50 T 92 50"
-              stroke="url(#line-grad)"
-              strokeWidth="0.4"
-              fill="none"
-              strokeDasharray="1.2 1.2"
-            />
-          </svg>
-
-          <div className="relative grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8">
-            {projects.map((p, i) => {
-              const a = accentMap[p.accent];
-              return (
-                <a
-                  key={p.slug}
-                  href={`#${p.slug}`}
-                  className="group relative block"
-                >
-                  <div className="flex items-center gap-3 mb-4">
-                    <span
-                      className={`relative inline-flex w-4 h-4 ${a.bg} border-2 border-black ring-4 ${a.ring} group-hover:scale-125 transition`}
-                    />
-                    <span className="font-mono text-[10px] uppercase tracking-[0.25em] text-white/50">
-                      Nodo 0{i + 1}
-                    </span>
-                    <span className="ml-auto chip uppercase">{p.status}</span>
-                  </div>
-                  <div className="brutal-dark p-5 group-hover:border-accent-lime/60 group-hover:-translate-y-1 transition">
-                    <h3 className={`heading-display text-2xl ${a.text}`}>{p.title}</h3>
-                    <p className="mt-2 text-sm text-white/70 leading-relaxed">
-                      {p.tagline}
-                    </p>
-                    <div className="mt-4 flex flex-wrap gap-1.5">
-                      {p.stack.slice(0, 3).map((s) => (
-                        <span key={s} className="chip">{s}</span>
-                      ))}
-                    </div>
-                    <div className="mt-5 flex items-center justify-between border-t border-white/10 pt-3">
-                      <span className="font-mono text-[11px] text-white/40 uppercase tracking-wider">
-                        explorar →
-                      </span>
-                      <span className={`font-mono text-xs ${a.text}`}>
-                        /{p.slug}
-                      </span>
-                    </div>
-                  </div>
-                </a>
-              );
-            })}
+        <div className="mt-8 flex flex-col gap-4 border-l-2 border-accent-lime/70 pl-5 text-white/72 md:flex-row md:items-center md:justify-between">
+          <p className="max-w-3xl leading-relaxed">
+            La competencia fue realizada el 21 de noviembre de 2025 en Armenia,
+            Quindio.
+          </p>
+          <div className="font-mono text-xs uppercase tracking-[0.22em] text-accent-electric">
+            1er puesto
           </div>
         </div>
       </div>

@@ -14,8 +14,6 @@ const assetPath = (path: string) => `${baseUrl}${path.replace(/^\/+/, '')}`;
 <Base>
   <Hero />
 
-  <TimelineGraph projects={projects} />
-
   <section id="projects" class="relative py-28 md:py-36 scroll-mt-24">
     <div class="mx-auto max-w-6xl px-6 sm:px-8 md:px-12 lg:px-14">
       <div class="mb-14 md:mb-20">
@@ -27,7 +25,7 @@ const assetPath = (path: string) => `${baseUrl}${path.replace(/^\/+/, '')}`;
         </p>
       </div>
 
-      <div class="flex flex-col gap-24 md:gap-32">
+      <div class="flex flex-col gap-12 md:gap-16">
         {projects.map((project, i) => (
           <ProjectCard project={project} index={i} />
         ))}
@@ -57,30 +55,35 @@ const assetPath = (path: string) => `${baseUrl}${path.replace(/^\/+/, '')}`;
         <div class="lg:col-span-7">
           <div class="relative glass-strong border-2 border-white/15 rounded-lg p-6 md:p-8 shadow-brutal-lg overflow-hidden">
             <div class="absolute inset-0 opacity-25 pointer-events-none bg-[linear-gradient(rgba(255,255,255,0.06)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.06)_1px,transparent_1px)] bg-[size:28px_28px]"></div>
-            <div class="relative grid gap-4 sm:grid-cols-3">
-              <div class="brutal-dark p-5">
+            <div class="relative grid gap-5 md:grid-cols-2">
+              <div class="border-2 border-white/80 bg-ink-950 min-h-[180px] p-5 md:p-6 shadow-[7px_7px_0_0_rgba(255,255,255,0.85)]">
                 <div class="label-mono text-accent-lime/80">inicio</div>
-                <div class="heading-display text-4xl mt-3 text-accent-lime">15</div>
-                <p class="mt-3 text-sm text-white/70 leading-relaxed">
+                <div class="heading-display text-3xl md:text-4xl mt-3 leading-tight text-accent-lime">15 años</div>
+                <p class="mt-4 text-sm md:text-base text-white/72 leading-relaxed">
                   Primer negocio de edición de video, nacido de una necesidad
                   clara en mi entorno.
                 </p>
               </div>
-              <div class="brutal-dark p-5">
+              <div class="border-2 border-white/80 bg-ink-950 min-h-[180px] p-5 md:p-6 shadow-[7px_7px_0_0_rgba(255,255,255,0.85)]">
                 <div class="label-mono text-accent-electric/80">choque</div>
-                <div class="heading-display text-4xl mt-3 text-accent-electric">fallé</div>
-                <p class="mt-3 text-sm text-white/70 leading-relaxed">
+                <div class="heading-display text-3xl md:text-4xl mt-3 leading-tight text-accent-electric">fallé</div>
+                <p class="mt-4 text-sm md:text-base text-white/72 leading-relaxed">
                   Intenté construir algo más grande sin la base técnica
                   suficiente. La idea no era el cuello de botella.
                 </p>
               </div>
-              <div class="brutal-dark p-5">
-                <div class="label-mono text-accent-magenta/80">giro</div>
-                <div class="heading-display text-4xl mt-3 text-accent-magenta">sistemas</div>
-                <p class="mt-3 text-sm text-white/70 leading-relaxed">
-                  Ese intento me expuso temprano a producto, arquitectura y
-                  aprendizaje autodidacta.
-                </p>
+              <div class="border-2 border-accent-magenta bg-ink-950 min-h-[220px] p-5 md:p-7 md:col-span-2 shadow-[9px_9px_0_0_rgba(255,61,209,0.75)]">
+                <div class="grid gap-5 md:grid-cols-[minmax(0,0.85fr)_minmax(0,1.15fr)] md:items-start">
+                  <div>
+                    <div class="label-mono text-accent-magenta/80">giro</div>
+                    <div class="heading-display text-4xl md:text-5xl mt-3 leading-tight text-accent-magenta">sistemas</div>
+                  </div>
+                  <p class="text-base md:text-lg text-white/76 leading-relaxed">
+                    Ese intento me expuso temprano a producto, arquitectura y
+                    aprendizaje autodidacta. Desde ahí empecé a pensar menos en
+                    pantallas aisladas y más en sistemas funcionales.
+                  </p>
+                </div>
               </div>
             </div>
           </div>
@@ -171,6 +174,8 @@ const assetPath = (path: string) => `${baseUrl}${path.replace(/^\/+/, '')}`;
       </div>
     </div>
   </section>
+
+  <TimelineGraph />
 
   <Contact />
 </Base>

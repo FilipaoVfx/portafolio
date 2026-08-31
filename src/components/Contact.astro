@@ -1,4 +1,5 @@
 ---
+import { site } from '@/data/site';
 ---
 
 <section id="contact" class="relative py-24">
@@ -20,13 +21,13 @@
         </p>
 
         <div class="mt-10 flex flex-wrap gap-4">
-          <a href="mailto:juanku2003@gmail.com" class="btn-brutal">
-            juanku2003@gmail.com →
+          <a href={`mailto:${site.email}`} class="btn-brutal">
+            {site.email} →
           </a>
-          <a href="https://github.com/filipaovfx" class="btn-ghost" target="_blank" rel="noreferrer">
+          <a href={site.github} class="btn-ghost" target="_blank" rel="noreferrer">
             GitHub ↗
           </a>
-          <a href="https://linkedin.com" class="btn-ghost" target="_blank" rel="noreferrer">
+          <a href={site.linkedin} class="btn-ghost" target="_blank" rel="noreferrer">
             LinkedIn ↗
           </a>
         </div>

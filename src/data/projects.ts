@@ -12,51 +12,59 @@ export type Project = {
   link?: string;
   repo?: string;
   previewImage?: string;
+  previewLabel?: string;
   accent: 'lime' | 'electric' | 'magenta';
   status: 'live' | 'beta' | 'wip';
 };
 
 export const projects: Project[] = [
   {
-    slug: 'crackingwall',
-    title: 'CrackingWall',
-    tagline: 'Laboratorio de SEO, tráfico y monetización en un nicho visual',
+    slug: 'pixelatmos',
+    title: 'Pixelatmos',
+    tagline: 'Estudio independiente: herramientas creativas propias en el navegador',
     description:
-      'Experimento técnico-producto en un nicho visual reducido: un sitio de herramientas creativas y fondos de pantalla orientado a cultura tech y estética digital. El objetivo no era construir otra galería, sino validar qué tan difícil es generar tráfico orgánico, estructurar contenido indexable y explorar monetización vía anuncios en un mercado saturado.',
-    stack: ['Astro', 'React', 'Cloudflare', 'Supabase', 'Tailwind'],
+      'Pixelatmos es un estudio de una sola persona en el cruce entre software y cultura visual. El núcleo son tres herramientas originales que corren enteras en el navegador —3D Lab, ASCII Lab y Visual Protocol— sin instalar nada y sin registro. Alrededor de ellas hay una galería curada de wallpapers de cultura tech que le da al sitio un mundo visual propio y un canal de distribución. Hoy: 3.085 descargas y 313 likes acumulados.',
+    stack: ['Astro', 'React', 'Three.js', 'Cloudflare', 'Supabase'],
     problem:
-      'Validar si un nicho visual altamente específico podía generar tráfico orgánico y monetización sin depender de una comunidad previa.',
+      'Las herramientas creativas útiles viven detrás de instaladores, cuentas y suscripciones. Y un estudio nuevo no tiene audiencia: hay que ganarla con producto real y contenido indexable, no con anuncios.',
     solution:
-      'Construí un sitio con render en servidor sobre el edge, contenido indexable, taxonomía por estilos y un conjunto de herramientas creativas propias que funcionan en el navegador.',
+      'Tres herramientas que resuelven algo concreto y corren en el dispositivo del usuario, más una galería curada que atrae al mismo público. El sitio se renderiza en el edge para ser rápido e indexable desde el primer request.',
     architecture: [
-      'Astro 5 con output server desplegado en Cloudflare Workers',
-      'Supabase como Postgres de metadatos + Storage de imágenes',
-      'Islas React 19 solo en las herramientas interactivas',
-      'LLM de visión vía OpenRouter para análisis de imágenes',
-      'AdSense y Clarity cargados detrás del consentimiento',
+      'Astro 5 con output server sobre Cloudflare Workers',
+      'Islas React 19 solo en las herramientas; el resto es HTML servido desde el edge',
+      '3D Lab: SVG o texto → objeto 3D interactivo, con export a PNG/GLB',
+      'Motor 3D extraído a su propio paquete y repo (3dsvg), reutilizable fuera del sitio',
+      'Supabase como Postgres de metadatos + Storage de las piezas',
+      'LLM de visión vía OpenRouter para Visual Protocol',
+      'AdSense y Clarity detrás del consentimiento',
     ],
     decisions: [
       {
-        title: 'Enfoque real',
-        body: 'No fue un proyecto de fondos de pantalla como fin, sino un laboratorio para aprender sobre SEO, monetización, distribución, rendimiento y validación de nichos.',
+        title: 'Las herramientas son el producto',
+        body: 'La galería atrae, las herramientas retienen. Por eso el trabajo duro está en 3D Lab, ASCII Lab y Visual Protocol: software original, no un wrapper sobre el producto de otro.',
       },
       {
-        title: 'Imágenes como datos',
-        body: 'Agregué análisis visual con IA para convertir imágenes en descripciones estructuradas útiles para búsqueda, clasificación y generación de instrucciones.',
+        title: 'Procesar en el cliente, no en mi servidor',
+        body: 'Las herramientas corren en el dispositivo del usuario. Sin subir archivos, sin cola de trabajos, sin factura de cómputo que escale con el tráfico. La privacidad sale gratis como efecto secundario.',
       },
       {
-        title: 'Islas, no SPA',
-        body: 'El contenido se sirve desde el edge y solo las herramientas hidratan React. La galería no paga el costo de un framework que no necesita.',
+        title: 'Curaduría antes que volumen',
+        body: 'Nueve piezas seleccionadas contra un manifiesto estético escrito, en vez de mil piezas generadas. En un nicho saturado, la coherencia es la ventaja competitiva.',
+      },
+      {
+        title: 'El motor 3D vive aparte',
+        body: 'La lógica de SVG a 3D se publicó como paquete propio en su repo. Si el sitio muere, el motor sigue siendo útil: obliga a diseñar una API limpia en vez de código pegado a una página.',
       },
     ],
     learnings: [
-      'SEO programático como herramienta de validación, no solo de crecimiento',
-      'La monetización condiciona decisiones de contenido, rendimiento y distribución',
-      'En nichos visuales, la arquitectura de metadatos pesa tanto como la interfaz',
+      'SEO programático como herramienta de validación de nicho, no solo de crecimiento',
+      'La monetización condiciona contenido, rendimiento y arquitectura antes de lo que uno cree',
+      'Distribuir es tan difícil como construir: sin audiencia previa, el producto tiene que traer su propio canal',
     ],
     link: 'https://pixelatmos.com/',
-    repo: 'https://github.com/FilipaoVfx/crackingWall',
-    previewImage: '/previews/crackingwall.webp',
+    repo: 'https://github.com/FilipaoVfx/pixelatmos',
+    previewImage: '/previews/pixelatmos.webp',
+    previewLabel: 'obra original del sitio',
     accent: 'lime',
     status: 'live',
   },

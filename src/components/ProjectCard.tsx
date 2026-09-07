@@ -162,7 +162,7 @@ export default function ProjectCard({ project, index }: { project: Project; inde
                     {project.previewImage ? (
                       <img
                         src={assetPath(project.previewImage)}
-                        alt={`Captura de ${project.title}`}
+                        alt={`${project.previewLabel ?? 'Captura'} de ${project.title}`}
                         loading={index === 0 ? 'eager' : 'lazy'}
                         decoding="async"
                         sizes="(min-width: 1280px) 520px, (min-width: 1024px) 48vw, 100vw"
@@ -175,7 +175,7 @@ export default function ProjectCard({ project, index }: { project: Project; inde
                     <div className="absolute bottom-3 left-3 right-3 flex items-end justify-between gap-3">
                       <div className="min-w-0">
                         <div className={`font-mono text-[10px] uppercase tracking-[0.2em] ${a.text}`}>
-                          captura real
+                          {project.previewLabel ?? 'captura real'}
                         </div>
                         <div className="mt-1 truncate text-xs font-mono text-white/55">
                           {displayUrl}

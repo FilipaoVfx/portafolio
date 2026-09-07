@@ -34,7 +34,7 @@ Construir un portfolio interactivo que:
 
 ## 4. 🧩 Proyectos a Mostrar
 
-### 1. CrackingWall
+### 1. Pixelatmos
 - Plataforma de wallpapers (SEO + distribución)
 - Stack: Astro + Cloudflare + Supabase
 - Enfoque: monetización + performance

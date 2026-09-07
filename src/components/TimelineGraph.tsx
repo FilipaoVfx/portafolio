@@ -5,7 +5,7 @@ const achievements = [
   {
     title: 'Equipo ganador',
     eyebrow: 'Hackathon Talento Tech',
-    src: '/ganadorv1.jpeg',
+    src: '/ganadorv1.webp',
     alt: 'Equipo ganador del hackathon Talento Tech en inteligencia artificial',
     className: 'lg:col-span-7 rotate-[-0.7deg]',
     imageClassName: 'max-h-[360px]',
@@ -13,15 +13,15 @@ const achievements = [
   {
     title: 'Premio recibido',
     eyebrow: 'Ganador',
-    src: '/ganadorv3.jpeg',
-    alt: 'Juan Felipe Gonzalez sosteniendo el premio del hackathon',
+    src: '/ganadorv3.webp',
+    alt: 'Juan Felipe González sosteniendo el premio del hackathon',
     className: 'lg:col-span-5 rotate-[1deg]',
     imageClassName: 'achievement-photo--repair max-h-[360px]',
   },
   {
     title: 'Certificado oficial',
     eyebrow: 'Ministerio TIC',
-    src: '/certificado.jpeg',
+    src: '/certificado.webp',
     alt: 'Certificado de primer lugar en el reto de inteligencia artificial',
     className: 'lg:col-span-7 rotate-[-0.35deg]',
     imageClassName: 'max-h-[320px]',
@@ -38,19 +38,19 @@ const stack = ['ETL Pipeline', 'XGBoost', 'Random Forest', 'Data Augmentation', 
 
 const sentimentCards = [
   {
-    title: 'Extraccion',
+    title: 'Extracción',
     front: 'YouTube API',
-    back: 'Captura comentarios masivos y los convierte en una base limpia para analisis.',
+    back: 'Captura comentarios masivos y los convierte en una base limpia para análisis.',
   },
   {
     title: 'Lenguaje',
     front: 'NLP',
-    back: 'Procesa lenguaje coloquial, ruido social y polaridad para detectar percepcion real.',
+    back: 'Procesa lenguaje coloquial, ruido social y polaridad para detectar percepción real.',
   },
   {
-    title: 'Decision',
+    title: 'Decisión',
     front: 'Audience insights',
-    back: 'Expone patrones de crisis, engagement y reputacion para actuar con criterio.',
+    back: 'Expone patrones de crisis, engagement y reputación para actuar con criterio.',
   },
 ];
 
@@ -67,7 +67,7 @@ export default function TimelineGraph() {
             </h2>
           </div>
           <p className="lg:col-span-4 text-white/62 leading-relaxed">
-            Un logro competitivo convertido en evidencia tecnica: diseno de
+            Un logro competitivo convertido en evidencia técnica: diseño de
             datos, modelado predictivo y decisiones de producto bajo presion.
           </p>
         </div>
@@ -78,25 +78,25 @@ export default function TimelineGraph() {
           </div>
           <div className="grid auto-rows-auto gap-5 lg:grid-cols-12 lg:items-stretch">
             <article className="achievement-bento lg:col-span-5 lg:row-span-2">
-              <div className="label-mono text-accent-lime/80">/ solucion ganadora</div>
+              <div className="label-mono text-accent-lime/80">/ solución ganadora</div>
               <h3 className="heading-display mt-3 text-2xl md:text-4xl leading-tight">
                 Ecosistema Predictivo ETL: de datos brutos a inteligencia comercial.
               </h3>
               <p className="mt-5 text-white/72 leading-relaxed">
                 Desarrollamos un pipeline integral de ciencia de datos que unifica
                 comportamiento, transacciones y leads en Supabase para construir
-                una vision 360 del ciclo de vida del cliente.
+                una visión 360 del ciclo de vida del cliente.
               </p>
               <p className="mt-4 text-white/62 leading-relaxed">
-                La solucion combina scoring de leads, prediccion de churn y
-                estimacion de valor potencial para convertir datos comerciales
-                complejos en priorizacion accionable.
+                La solución combina scoring de leads, predicción de churn y
+                estimación de valor potencial para convertir datos comerciales
+                complejos en priorización accionable.
               </p>
               <div className="mt-6 grid grid-cols-2 gap-3">
                 <div className="border border-white/10 bg-white/[0.04] p-4">
                   <div className="heading-display text-4xl text-accent-lime">92%</div>
                   <div className="mt-2 font-mono text-[10px] uppercase tracking-[0.2em] text-white/45">
-                    precision leads
+                    precisión leads
                   </div>
                 </div>
                 <div className="border border-white/10 bg-white/[0.04] p-4">
@@ -111,7 +111,7 @@ export default function TimelineGraph() {
             <article className="achievement-bento lg:col-span-7">
               <div className="grid gap-4 md:grid-cols-3">
                 {impactPoints.map((point, index) => (
-                  <div className="border-l-2 border-accent-lime/70 bg-black/20 p-4">
+                  <div key={point} className="border-l-2 border-accent-lime/70 bg-black/20 p-4">
                     <div className="font-mono text-[10px] uppercase tracking-[0.22em] text-accent-electric">
                       0{index + 1}
                     </div>
@@ -153,7 +153,7 @@ export default function TimelineGraph() {
             <div className="lg:col-span-12 flex flex-col gap-4 border-l-2 border-accent-lime/70 bg-black/20 px-5 py-4 text-white/72 md:flex-row md:items-center md:justify-between">
               <p className="max-w-3xl leading-relaxed">
                 La competencia fue realizada el 21 de noviembre de 2025 en Armenia,
-                Quindio.
+                Quindío.
               </p>
               <div className="font-mono text-xs uppercase tracking-[0.22em] text-accent-electric">
                 1er puesto
@@ -163,15 +163,15 @@ export default function TimelineGraph() {
               <div className="grid gap-5 lg:grid-cols-12 lg:items-stretch">
                 <div className="relative overflow-hidden border-2 border-white/75 bg-ink-950 p-2.5 shadow-[8px_8px_0_0_rgba(255,255,255,0.72)] lg:col-span-5 min-h-[260px]">
                   <img
-                    src={assetPath('/presentacionv2.png')}
-                    alt="Presentacion del analizador de sentimiento para YouTube"
+                    src={assetPath('/presentacionv2.webp')}
+                    alt="Presentación del analizador de sentimiento para YouTube"
                     loading="lazy"
                     className="h-full min-h-[240px] w-full object-cover opacity-95 contrast-105 saturate-95"
                   />
                   <div className="pointer-events-none absolute inset-2.5 bg-[linear-gradient(180deg,transparent_55%,rgba(8,9,14,0.62))]" />
                   <div className="absolute bottom-2.5 left-2.5 right-2.5 flex items-center justify-between gap-3 border-t-2 border-white/75 bg-ink-950 px-3 py-3">
                     <span className="font-mono text-[10px] uppercase tracking-[0.24em] text-accent-electric">
-                      demo publica
+                      demo pública
                     </span>
                     <span className="font-mono text-[10px] uppercase tracking-[0.24em] text-white/55">
                       NLP
@@ -181,7 +181,7 @@ export default function TimelineGraph() {
 
                 <div className="lg:col-span-7">
                   <div className="flex flex-wrap items-center gap-2">
-                    <span className="chip">comunicacion tecnica</span>
+                    <span className="chip">comunicación técnica</span>
                     <span className="chip">python data science</span>
                     <span className="chip">youtube api</span>
                   </div>

@@ -141,4 +141,33 @@
     transform: rotateY(180deg);
     border-color: rgba(198,255,61,0.32);
   }
+
+  /* Menú móvil: <details> nativo, sin JS */
+  .nav-menu > summary {
+    list-style: none;
+  }
+  .nav-menu > summary::-webkit-details-marker {
+    display: none;
+  }
+  .nav-menu__bars {
+    display: inline-flex;
+    flex-direction: column;
+    gap: 3px;
+  }
+  .nav-menu__bars span {
+    display: block;
+    width: 14px;
+    height: 2px;
+    background: currentColor;
+    transition: transform 200ms ease, opacity 200ms ease;
+  }
+  .nav-menu[open] .nav-menu__bars span:nth-child(1) {
+    transform: translateY(5px) rotate(45deg);
+  }
+  .nav-menu[open] .nav-menu__bars span:nth-child(2) {
+    opacity: 0;
+  }
+  .nav-menu[open] .nav-menu__bars span:nth-child(3) {
+    transform: translateY(-5px) rotate(-45deg);
+  }
 }

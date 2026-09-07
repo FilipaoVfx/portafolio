@@ -1,0 +1,124 @@
+---
+const baseUrl = import.meta.env.BASE_URL.replace(/\/?$/, '/');
+const assetPath = (path: string) => `${baseUrl}${path.replace(/^\/+/, '')}`;
+
+// El pipeline real de este sitio: .github/workflows/deploy-github-pages.yml
+const pipeline = [
+  { step: 'push', detail: 'rama main' },
+  { step: 'checkout', detail: 'actions/checkout@v4' },
+  { step: 'setup node', detail: 'node 20 · cache npm' },
+  { step: 'install', detail: 'npm ci — lockfile exacto' },
+  { step: 'build', detail: 'astro build estático' },
+  { step: 'artifact', detail: 'upload-pages-artifact@v3' },
+  { step: 'deploy', detail: 'GitHub Pages · concurrency: pages' },
+];
+
+const applied = [
+  { label: 'JS enviado al cliente', value: '0 KB' },
+  { label: 'Deploy manual', value: 'ninguno' },
+  { label: 'robots + sitemap', value: 'generados en build' },
+  { label: 'Imágenes', value: 'WebP' },
+];
+---
+
+<section id="devops" class="relative py-24 md:py-28 scroll-mt-24 overflow-hidden">
+  <div class="absolute inset-x-0 top-10 h-px bg-gradient-to-r from-transparent via-accent-magenta/45 to-transparent"></div>
+  <div class="mx-auto max-w-6xl px-6 sm:px-8 md:px-12 lg:px-14">
+    <div class="mb-10 grid gap-6 lg:grid-cols-12 lg:items-end">
+      <div class="lg:col-span-8">
+        <div class="label-mono">/ devops</div>
+        <h2 class="heading-display text-3xl md:text-5xl mt-3">
+          Del commit a producción.
+        </h2>
+      </div>
+      <p class="lg:col-span-4 text-white/62 leading-relaxed">
+        Un certificado es una afirmación. El pipeline que publica este sitio es
+        la evidencia. Aquí están los dos, juntos.
+      </p>
+    </div>
+
+    <div class="grid gap-5 lg:grid-cols-12 lg:items-stretch">
+      <!-- Claim: la credencial -->
+      <figure class="lg:col-span-5 achievement-paper group relative overflow-hidden border-2 border-white/75 bg-ink-950 p-2.5 shadow-[8px_8px_0_0_rgba(255,255,255,0.72)] rotate-[-0.5deg] transition duration-300 hover:rotate-0 hover:-translate-y-1">
+        <div class="relative overflow-hidden border-2 border-black bg-white">
+          <img
+            src={assetPath('/certificado-devops.webp')}
+            alt="Diploma en Fundamentos de DevOps otorgado por la Facultad de Ingeniería de la Universidad de La Sabana"
+            loading="lazy"
+            decoding="async"
+            width="1505"
+            height="1163"
+            class="h-full w-full object-cover"
+          />
+        </div>
+        <figcaption class="border-t-2 border-white/75 bg-ink-950 px-3 py-3">
+          <div class="flex flex-wrap items-center justify-between gap-2">
+            <span class="font-mono text-[10px] uppercase tracking-[0.22em] text-accent-magenta/90">
+              Universidad de La Sabana
+            </span>
+            <span class="heading-display text-lg leading-none text-white/90">
+              Fundamentos de DevOps
+            </span>
+          </div>
+          <div class="mt-3 flex flex-wrap gap-2">
+            <span class="chip">96 horas</span>
+            <span class="chip">Facultad de Ingeniería</span>
+            <span class="chip">jul 2026</span>
+          </div>
+          <p class="mt-3 font-mono text-[10px] uppercase tracking-[0.18em] text-white/40">
+            documento de identidad y QR ocultos por privacidad
+          </p>
+        </figcaption>
+      </figure>
+
+      <!-- Evidencia: el pipeline real -->
+      <article class="achievement-bento lg:col-span-7">
+        <div class="label-mono text-accent-magenta/80">/ evidencia</div>
+        <h3 class="heading-display mt-3 text-2xl md:text-3xl leading-tight">
+          Este portfolio se despliega solo.
+        </h3>
+        <p class="mt-4 text-white/70 leading-relaxed">
+          Cada push a <span class="font-mono text-accent-lime">main</span> dispara
+          el workflow de GitHub Actions que construye el sitio y lo publica. Sin
+          subir carpetas a mano, sin pasos que solo yo sé ejecutar.
+        </p>
+
+        <ol class="mt-6 grid gap-1.5">
+          {pipeline.map((p, i) => (
+            <li class="flex items-center gap-3 border border-white/10 bg-black/20 px-3.5 py-2.5">
+              <span class="font-mono text-[10px] text-accent-magenta min-w-[1.6rem]">
+                {String(i + 1).padStart(2, '0')}
+              </span>
+              <span class="font-mono text-xs uppercase tracking-[0.16em] text-white min-w-[6.5rem]">
+                {p.step}
+              </span>
+              <span class="font-mono text-[11px] text-white/55 leading-relaxed">
+                {p.detail}
+              </span>
+            </li>
+          ))}
+        </ol>
+
+        <div class="mt-6 grid gap-2 sm:grid-cols-2">
+          {applied.map((a) => (
+            <div class="flex items-center justify-between gap-3 glass px-4 py-3">
+              <span class="font-mono text-[10px] uppercase tracking-[0.2em] text-white/45">
+                {a.label}
+              </span>
+              <span class="font-mono text-xs text-accent-lime text-right">{a.value}</span>
+            </div>
+          ))}
+        </div>
+
+        <a
+          href="https://github.com/FilipaoVfx/portafolio/blob/main/.github/workflows/deploy-github-pages.yml"
+          target="_blank"
+          rel="noreferrer"
+          class="btn-ghost mt-6 text-xs"
+        >
+          Ver el workflow ↗
+        </a>
+      </article>
+    </div>
+  </div>
+</section>

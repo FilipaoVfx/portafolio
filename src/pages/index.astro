@@ -4,6 +4,7 @@ import Hero from '@/components/Hero.tsx';
 import TimelineGraph from '@/components/TimelineGraph.tsx';
 import ProjectCard from '@/components/ProjectCard.tsx';
 import HowIThink from '@/components/HowIThink.astro';
+import DevOps from '@/components/DevOps.astro';
 import Contact from '@/components/Contact.astro';
 import { projects } from '@/data/projects';
 
@@ -176,6 +177,8 @@ const assetPath = (path: string) => `${baseUrl}${path.replace(/^\/+/, '')}`;
   </section>
 
   <TimelineGraph />
+
+  <DevOps />
 
   <Contact />
 </Base>

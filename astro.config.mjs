@@ -8,7 +8,12 @@ import sitemap from '@astrojs/sitemap';
 // que el dominio propio exista y resuelva.
 const targets = {
   'github-pages': { site: 'https://filipaovfx.github.io', base: '/portafolio' },
-  cloudflare: { site: 'https://filipaovfx.dev', base: '/' },
+  cloudflare: {
+    // Cloudflare Pages inyecta CF_PAGES_URL en cada build (producción y preview),
+    // así canonical y sitemap salen con el host real sin tocar código.
+    site: process.env.DEPLOY_SITE ?? process.env.CF_PAGES_URL ?? 'https://filipaovfx.dev',
+    base: '/',
+  },
 };
 
 const target = process.env.DEPLOY_TARGET ?? 'github-pages';

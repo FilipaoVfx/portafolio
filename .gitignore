@@ -7,3 +7,6 @@ node_modules
 .vscode
 
 dist
+
+# impeccable: binario de plataforma, se descarga solo en el primer uso
+.claude/skills/impeccable/scripts/bin/

@@ -4,14 +4,15 @@ import tailwind from '@astrojs/tailwind';
 import sitemap from '@astrojs/sitemap';
 
 // Un único lugar donde vive la verdad sobre dónde se publica el sitio.
-// Producción = Cloudflare Pages. El target github-pages queda para builds
+// Producción = Cloudflare Workers (assets estáticos). El target github-pages
+// queda para builds
 // de respaldo servidas bajo /portafolio.
 const targets = {
   'github-pages': { site: 'https://filipaovfx.github.io', base: '/portafolio' },
   cloudflare: {
-    // Cloudflare Pages inyecta CF_PAGES_URL en cada build (producción y preview),
-    // así canonical y sitemap salen con el host real sin tocar código.
-    site: process.env.DEPLOY_SITE ?? process.env.CF_PAGES_URL ?? 'https://filipaovfx.dev',
+    // Dominio propio vinculado en Cloudflare. DEPLOY_SITE lo sobrescribe para
+    // previews de rama, donde el host es el *.workers.dev del deployment.
+    site: process.env.DEPLOY_SITE ?? 'https://juangonzalezdev.xyz',
     base: '/',
   },
 };

@@ -1,6 +1,8 @@
 name = "portafolio"
 compatibility_date = "2026-04-28"
-pages_build_output_dir = "dist"
 
-[vars]
-NODE_VERSION = "20"
+# Sitio estático servido por Workers Static Assets: sin script de Worker,
+# solo el directorio que produce `astro build`.
+[assets]
+directory = "./dist"
+not_found_handling = "404-page"

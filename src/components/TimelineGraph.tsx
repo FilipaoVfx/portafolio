@@ -61,14 +61,13 @@ export default function TimelineGraph() {
       <div className="mx-auto max-w-6xl px-6 sm:px-8 md:px-12 lg:px-14">
         <div className="mb-10 grid gap-6 lg:grid-cols-12 lg:items-end">
           <div className="lg:col-span-8">
-            <div className="label-mono">/ logros</div>
             <h2 className="heading-display text-3xl md:text-5xl mt-3">
               Trayectoria y reconocimiento
             </h2>
           </div>
           <p className="lg:col-span-4 text-white/62 leading-relaxed">
             Un logro competitivo convertido en evidencia técnica: diseño de
-            datos, modelado predictivo y decisiones de producto bajo presion.
+            datos, modelado predictivo y decisiones de producto bajo presión.
           </p>
         </div>
 
@@ -78,7 +77,6 @@ export default function TimelineGraph() {
           </div>
           <div className="grid auto-rows-auto gap-5 lg:grid-cols-12 lg:items-stretch">
             <article className="achievement-bento lg:col-span-5 lg:row-span-2">
-              <div className="label-mono text-accent-lime/80">/ solución ganadora</div>
               <h3 className="heading-display mt-3 text-2xl md:text-4xl leading-tight">
                 Ecosistema Predictivo ETL: de datos brutos a inteligencia comercial.
               </h3>

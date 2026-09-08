@@ -2,21 +2,22 @@
 const baseUrl = import.meta.env.BASE_URL.replace(/\/?$/, '/');
 const assetPath = (path: string) => `${baseUrl}${path.replace(/^\/+/, '')}`;
 
-// El pipeline real de este sitio: .github/workflows/deploy-github-pages.yml
+// El pipeline real de este sitio: Cloudflare Pages, configurado en wrangler.toml
 const pipeline = [
   { step: 'push', detail: 'rama main' },
-  { step: 'checkout', detail: 'actions/checkout@v4' },
-  { step: 'setup node', detail: 'node 20 · cache npm' },
-  { step: 'install', detail: 'npm ci — lockfile exacto' },
-  { step: 'build', detail: 'astro build estático' },
-  { step: 'artifact', detail: 'upload-pages-artifact@v3' },
-  { step: 'deploy', detail: 'GitHub Pages · concurrency: pages' },
+  { step: 'clone', detail: 'Cloudflare Build · node 20' },
+  { step: 'install', detail: 'npm clean-install — lockfile exacto' },
+  { step: 'build', detail: 'npm run build:cloudflare' },
+  { step: 'host', detail: 'canonical desde CF_PAGES_URL' },
+  { step: 'upload', detail: 'dist/ a la red de Cloudflare' },
+  { step: 'headers', detail: '_headers: cache immutable + nosniff' },
 ];
 
 const applied = [
   { label: 'JS enviado al cliente', value: '0 KB' },
   { label: 'Deploy manual', value: 'ninguno' },
   { label: 'robots + sitemap', value: 'generados en build' },
+  { label: 'Cabeceras', value: 'nosniff · referrer-policy' },
   { label: 'Imágenes', value: 'WebP' },
 ];
 ---
@@ -79,7 +80,7 @@ const applied = [
         </h3>
         <p class="mt-4 text-white/70 leading-relaxed">
           Cada push a <span class="font-mono text-accent-lime">main</span> dispara
-          el workflow de GitHub Actions que construye el sitio y lo publica. Sin
+          un build en Cloudflare que compila el sitio y lo publica en el edge. Sin
           subir carpetas a mano, sin pasos que solo yo sé ejecutar.
         </p>
 
@@ -111,12 +112,12 @@ const applied = [
         </div>
 
         <a
-          href="https://github.com/FilipaoVfx/portafolio/blob/main/.github/workflows/deploy-github-pages.yml"
+          href="https://github.com/FilipaoVfx/portafolio/blob/main/astro.config.mjs"
           target="_blank"
           rel="noreferrer"
           class="btn-ghost mt-6 text-xs"
         >
-          Ver el workflow ↗
+          Ver la configuración de deploy ↗
         </a>
       </article>
     </div>

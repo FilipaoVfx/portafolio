@@ -4,8 +4,8 @@ import tailwind from '@astrojs/tailwind';
 import sitemap from '@astrojs/sitemap';
 
 // Un único lugar donde vive la verdad sobre dónde se publica el sitio.
-// Producción real hoy = GitHub Pages. `cloudflare` queda listo para el día
-// que el dominio propio exista y resuelva.
+// Producción = Cloudflare Pages. El target github-pages queda para builds
+// de respaldo servidas bajo /portafolio.
 const targets = {
   'github-pages': { site: 'https://filipaovfx.github.io', base: '/portafolio' },
   cloudflare: {
@@ -16,8 +16,8 @@ const targets = {
   },
 };
 
-const target = process.env.DEPLOY_TARGET ?? 'github-pages';
-const { site, base } = targets[target] ?? targets['github-pages'];
+const target = process.env.DEPLOY_TARGET ?? 'cloudflare';
+const { site, base } = targets[target] ?? targets.cloudflare;
 
 export default defineConfig({
   site,

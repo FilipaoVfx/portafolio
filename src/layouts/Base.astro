@@ -21,9 +21,13 @@ const {
 const baseUrl = import.meta.env.BASE_URL.replace(/\/?$/, '/');
 const assetPath = (path: string) => `${baseUrl}${path.replace(/^\/+/, '')}`;
 
-// URL canónica con slash final: coincide exactamente con lo que emite el sitemap
+// URL canónica con slash final: coincide exactamente con lo que emite el sitemap.
+// En el espejo de GitHub Pages, PUBLIC_CANONICAL_SITE apunta al dominio real y
+// se descuenta el base (/portafolio) para no inventar una ruta que no existe allá.
 const pathname = Astro.url.pathname.replace(/\/?$/, '/');
-const canonical = new URL(pathname, Astro.site).href;
+const canonicalSite = import.meta.env.PUBLIC_CANONICAL_SITE || Astro.site;
+const canonicalPath = pathname.startsWith(baseUrl) ? pathname.slice(baseUrl.length - 1) : pathname;
+const canonical = new URL(canonicalPath, canonicalSite).href;
 const ogImage = new URL(assetPath(image), Astro.site).href;
 
 const personSchema = {

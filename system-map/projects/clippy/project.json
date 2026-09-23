@@ -1,0 +1,13 @@
+{
+  "slug": "clippy",
+  "name": "Clippy",
+  "description": "Portapapeles compartido entre dispositivos en tiempo real.",
+  "repository": "FilipaoVfx/clippy",
+  "branch": "main",
+  "systemMap": {
+    "enabled": true,
+    "artifact": "architecture.json",
+    "generatedAt": "2026-09-23T20:17:10.506Z",
+    "commit": "444e540cba31e004cf125f2b6b273495481fd93e"
+  }
+}

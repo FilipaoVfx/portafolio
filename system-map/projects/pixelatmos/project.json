@@ -1,0 +1,18 @@
+{
+  "slug": "pixelatmos",
+  "name": "Pixelatmos",
+  "description": "Estudio independiente de herramientas creativas en el navegador.",
+  "repository": "FilipaoVfx/pixelatmos",
+  "branch": "main",
+  "exclude": [
+    "implementation_docs",
+    "supabase/.temp",
+    "docs/seo"
+  ],
+  "systemMap": {
+    "enabled": true,
+    "artifact": "architecture.json",
+    "generatedAt": "2026-09-23T20:17:59.072Z",
+    "commit": "fdc1f4d73b0ffaa8449f9a3b354aff78ba352ce9"
+  }
+}

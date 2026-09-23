@@ -1,0 +1,2085 @@
+{
+  "schemaVersion": "0.1",
+  "generatorVersion": "system-map/0.1.0",
+  "analysisVersion": "static-facts/1",
+  "generatedAt": "2026-09-23T20:17:59.072Z",
+  "project": {
+    "slug": "pixelatmos",
+    "name": "Pixelatmos",
+    "summary": "Herramientas creativas que corren en el navegador y una galería curada, servidas por Astro SSR en un Worker de Cloudflare.",
+    "description": "Tres herramientas (3D Lab, ASCII Lab, Visual Protocol) y una galería de wallpapers. Solo Visual Protocol sale del navegador: pasa por /api/decode, que cachea por hash, aplica cuota diaria y llama a un LLM de visión.",
+    "technologies": [
+      "Astro 5",
+      "React 19",
+      "Cloudflare Workers",
+      "Supabase",
+      "OpenRouter",
+      "Three.js",
+      "Web Workers"
+    ]
+  },
+  "source": {
+    "repository": "FilipaoVfx/pixelatmos",
+    "url": "https://github.com/FilipaoVfx/pixelatmos",
+    "branch": "main",
+    "commit": "fdc1f4d73b0ffaa8449f9a3b354aff78ba352ce9",
+    "committedAt": "2026-09-07T21:01:04-05:00"
+  },
+  "analysis": {
+    "filesScanned": 147,
+    "excluded": {
+      "secret": 2,
+      "binary": 5,
+      "lockfile": 1,
+      "too-large": 1,
+      "ignored-dir": 3,
+      "project-exclude": 3
+    },
+    "languages": {
+      "Markdown": {
+        "files": 10,
+        "lines": 1573
+      },
+      "JavaScript": {
+        "files": 7,
+        "lines": 406
+      },
+      "SQL": {
+        "files": 4,
+        "lines": 513
+      },
+      "JSON": {
+        "files": 9,
+        "lines": 465
+      },
+      "Astro": {
+        "files": 37,
+        "lines": 5061
+      },
+      "TypeScript": {
+        "files": 62,
+        "lines": 6895
+      },
+      "CSS": {
+        "files": 2,
+        "lines": 383
+      },
+      "TOML": {
+        "files": 1,
+        "lines": 43
+      }
+    },
+    "factsByKind": {
+      "call": 3,
+      "dependency": 44,
+      "env": 16,
+      "heading": 142,
+      "host": 144,
+      "import": 242,
+      "package": 1,
+      "page": 33,
+      "rpc": 7,
+      "script": 7,
+      "sql-object": 45,
+      "table": 35
+    },
+    "coverage": {
+      "codeFiles": 110,
+      "mappedFiles": 91,
+      "unmappedFiles": [
+        "docs/architecture/gen.mjs",
+        "eslint.config.js",
+        "postcss.config.js",
+        "scripts/gen-ads-txt.mjs",
+        "scripts/gen-headers.mjs",
+        "src/components/AuthModal.test.tsx",
+        "src/components/BrutalButton.tsx",
+        "src/config/adsense.test.ts",
+        "src/config/securityHeaders.test.ts",
+        "src/data/mockData.ts",
+        "src/env.d.ts",
+        "src/hooks/useAuth.test.ts",
+        "src/lib/supabaseAnalysis.ts",
+        "src/lib/svgOptimize.test.ts",
+        "src/test/setup.ts",
+        "src/types/index.ts",
+        "src/types/wallpaper.ts",
+        "tailwind.config.js",
+        "vitest.config.ts"
+      ]
+    },
+    "externalHosts": [
+      {
+        "host": "api.resend.com",
+        "component": "resend"
+      },
+      {
+        "host": "cauitdpbsedajkuodsaf.supabase.co",
+        "component": null
+      },
+      {
+        "host": "openrouter.ai",
+        "component": "openrouter"
+      },
+      {
+        "host": "placeholder.supabase.co",
+        "component": null
+      }
+    ],
+    "sharedModules": [
+      "src/components/BrutalButton.tsx"
+    ]
+  },
+  "groups": [
+    {
+      "id": "browser",
+      "name": "Navegador"
+    },
+    {
+      "id": "packages",
+      "name": "Paquete propio"
+    },
+    {
+      "id": "ops",
+      "name": "Operación"
+    },
+    {
+      "id": "edge",
+      "name": "Worker · Astro SSR"
+    },
+    {
+      "id": "core",
+      "name": "Servicios de la app"
+    },
+    {
+      "id": "supabase",
+      "name": "Supabase"
+    },
+    {
+      "id": "external",
+      "name": "Servicios externos"
+    }
+  ],
+  "components": [
+    {
+      "id": "lab-3d",
+      "name": "3D Lab",
+      "type": "client",
+      "group": "browser",
+      "summary": "SVG o texto → objeto 3D interactivo, con export PNG y GLB. 100% en el navegador.",
+      "role": "Isla React sobre el motor @filipaovfx/svg3d: analiza el SVG, aplica presets de material y exporta la escena.",
+      "technologies": [
+        "React",
+        "Three.js",
+        "WebGL"
+      ],
+      "paths": [
+        "src/components/Svg3DLab.tsx",
+        "src/components/Text3DGenerator.tsx",
+        "src/components/SvgOptimizer.tsx",
+        "src/lib/svgOptimize.ts"
+      ],
+      "metrics": {
+        "files": 4,
+        "lines": 787
+      },
+      "confidence": "confirmed",
+      "evidence": [
+        {
+          "type": "import",
+          "path": "src/components/Svg3DLab.tsx",
+          "lines": "2",
+          "excerpt": "import { PRESETS, analyzeSvg, exportCanvasPng, exportSceneGlb, exportHighLodGlb, readSvgFile, type PresetName, type AssetProfile, type MaterialPreset } from '@…",
+          "note": "3 ocurrencias",
+          "url": "https://github.com/FilipaoVfx/pixelatmos/blob/fdc1f4d73b0ffaa8449f9a3b354aff78ba352ce9/src/components/Svg3DLab.tsx#L2"
+        },
+        {
+          "type": "source",
+          "path": "src/components/Text3DGenerator.tsx",
+          "note": "131 líneas",
+          "url": "https://github.com/FilipaoVfx/pixelatmos/blob/fdc1f4d73b0ffaa8449f9a3b354aff78ba352ce9/src/components/Text3DGenerator.tsx"
+        },
+        {
+          "type": "source",
+          "path": "src/components/SvgOptimizer.tsx",
+          "note": "204 líneas",
+          "url": "https://github.com/FilipaoVfx/pixelatmos/blob/fdc1f4d73b0ffaa8449f9a3b354aff78ba352ce9/src/components/SvgOptimizer.tsx"
+        }
+      ]
+    },
+    {
+      "id": "ascii-lab",
+      "name": "ASCII Lab",
+      "type": "client",
+      "group": "browser",
+      "summary": "Imagen o vídeo → ASCII animado, convertido en un Web Worker y exportado a TXT, JSON o HTML.",
+      "role": "Pipeline local: valida el vídeo, extrae frames, convierte por luminancia en un worker y reproduce o exporta.",
+      "technologies": [
+        "React",
+        "Web Worker",
+        "Canvas"
+      ],
+      "paths": [
+        "src/features/ascii-video"
+      ],
+      "metrics": {
+        "files": 16,
+        "lines": 1671
+      },
+      "confidence": "confirmed",
+      "evidence": [
+        {
+          "type": "source",
+          "path": "src/features/ascii-video/hooks/useAsciiGenerator.ts",
+          "lines": "75",
+          "excerpt": "const worker = new Worker(",
+          "url": "https://github.com/FilipaoVfx/pixelatmos/blob/fdc1f4d73b0ffaa8449f9a3b354aff78ba352ce9/src/features/ascii-video/hooks/useAsciiGenerator.ts#L75"
+        },
+        {
+          "type": "source",
+          "path": "src/features/ascii-video",
+          "dir": true,
+          "note": "16 archivos",
+          "url": "https://github.com/FilipaoVfx/pixelatmos/tree/fdc1f4d73b0ffaa8449f9a3b354aff78ba352ce9/src/features/ascii-video"
+        }
+      ]
+    },
+    {
+      "id": "visual-protocol",
+      "name": "Visual Protocol",
+      "type": "client",
+      "group": "browser",
+      "summary": "Imagen → brief creativo estructurado. La única herramienta asistida por servidor.",
+      "role": "Sube la imagen a /api/decode con la sesión del usuario si existe, y muestra el análisis o el límite de cuota.",
+      "technologies": [
+        "React"
+      ],
+      "paths": [
+        "src/components/ImageAnalyzer.tsx"
+      ],
+      "metrics": {
+        "files": 1,
+        "lines": 342
+      },
+      "confidence": "confirmed",
+      "evidence": [
+        {
+          "type": "source",
+          "path": "src/components/ImageAnalyzer.tsx",
+          "note": "342 líneas",
+          "url": "https://github.com/FilipaoVfx/pixelatmos/blob/fdc1f4d73b0ffaa8449f9a3b354aff78ba352ce9/src/components/ImageAnalyzer.tsx"
+        }
+      ]
+    },
+    {
+      "id": "gallery",
+      "name": "Galería",
+      "type": "client",
+      "group": "browser",
+      "summary": "Grid de wallpapers con filtro por categoría, modal, likes y descargas.",
+      "role": "Islas React sobre HTML prerenderizado; likes y descargas requieren sesión.",
+      "technologies": [
+        "React",
+        "framer-motion"
+      ],
+      "paths": [
+        "src/components/WallpapersGridContainer.tsx",
+        "src/components/WallpaperGrid.tsx",
+        "src/components/WallpaperCard.tsx",
+        "src/components/WallpaperModal.tsx",
+        "src/components/CategoryFilter.tsx"
+      ],
+      "metrics": {
+        "files": 5,
+        "lines": 567
+      },
+      "confidence": "confirmed",
+      "evidence": [
+        {
+          "type": "source",
+          "path": "src/components/WallpapersGridContainer.tsx",
+          "note": "191 líneas",
+          "url": "https://github.com/FilipaoVfx/pixelatmos/blob/fdc1f4d73b0ffaa8449f9a3b354aff78ba352ce9/src/components/WallpapersGridContainer.tsx"
+        },
+        {
+          "type": "source",
+          "path": "src/components/WallpaperGrid.tsx",
+          "note": "57 líneas",
+          "url": "https://github.com/FilipaoVfx/pixelatmos/blob/fdc1f4d73b0ffaa8449f9a3b354aff78ba352ce9/src/components/WallpaperGrid.tsx"
+        },
+        {
+          "type": "source",
+          "path": "src/components/WallpaperCard.tsx",
+          "note": "127 líneas",
+          "url": "https://github.com/FilipaoVfx/pixelatmos/blob/fdc1f4d73b0ffaa8449f9a3b354aff78ba352ce9/src/components/WallpaperCard.tsx"
+        }
+      ]
+    },
+    {
+      "id": "consent",
+      "name": "Consentimiento y anuncios",
+      "type": "client",
+      "group": "browser",
+      "summary": "Banner de Consent Mode v2: AdSense y Clarity solo cargan tras aceptar.",
+      "role": "Guarda la elección en localStorage y actualiza el consentimiento de gtag; las unidades de anuncio se rellenan después.",
+      "technologies": [
+        "Google Consent Mode v2"
+      ],
+      "paths": [
+        "src/components/ConsentBanner.astro",
+        "src/components/AdUnit.astro",
+        "src/config/adsense.ts"
+      ],
+      "metrics": {
+        "files": 3,
+        "lines": 211
+      },
+      "confidence": "confirmed",
+      "evidence": [
+        {
+          "type": "source",
+          "path": "src/components/ConsentBanner.astro",
+          "lines": "47",
+          "excerpt": "gtag('consent', 'update', {",
+          "url": "https://github.com/FilipaoVfx/pixelatmos/blob/fdc1f4d73b0ffaa8449f9a3b354aff78ba352ce9/src/components/ConsentBanner.astro#L47"
+        },
+        {
+          "type": "source",
+          "path": "src/components/AdUnit.astro",
+          "note": "91 líneas",
+          "url": "https://github.com/FilipaoVfx/pixelatmos/blob/fdc1f4d73b0ffaa8449f9a3b354aff78ba352ce9/src/components/AdUnit.astro"
+        },
+        {
+          "type": "source",
+          "path": "src/config/adsense.ts",
+          "note": "44 líneas",
+          "url": "https://github.com/FilipaoVfx/pixelatmos/blob/fdc1f4d73b0ffaa8449f9a3b354aff78ba352ce9/src/config/adsense.ts"
+        }
+      ]
+    },
+    {
+      "id": "site",
+      "name": "Sitio Astro",
+      "type": "service",
+      "group": "edge",
+      "summary": "Páginas, layouts y middleware. La galería y el blog se prerenderizan; el resto se sirve por SSR en el edge.",
+      "role": "Monta las islas de cada herramienta, aplica cabeceras de seguridad a las rutas SSR y genera sitemaps.",
+      "technologies": [
+        "Astro 5",
+        "@astrojs/cloudflare",
+        "Tailwind"
+      ],
+      "paths": [
+        "src/pages",
+        "src/layouts",
+        "src/middleware.ts",
+        "src/components/layout",
+        "src/components/Header.tsx",
+        "src/components/HeaderContainer.tsx",
+        "src/components/ContactForm.tsx",
+        "src/components/SEO.astro",
+        "src/components/Breadcrumbs.astro",
+        "src/components/FaqSection.astro",
+        "src/components/ToolHub.astro",
+        "src/config/securityHeaders.ts",
+        "src/config/labs.ts",
+        "src/config/toolHubs.ts",
+        "astro.config.mjs"
+      ],
+      "metrics": {
+        "files": 50,
+        "lines": 6326
+      },
+      "confidence": "confirmed",
+      "evidence": [
+        {
+          "type": "config",
+          "path": "astro.config.mjs",
+          "lines": "23",
+          "excerpt": "output: 'server',",
+          "url": "https://github.com/FilipaoVfx/pixelatmos/blob/fdc1f4d73b0ffaa8449f9a3b354aff78ba352ce9/astro.config.mjs#L23"
+        },
+        {
+          "type": "source",
+          "path": "src/middleware.ts",
+          "lines": "12",
+          "excerpt": "export const onRequest = defineMiddleware(async (_context, next) => {",
+          "url": "https://github.com/FilipaoVfx/pixelatmos/blob/fdc1f4d73b0ffaa8449f9a3b354aff78ba352ce9/src/middleware.ts#L12"
+        },
+        {
+          "type": "source",
+          "path": "src/pages",
+          "dir": true,
+          "note": "33 archivos",
+          "url": "https://github.com/FilipaoVfx/pixelatmos/tree/fdc1f4d73b0ffaa8449f9a3b354aff78ba352ce9/src/pages"
+        },
+        {
+          "type": "source",
+          "path": "src/layouts",
+          "dir": true,
+          "note": "2 archivos",
+          "url": "https://github.com/FilipaoVfx/pixelatmos/tree/fdc1f4d73b0ffaa8449f9a3b354aff78ba352ce9/src/layouts"
+        }
+      ]
+    },
+    {
+      "id": "decode-api",
+      "name": "API /api/decode",
+      "type": "service",
+      "group": "edge",
+      "summary": "Endpoint SSR de Visual Protocol: caché por hash, cuota diaria y LLM de visión.",
+      "role": "Resuelve la identidad (usuario o anónimo), consulta la caché, controla la cuota, llama a OpenRouter y persiste resultado y uso.",
+      "technologies": [
+        "Astro API route",
+        "supabase-js"
+      ],
+      "paths": [
+        "src/pages/api/decode.ts",
+        "src/lib/promptImage.ts"
+      ],
+      "metrics": {
+        "files": 2,
+        "lines": 517
+      },
+      "confidence": "confirmed",
+      "evidence": [
+        {
+          "type": "config",
+          "path": "src/pages/api/decode.ts",
+          "lines": "5",
+          "excerpt": "export const prerender = false;",
+          "url": "https://github.com/FilipaoVfx/pixelatmos/blob/fdc1f4d73b0ffaa8449f9a3b354aff78ba352ce9/src/pages/api/decode.ts#L5"
+        },
+        {
+          "type": "source",
+          "path": "src/lib/promptImage.ts",
+          "note": "31 líneas",
+          "url": "https://github.com/FilipaoVfx/pixelatmos/blob/fdc1f4d73b0ffaa8449f9a3b354aff78ba352ce9/src/lib/promptImage.ts"
+        }
+      ]
+    },
+    {
+      "id": "wallpaper-service",
+      "name": "WallpaperService",
+      "type": "module",
+      "group": "core",
+      "summary": "Acceso a wallpapers, likes y descargas, con fallback a un JSON local si Supabase falla.",
+      "role": "Lo usan tanto el build (páginas prerenderizadas) como la galería en el cliente.",
+      "technologies": [
+        "supabase-js"
+      ],
+      "paths": [
+        "src/services/wallpaperService.ts",
+        "src/content/wallpapers.json",
+        "src/utils/wallpaper.ts"
+      ],
+      "metrics": {
+        "files": 3,
+        "lines": 564
+      },
+      "confidence": "confirmed",
+      "evidence": [
+        {
+          "type": "source",
+          "path": "src/services/wallpaperService.ts",
+          "lines": "14",
+          "excerpt": "export class WallpaperService {",
+          "url": "https://github.com/FilipaoVfx/pixelatmos/blob/fdc1f4d73b0ffaa8449f9a3b354aff78ba352ce9/src/services/wallpaperService.ts#L14"
+        },
+        {
+          "type": "source",
+          "path": "src/content/wallpapers.json",
+          "note": "165 líneas",
+          "url": "https://github.com/FilipaoVfx/pixelatmos/blob/fdc1f4d73b0ffaa8449f9a3b354aff78ba352ce9/src/content/wallpapers.json"
+        },
+        {
+          "type": "source",
+          "path": "src/utils/wallpaper.ts",
+          "note": "19 líneas",
+          "url": "https://github.com/FilipaoVfx/pixelatmos/blob/fdc1f4d73b0ffaa8449f9a3b354aff78ba352ce9/src/utils/wallpaper.ts"
+        }
+      ]
+    },
+    {
+      "id": "supabase-client",
+      "name": "Auth y cliente Supabase",
+      "type": "module",
+      "group": "core",
+      "summary": "Cliente con clave anónima, hook de sesión y modal de login.",
+      "role": "Punto único de acceso a Supabase desde el navegador; la sesión se reutiliza para cuotas y likes.",
+      "technologies": [
+        "Supabase Auth"
+      ],
+      "paths": [
+        "src/lib/supabase.ts",
+        "src/hooks/useAuth.ts",
+        "src/components/AuthModal.tsx"
+      ],
+      "metrics": {
+        "files": 3,
+        "lines": 360
+      },
+      "confidence": "confirmed",
+      "evidence": [
+        {
+          "type": "source",
+          "path": "src/hooks/useAuth.ts",
+          "lines": "20",
+          "excerpt": "const { data: { subscription } } = supabase.auth.onAuthStateChange(",
+          "url": "https://github.com/FilipaoVfx/pixelatmos/blob/fdc1f4d73b0ffaa8449f9a3b354aff78ba352ce9/src/hooks/useAuth.ts#L20"
+        },
+        {
+          "type": "source",
+          "path": "src/lib/supabase.ts",
+          "note": "118 líneas",
+          "url": "https://github.com/FilipaoVfx/pixelatmos/blob/fdc1f4d73b0ffaa8449f9a3b354aff78ba352ce9/src/lib/supabase.ts"
+        },
+        {
+          "type": "source",
+          "path": "src/components/AuthModal.tsx",
+          "note": "183 líneas",
+          "url": "https://github.com/FilipaoVfx/pixelatmos/blob/fdc1f4d73b0ffaa8449f9a3b354aff78ba352ce9/src/components/AuthModal.tsx"
+        }
+      ]
+    },
+    {
+      "id": "svg3d",
+      "name": "Motor svg3d",
+      "type": "module",
+      "group": "packages",
+      "summary": "Motor SVG → 3D publicado en su propio repositorio y fijado a un commit.",
+      "role": "Análisis de SVG, presets de material, render y export; el sitio solo lo consume.",
+      "technologies": [
+        "Three.js"
+      ],
+      "paths": [],
+      "metrics": {
+        "files": 0,
+        "lines": 0
+      },
+      "confidence": "confirmed",
+      "evidence": [
+        {
+          "type": "dependency",
+          "path": "package.json",
+          "lines": "22",
+          "excerpt": "\"@filipaovfx/svg3d\": \"github:FilipaoVfx/Svg3Ddesign#a8cf5d3\",",
+          "note": "github:FilipaoVfx/Svg3Ddesign fijado a un commit",
+          "url": "https://github.com/FilipaoVfx/pixelatmos/blob/fdc1f4d73b0ffaa8449f9a3b354aff78ba352ce9/package.json#L22"
+        }
+      ]
+    },
+    {
+      "id": "supabase-db",
+      "name": "Postgres",
+      "type": "database",
+      "group": "supabase",
+      "summary": "Wallpapers, likes, descargas, caché de análisis, cuotas y jobs.",
+      "role": "Estado de la galería y de Visual Protocol, con RPC para contadores atómicos.",
+      "technologies": [
+        "PostgreSQL",
+        "RPC"
+      ],
+      "paths": [
+        "supabase/migrations",
+        "db"
+      ],
+      "metrics": {
+        "files": 4,
+        "lines": 513
+      },
+      "confidence": "confirmed",
+      "evidence": [
+        {
+          "type": "migration",
+          "path": "supabase/migrations",
+          "dir": true,
+          "note": "3 archivos .sql",
+          "url": "https://github.com/FilipaoVfx/pixelatmos/tree/fdc1f4d73b0ffaa8449f9a3b354aff78ba352ce9/supabase/migrations"
+        },
+        {
+          "type": "source",
+          "path": "db",
+          "dir": true,
+          "note": "1 archivos",
+          "url": "https://github.com/FilipaoVfx/pixelatmos/tree/fdc1f4d73b0ffaa8449f9a3b354aff78ba352ce9/db"
+        }
+      ]
+    },
+    {
+      "id": "supabase-storage",
+      "name": "Storage",
+      "type": "external",
+      "group": "supabase",
+      "summary": "Bucket público con las imágenes de los wallpapers.",
+      "role": "Las páginas enlazan las imágenes directamente; no pasan por el Worker.",
+      "technologies": [
+        "Supabase Storage"
+      ],
+      "paths": [],
+      "metrics": {
+        "files": 0,
+        "lines": 0
+      },
+      "confidence": "confirmed",
+      "evidence": [
+        {
+          "type": "config",
+          "path": "src/content/wallpapers.json",
+          "lines": "7",
+          "excerpt": "\"url\": \"https://cauitdpbsedajkuodsaf.supabase.co/storage/v1/object/public/images/trainmythos_waifu2x_art_noise2_scale.png\",",
+          "url": "https://github.com/FilipaoVfx/pixelatmos/blob/fdc1f4d73b0ffaa8449f9a3b354aff78ba352ce9/src/content/wallpapers.json#L7"
+        }
+      ]
+    },
+    {
+      "id": "contact-fn",
+      "name": "Edge Function contact",
+      "type": "service",
+      "group": "supabase",
+      "summary": "Función Deno que recibe el formulario de contacto, filtra bots y envía el correo.",
+      "role": "Honeypot con registro en Postgres y envío vía Resend.",
+      "technologies": [
+        "Deno",
+        "Supabase Edge Functions"
+      ],
+      "paths": [
+        "supabase/functions"
+      ],
+      "metrics": {
+        "files": 3,
+        "lines": 160
+      },
+      "confidence": "confirmed",
+      "evidence": [
+        {
+          "type": "source",
+          "path": "supabase/functions",
+          "dir": true,
+          "note": "3 archivos",
+          "url": "https://github.com/FilipaoVfx/pixelatmos/tree/fdc1f4d73b0ffaa8449f9a3b354aff78ba352ce9/supabase/functions"
+        }
+      ]
+    },
+    {
+      "id": "openrouter",
+      "name": "OpenRouter",
+      "type": "external",
+      "group": "external",
+      "summary": "LLM de visión para Visual Protocol, modelo configurable por variable de entorno.",
+      "role": "Solo lo llama /api/decode, con la clave en el servidor.",
+      "technologies": [
+        "LLM de visión"
+      ],
+      "paths": [],
+      "metrics": {
+        "files": 0,
+        "lines": 0
+      },
+      "confidence": "confirmed",
+      "evidence": [
+        {
+          "type": "api-call",
+          "path": "src/pages/api/decode.ts",
+          "lines": "300",
+          "excerpt": "const aiResponse = await fetch('https://openrouter.ai/api/v1/chat/completions', {",
+          "url": "https://github.com/FilipaoVfx/pixelatmos/blob/fdc1f4d73b0ffaa8449f9a3b354aff78ba352ce9/src/pages/api/decode.ts#L300"
+        }
+      ]
+    },
+    {
+      "id": "resend",
+      "name": "Resend",
+      "type": "external",
+      "group": "external",
+      "summary": "Envío de correo del formulario de contacto.",
+      "role": "Proveedor transaccional.",
+      "technologies": [
+        "Email API"
+      ],
+      "paths": [],
+      "metrics": {
+        "files": 0,
+        "lines": 0
+      },
+      "confidence": "confirmed",
+      "evidence": [
+        {
+          "type": "api-call",
+          "path": "supabase/functions/contact/index.ts",
+          "lines": "103",
+          "excerpt": "const resendRes = await fetch(\"https://api.resend.com/emails\", {",
+          "url": "https://github.com/FilipaoVfx/pixelatmos/blob/fdc1f4d73b0ffaa8449f9a3b354aff78ba352ce9/supabase/functions/contact/index.ts#L103"
+        }
+      ]
+    },
+    {
+      "id": "ads-analytics",
+      "name": "AdSense + Clarity",
+      "type": "external",
+      "group": "external",
+      "summary": "Anuncios y analítica de comportamiento, ambos detrás del consentimiento.",
+      "role": "Monetización y medición; se cargan solo si el visitante acepta.",
+      "technologies": [
+        "Google AdSense",
+        "Microsoft Clarity"
+      ],
+      "paths": [],
+      "metrics": {
+        "files": 0,
+        "lines": 0
+      },
+      "confidence": "confirmed",
+      "evidence": [
+        {
+          "type": "config",
+          "path": "src/config/adsense.ts",
+          "lines": "24",
+          "excerpt": "export const AD_LOADER_SRC = `https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${AD_CLIENT}`;",
+          "url": "https://github.com/FilipaoVfx/pixelatmos/blob/fdc1f4d73b0ffaa8449f9a3b354aff78ba352ce9/src/config/adsense.ts#L24"
+        },
+        {
+          "type": "source",
+          "path": "src/layouts/AppLayout.astro",
+          "lines": "126",
+          "excerpt": "t = l.createElement(r); t.async = 1; t.src = \"https://www.clarity.ms/tag/\" + i;",
+          "url": "https://github.com/FilipaoVfx/pixelatmos/blob/fdc1f4d73b0ffaa8449f9a3b354aff78ba352ce9/src/layouts/AppLayout.astro#L126"
+        }
+      ]
+    },
+    {
+      "id": "cloudflare",
+      "name": "Cloudflare Workers",
+      "type": "infrastructure",
+      "group": "ops",
+      "summary": "Build desde Git, Worker con assets estáticos y Workers Logs activados.",
+      "role": "Cada push a main construye y despliega; los assets prerenderizados salen del asset store, lo demás del Worker.",
+      "technologies": [
+        "Workers",
+        "Static Assets",
+        "Workers Logs"
+      ],
+      "paths": [
+        "wrangler.toml"
+      ],
+      "metrics": {
+        "files": 1,
+        "lines": 43
+      },
+      "confidence": "confirmed",
+      "evidence": [
+        {
+          "type": "deployment",
+          "path": "wrangler.toml",
+          "lines": "7",
+          "excerpt": "main = \"./dist/_worker.js\"",
+          "url": "https://github.com/FilipaoVfx/pixelatmos/blob/fdc1f4d73b0ffaa8449f9a3b354aff78ba352ce9/wrangler.toml#L7"
+        },
+        {
+          "type": "deployment",
+          "path": "wrangler.toml",
+          "lines": "17",
+          "excerpt": "command = \"npm ci && npm run build\"",
+          "url": "https://github.com/FilipaoVfx/pixelatmos/blob/fdc1f4d73b0ffaa8449f9a3b354aff78ba352ce9/wrangler.toml#L17"
+        }
+      ]
+    }
+  ],
+  "relationships": [
+    {
+      "id": "cloudflare--site",
+      "source": "cloudflare",
+      "target": "site",
+      "type": "deploy",
+      "label": "Build + deploy del Worker",
+      "description": "Cada push a main ejecuta npm ci && npm run build y publica dist/_worker.js con los assets prerenderizados.",
+      "detected": false,
+      "confidence": "confirmed",
+      "evidence": [
+        {
+          "type": "deployment",
+          "path": "wrangler.toml",
+          "lines": "7",
+          "excerpt": "main = \"./dist/_worker.js\"",
+          "url": "https://github.com/FilipaoVfx/pixelatmos/blob/fdc1f4d73b0ffaa8449f9a3b354aff78ba352ce9/wrangler.toml#L7"
+        },
+        {
+          "type": "deployment",
+          "path": "wrangler.toml",
+          "lines": "17",
+          "excerpt": "command = \"npm ci && npm run build\"",
+          "url": "https://github.com/FilipaoVfx/pixelatmos/blob/fdc1f4d73b0ffaa8449f9a3b354aff78ba352ce9/wrangler.toml#L17"
+        }
+      ]
+    },
+    {
+      "id": "site--lab-3d",
+      "source": "site",
+      "target": "lab-3d",
+      "type": "import",
+      "label": "Monta la isla del 3D Lab",
+      "description": "Las páginas /3d-lab y /3d-text-generator cargan el componente en el cliente.",
+      "detected": true,
+      "confidence": "confirmed",
+      "evidence": [
+        {
+          "type": "import",
+          "path": "src/pages/3d-lab/index.astro",
+          "lines": "4",
+          "excerpt": "import Svg3DLab from '../../components/Svg3DLab';",
+          "url": "https://github.com/FilipaoVfx/pixelatmos/blob/fdc1f4d73b0ffaa8449f9a3b354aff78ba352ce9/src/pages/3d-lab/index.astro#L4"
+        },
+        {
+          "type": "import",
+          "path": "src/pages/3d-lab/svg-to-3d.astro",
+          "lines": "4",
+          "excerpt": "import Svg3DLab from '../../components/Svg3DLab';",
+          "url": "https://github.com/FilipaoVfx/pixelatmos/blob/fdc1f4d73b0ffaa8449f9a3b354aff78ba352ce9/src/pages/3d-lab/svg-to-3d.astro#L4"
+        },
+        {
+          "type": "import",
+          "path": "src/pages/3d-text-generator.astro",
+          "lines": "4",
+          "excerpt": "import Text3DGenerator from '../components/Text3DGenerator';",
+          "url": "https://github.com/FilipaoVfx/pixelatmos/blob/fdc1f4d73b0ffaa8449f9a3b354aff78ba352ce9/src/pages/3d-text-generator.astro#L4"
+        },
+        {
+          "type": "import",
+          "path": "src/pages/svg-optimizer.astro",
+          "lines": "4",
+          "excerpt": "import SvgOptimizer from '../components/SvgOptimizer';",
+          "url": "https://github.com/FilipaoVfx/pixelatmos/blob/fdc1f4d73b0ffaa8449f9a3b354aff78ba352ce9/src/pages/svg-optimizer.astro#L4"
+        }
+      ]
+    },
+    {
+      "id": "site--ascii-lab",
+      "source": "site",
+      "target": "ascii-lab",
+      "type": "import",
+      "label": "Monta la isla del ASCII Lab",
+      "description": "/ascii-lab carga el laboratorio completo en el cliente.",
+      "detected": true,
+      "confidence": "confirmed",
+      "evidence": [
+        {
+          "type": "import",
+          "path": "src/pages/ascii-lab.astro",
+          "lines": "4",
+          "excerpt": "import { AsciiLab } from '../features/ascii-video';",
+          "url": "https://github.com/FilipaoVfx/pixelatmos/blob/fdc1f4d73b0ffaa8449f9a3b354aff78ba352ce9/src/pages/ascii-lab.astro#L4"
+        }
+      ]
+    },
+    {
+      "id": "site--visual-protocol",
+      "source": "site",
+      "target": "visual-protocol",
+      "type": "import",
+      "label": "Monta la isla de Visual Protocol",
+      "description": "/visual-protocol carga el analizador de imágenes.",
+      "detected": true,
+      "confidence": "confirmed",
+      "evidence": [
+        {
+          "type": "import",
+          "path": "src/pages/visual-protocol.astro",
+          "lines": "4",
+          "excerpt": "import { ImageAnalyzer } from '../components/ImageAnalyzer';",
+          "url": "https://github.com/FilipaoVfx/pixelatmos/blob/fdc1f4d73b0ffaa8449f9a3b354aff78ba352ce9/src/pages/visual-protocol.astro#L4"
+        }
+      ]
+    },
+    {
+      "id": "site--gallery",
+      "source": "site",
+      "target": "gallery",
+      "type": "import",
+      "label": "Monta la galería",
+      "description": "Las páginas de wallpapers y categorías hidratan el grid sobre HTML prerenderizado.",
+      "detected": true,
+      "confidence": "confirmed",
+      "evidence": [
+        {
+          "type": "import",
+          "path": "src/pages/_WallpapersPage.tsx",
+          "lines": "4",
+          "excerpt": "import { WallpaperGrid } from '../components/WallpaperGrid';",
+          "url": "https://github.com/FilipaoVfx/pixelatmos/blob/fdc1f4d73b0ffaa8449f9a3b354aff78ba352ce9/src/pages/_WallpapersPage.tsx#L4"
+        },
+        {
+          "type": "import",
+          "path": "src/pages/_WallpapersPage.tsx",
+          "lines": "5",
+          "excerpt": "import { CategoryFilter } from '../components/CategoryFilter';",
+          "url": "https://github.com/FilipaoVfx/pixelatmos/blob/fdc1f4d73b0ffaa8449f9a3b354aff78ba352ce9/src/pages/_WallpapersPage.tsx#L5"
+        },
+        {
+          "type": "import",
+          "path": "src/pages/[category]/index.astro",
+          "lines": "5",
+          "excerpt": "import { WallpapersGridContainer } from '../../components/WallpapersGridContainer';",
+          "url": "https://github.com/FilipaoVfx/pixelatmos/blob/fdc1f4d73b0ffaa8449f9a3b354aff78ba352ce9/src/pages/[category]/index.astro#L5"
+        },
+        {
+          "type": "import",
+          "path": "src/pages/wallpapers/[...page].astro",
+          "lines": "5",
+          "excerpt": "import { WallpapersGridContainer } from '../../components/WallpapersGridContainer';",
+          "url": "https://github.com/FilipaoVfx/pixelatmos/blob/fdc1f4d73b0ffaa8449f9a3b354aff78ba352ce9/src/pages/wallpapers/[...page].astro#L5"
+        }
+      ]
+    },
+    {
+      "id": "site--consent",
+      "source": "site",
+      "target": "consent",
+      "type": "import",
+      "label": "Banner en el layout",
+      "description": "Ambos layouts incluyen el banner y las unidades de anuncio.",
+      "detected": true,
+      "confidence": "confirmed",
+      "evidence": [
+        {
+          "type": "import",
+          "path": "src/layouts/AppLayout.astro",
+          "lines": "2",
+          "excerpt": "import { AD_LOADER_SRC } from '../config/adsense';",
+          "url": "https://github.com/FilipaoVfx/pixelatmos/blob/fdc1f4d73b0ffaa8449f9a3b354aff78ba352ce9/src/layouts/AppLayout.astro#L2"
+        },
+        {
+          "type": "import",
+          "path": "src/layouts/AppLayout.astro",
+          "lines": "5",
+          "excerpt": "import ConsentBanner from '../components/ConsentBanner.astro';",
+          "url": "https://github.com/FilipaoVfx/pixelatmos/blob/fdc1f4d73b0ffaa8449f9a3b354aff78ba352ce9/src/layouts/AppLayout.astro#L5"
+        },
+        {
+          "type": "import",
+          "path": "src/layouts/Layout.astro",
+          "lines": "2",
+          "excerpt": "import { AD_LOADER_SRC } from '../config/adsense';",
+          "url": "https://github.com/FilipaoVfx/pixelatmos/blob/fdc1f4d73b0ffaa8449f9a3b354aff78ba352ce9/src/layouts/Layout.astro#L2"
+        },
+        {
+          "type": "import",
+          "path": "src/pages/[category]/[slug].astro",
+          "lines": "7",
+          "excerpt": "import AdUnit from '../../components/AdUnit.astro';",
+          "url": "https://github.com/FilipaoVfx/pixelatmos/blob/fdc1f4d73b0ffaa8449f9a3b354aff78ba352ce9/src/pages/[category]/[slug].astro#L7"
+        },
+        {
+          "type": "import",
+          "path": "src/pages/blog/how-to-optimize-svg-files.astro",
+          "lines": "5",
+          "excerpt": "import AdUnit from '../../components/AdUnit.astro';",
+          "url": "https://github.com/FilipaoVfx/pixelatmos/blob/fdc1f4d73b0ffaa8449f9a3b354aff78ba352ce9/src/pages/blog/how-to-optimize-svg-files.astro#L5"
+        },
+        {
+          "type": "import",
+          "path": "src/pages/blog/svg-vs-png.astro",
+          "lines": "5",
+          "excerpt": "import AdUnit from '../../components/AdUnit.astro';",
+          "url": "https://github.com/FilipaoVfx/pixelatmos/blob/fdc1f4d73b0ffaa8449f9a3b354aff78ba352ce9/src/pages/blog/svg-vs-png.astro#L5"
+        }
+      ]
+    },
+    {
+      "id": "site--wallpaper-service",
+      "source": "site",
+      "target": "wallpaper-service",
+      "type": "import",
+      "label": "Datos en build",
+      "description": "getStaticPaths lee los wallpapers al compilar: la galería y sus páginas salen prerenderizadas.",
+      "detected": true,
+      "confidence": "confirmed",
+      "evidence": [
+        {
+          "type": "import",
+          "path": "src/pages/[category]/[slug].astro",
+          "lines": "4",
+          "excerpt": "import { WallpaperService } from '../../services/wallpaperService';",
+          "url": "https://github.com/FilipaoVfx/pixelatmos/blob/fdc1f4d73b0ffaa8449f9a3b354aff78ba352ce9/src/pages/[category]/[slug].astro#L4"
+        },
+        {
+          "type": "import",
+          "path": "src/pages/[category]/[slug].astro",
+          "lines": "5",
+          "excerpt": "import { wallpaperSlug, wallpaperPath } from '../../utils/wallpaper';",
+          "url": "https://github.com/FilipaoVfx/pixelatmos/blob/fdc1f4d73b0ffaa8449f9a3b354aff78ba352ce9/src/pages/[category]/[slug].astro#L5"
+        },
+        {
+          "type": "import",
+          "path": "src/pages/[category]/[slug].astro",
+          "lines": "242",
+          "excerpt": "const { WallpaperService } = await import('../../services/wallpaperService');",
+          "url": "https://github.com/FilipaoVfx/pixelatmos/blob/fdc1f4d73b0ffaa8449f9a3b354aff78ba352ce9/src/pages/[category]/[slug].astro#L242"
+        },
+        {
+          "type": "import",
+          "path": "src/pages/[category]/index.astro",
+          "lines": "4",
+          "excerpt": "import { WallpaperService } from '../../services/wallpaperService';",
+          "url": "https://github.com/FilipaoVfx/pixelatmos/blob/fdc1f4d73b0ffaa8449f9a3b354aff78ba352ce9/src/pages/[category]/index.astro#L4"
+        },
+        {
+          "type": "import",
+          "path": "src/pages/image-sitemap.xml.ts",
+          "lines": "4",
+          "excerpt": "import { WallpaperService } from '../services/wallpaperService';",
+          "url": "https://github.com/FilipaoVfx/pixelatmos/blob/fdc1f4d73b0ffaa8449f9a3b354aff78ba352ce9/src/pages/image-sitemap.xml.ts#L4"
+        },
+        {
+          "type": "import",
+          "path": "src/pages/index.astro",
+          "lines": "4",
+          "excerpt": "import { WallpaperService } from '../services/wallpaperService';",
+          "url": "https://github.com/FilipaoVfx/pixelatmos/blob/fdc1f4d73b0ffaa8449f9a3b354aff78ba352ce9/src/pages/index.astro#L4"
+        },
+        {
+          "type": "import",
+          "path": "src/pages/index.astro",
+          "lines": "5",
+          "excerpt": "import { wallpaperPath } from '../utils/wallpaper';",
+          "url": "https://github.com/FilipaoVfx/pixelatmos/blob/fdc1f4d73b0ffaa8449f9a3b354aff78ba352ce9/src/pages/index.astro#L5"
+        },
+        {
+          "type": "import",
+          "path": "src/pages/wallpapers/[...page].astro",
+          "lines": "4",
+          "excerpt": "import { WallpaperService } from '../../services/wallpaperService';",
+          "url": "https://github.com/FilipaoVfx/pixelatmos/blob/fdc1f4d73b0ffaa8449f9a3b354aff78ba352ce9/src/pages/wallpapers/[...page].astro#L4"
+        }
+      ]
+    },
+    {
+      "id": "site--supabase-client",
+      "source": "site",
+      "target": "supabase-client",
+      "type": "import",
+      "label": "Sesión en la cabecera",
+      "description": "La cabecera muestra el estado de sesión con el mismo hook de auth.",
+      "detected": true,
+      "confidence": "confirmed",
+      "evidence": [
+        {
+          "type": "import",
+          "path": "src/components/Header.tsx",
+          "lines": "5",
+          "excerpt": "import { useAuth } from '../hooks/useAuth';",
+          "url": "https://github.com/FilipaoVfx/pixelatmos/blob/fdc1f4d73b0ffaa8449f9a3b354aff78ba352ce9/src/components/Header.tsx#L5"
+        },
+        {
+          "type": "import",
+          "path": "src/components/HeaderContainer.tsx",
+          "lines": "3",
+          "excerpt": "import { AuthModal } from './AuthModal';",
+          "url": "https://github.com/FilipaoVfx/pixelatmos/blob/fdc1f4d73b0ffaa8449f9a3b354aff78ba352ce9/src/components/HeaderContainer.tsx#L3"
+        },
+        {
+          "type": "import",
+          "path": "src/components/layout/AppTopBar.tsx",
+          "lines": "3",
+          "excerpt": "import { AuthModal } from '../AuthModal';",
+          "url": "https://github.com/FilipaoVfx/pixelatmos/blob/fdc1f4d73b0ffaa8449f9a3b354aff78ba352ce9/src/components/layout/AppTopBar.tsx#L3"
+        },
+        {
+          "type": "import",
+          "path": "src/components/layout/AppTopBar.tsx",
+          "lines": "4",
+          "excerpt": "import { useAuth } from '../../hooks/useAuth';",
+          "url": "https://github.com/FilipaoVfx/pixelatmos/blob/fdc1f4d73b0ffaa8449f9a3b354aff78ba352ce9/src/components/layout/AppTopBar.tsx#L4"
+        }
+      ]
+    },
+    {
+      "id": "site--contact-fn",
+      "source": "site",
+      "target": "contact-fn",
+      "type": "http",
+      "label": "Formulario de contacto",
+      "description": "El formulario envía directamente a la Edge Function de Supabase configurada por variable pública.",
+      "detected": false,
+      "confidence": "confirmed",
+      "evidence": [
+        {
+          "type": "source",
+          "path": "src/components/ContactForm.tsx",
+          "lines": "33",
+          "excerpt": "const response = await fetch(CONTACT_URL, {",
+          "url": "https://github.com/FilipaoVfx/pixelatmos/blob/fdc1f4d73b0ffaa8449f9a3b354aff78ba352ce9/src/components/ContactForm.tsx#L33"
+        },
+        {
+          "type": "environment",
+          "path": "src/components/ContactForm.tsx",
+          "lines": "6",
+          "excerpt": "const CONTACT_URL = import.meta.env.PUBLIC_CONTACT_FUNCTION_URL as string;",
+          "url": "https://github.com/FilipaoVfx/pixelatmos/blob/fdc1f4d73b0ffaa8449f9a3b354aff78ba352ce9/src/components/ContactForm.tsx#L6"
+        }
+      ]
+    },
+    {
+      "id": "site--resend",
+      "source": "site",
+      "target": "resend",
+      "type": "http",
+      "label": "Endpoint /api/contact sin llamadas",
+      "description": "El Worker aún expone un endpoint que envía por Resend, pero ningún componente lo llama.",
+      "detected": true,
+      "confidence": "supported",
+      "evidence": [
+        {
+          "type": "api-call",
+          "path": "src/pages/api/contact.ts",
+          "lines": "30",
+          "excerpt": "const resendResponse = await fetch('https://api.resend.com/emails', {",
+          "note": "api.resend.com",
+          "url": "https://github.com/FilipaoVfx/pixelatmos/blob/fdc1f4d73b0ffaa8449f9a3b354aff78ba352ce9/src/pages/api/contact.ts#L30"
+        }
+      ],
+      "caveat": "El código existe y se despliega; el formulario usa la Edge Function, así que este camino no se ejerce."
+    },
+    {
+      "id": "visual-protocol--decode-api",
+      "source": "visual-protocol",
+      "target": "decode-api",
+      "type": "http",
+      "label": "POST /api/decode",
+      "description": "Sube la imagen como multipart y recibe el brief, el estado de caché o el error de cuota.",
+      "detected": true,
+      "confidence": "confirmed",
+      "evidence": [
+        {
+          "type": "api-call",
+          "path": "src/components/ImageAnalyzer.tsx",
+          "lines": "90",
+          "excerpt": "const res = await fetch('/api/decode', {",
+          "url": "https://github.com/FilipaoVfx/pixelatmos/blob/fdc1f4d73b0ffaa8449f9a3b354aff78ba352ce9/src/components/ImageAnalyzer.tsx#L90"
+        },
+        {
+          "type": "route",
+          "path": "src/pages/api/decode.ts",
+          "lines": "108",
+          "excerpt": "export const POST: APIRoute = async ({ request, locals }) => {",
+          "url": "https://github.com/FilipaoVfx/pixelatmos/blob/fdc1f4d73b0ffaa8449f9a3b354aff78ba352ce9/src/pages/api/decode.ts#L108"
+        },
+        {
+          "type": "api-call",
+          "path": "src/components/ImageAnalyzer.tsx",
+          "lines": "128",
+          "excerpt": "const fullUrl = new URL('/api/decode', window.location.href).toString();",
+          "url": "https://github.com/FilipaoVfx/pixelatmos/blob/fdc1f4d73b0ffaa8449f9a3b354aff78ba352ce9/src/components/ImageAnalyzer.tsx#L128"
+        }
+      ],
+      "endpoints": [
+        "POST /api/decode"
+      ]
+    },
+    {
+      "id": "visual-protocol--supabase-client",
+      "source": "visual-protocol",
+      "target": "supabase-client",
+      "type": "import",
+      "label": "Adjunta la sesión",
+      "description": "Si hay usuario, envía su token para que la cuota sea por cuenta y no por IP.",
+      "detected": true,
+      "confidence": "confirmed",
+      "evidence": [
+        {
+          "type": "import",
+          "path": "src/components/ImageAnalyzer.tsx",
+          "lines": "4",
+          "excerpt": "import { supabase } from '../lib/supabase';",
+          "url": "https://github.com/FilipaoVfx/pixelatmos/blob/fdc1f4d73b0ffaa8449f9a3b354aff78ba352ce9/src/components/ImageAnalyzer.tsx#L4"
+        }
+      ]
+    },
+    {
+      "id": "gallery--wallpaper-service",
+      "source": "gallery",
+      "target": "wallpaper-service",
+      "type": "import",
+      "label": "Likes y descargas",
+      "description": "Los contadores se actualizan con RPC atómicas.",
+      "detected": true,
+      "confidence": "confirmed",
+      "evidence": [
+        {
+          "type": "import",
+          "path": "src/components/WallpaperModal.tsx",
+          "lines": "6",
+          "excerpt": "import { wallpaperPath } from '../utils/wallpaper';",
+          "url": "https://github.com/FilipaoVfx/pixelatmos/blob/fdc1f4d73b0ffaa8449f9a3b354aff78ba352ce9/src/components/WallpaperModal.tsx#L6"
+        },
+        {
+          "type": "import",
+          "path": "src/components/WallpapersGridContainer.tsx",
+          "lines": "5",
+          "excerpt": "import { WallpaperService } from '../services/wallpaperService';",
+          "url": "https://github.com/FilipaoVfx/pixelatmos/blob/fdc1f4d73b0ffaa8449f9a3b354aff78ba352ce9/src/components/WallpapersGridContainer.tsx#L5"
+        }
+      ]
+    },
+    {
+      "id": "gallery--supabase-client",
+      "source": "gallery",
+      "target": "supabase-client",
+      "type": "import",
+      "label": "Sesión para likes",
+      "description": "Sin sesión, like y favoritos abren el modal de login.",
+      "detected": true,
+      "confidence": "confirmed",
+      "evidence": [
+        {
+          "type": "import",
+          "path": "src/components/WallpapersGridContainer.tsx",
+          "lines": "4",
+          "excerpt": "import { AuthModal } from './AuthModal';",
+          "url": "https://github.com/FilipaoVfx/pixelatmos/blob/fdc1f4d73b0ffaa8449f9a3b354aff78ba352ce9/src/components/WallpapersGridContainer.tsx#L4"
+        },
+        {
+          "type": "import",
+          "path": "src/components/WallpapersGridContainer.tsx",
+          "lines": "6",
+          "excerpt": "import { useAuth } from '../hooks/useAuth';",
+          "url": "https://github.com/FilipaoVfx/pixelatmos/blob/fdc1f4d73b0ffaa8449f9a3b354aff78ba352ce9/src/components/WallpapersGridContainer.tsx#L6"
+        }
+      ]
+    },
+    {
+      "id": "wallpaper-service--supabase-client",
+      "source": "wallpaper-service",
+      "target": "supabase-client",
+      "type": "import",
+      "label": "Mismo cliente",
+      "description": "Reutiliza el cliente anónimo compartido.",
+      "detected": true,
+      "confidence": "confirmed",
+      "evidence": [
+        {
+          "type": "import",
+          "path": "src/services/wallpaperService.ts",
+          "lines": "1",
+          "excerpt": "import { supabase } from '../lib/supabase';",
+          "url": "https://github.com/FilipaoVfx/pixelatmos/blob/fdc1f4d73b0ffaa8449f9a3b354aff78ba352ce9/src/services/wallpaperService.ts#L1"
+        }
+      ]
+    },
+    {
+      "id": "wallpaper-service--supabase-storage",
+      "source": "wallpaper-service",
+      "target": "supabase-storage",
+      "type": "http",
+      "label": "Imágenes públicas",
+      "description": "Cada wallpaper apunta a su objeto público en el bucket de imágenes.",
+      "detected": false,
+      "confidence": "confirmed",
+      "evidence": [
+        {
+          "type": "config",
+          "path": "src/content/wallpapers.json",
+          "lines": "7",
+          "excerpt": "\"url\": \"https://cauitdpbsedajkuodsaf.supabase.co/storage/v1/object/public/images/trainmythos_waifu2x_art_noise2_scale.png\",",
+          "url": "https://github.com/FilipaoVfx/pixelatmos/blob/fdc1f4d73b0ffaa8449f9a3b354aff78ba352ce9/src/content/wallpapers.json#L7"
+        }
+      ]
+    },
+    {
+      "id": "supabase-client--supabase-db",
+      "source": "supabase-client",
+      "target": "supabase-db",
+      "type": "sdk",
+      "label": "Auth + consultas anónimas",
+      "description": "Consultas con la clave anónima; las políticas de la base deciden qué puede leer cada rol.",
+      "detected": true,
+      "confidence": "confirmed",
+      "evidence": [
+        {
+          "type": "import",
+          "path": "src/hooks/useAuth.ts",
+          "lines": "2",
+          "excerpt": "import { User } from '@supabase/supabase-js';",
+          "url": "https://github.com/FilipaoVfx/pixelatmos/blob/fdc1f4d73b0ffaa8449f9a3b354aff78ba352ce9/src/hooks/useAuth.ts#L2"
+        },
+        {
+          "type": "import",
+          "path": "src/lib/supabase.ts",
+          "lines": "1",
+          "excerpt": "import { createClient } from '@supabase/supabase-js';",
+          "url": "https://github.com/FilipaoVfx/pixelatmos/blob/fdc1f4d73b0ffaa8449f9a3b354aff78ba352ce9/src/lib/supabase.ts#L1"
+        }
+      ]
+    },
+    {
+      "id": "decode-api--supabase-db",
+      "source": "decode-api",
+      "target": "supabase-db",
+      "type": "sql",
+      "label": "Caché, cuota y jobs",
+      "description": "Lee y escribe image_cache, usage_windows y analysis_jobs con la clave de servicio.",
+      "detected": true,
+      "confidence": "confirmed",
+      "evidence": [
+        {
+          "type": "import",
+          "path": "src/pages/api/decode.ts",
+          "lines": "2",
+          "excerpt": "import { createClient } from '@supabase/supabase-js';",
+          "url": "https://github.com/FilipaoVfx/pixelatmos/blob/fdc1f4d73b0ffaa8449f9a3b354aff78ba352ce9/src/pages/api/decode.ts#L2"
+        },
+        {
+          "type": "source",
+          "path": "src/pages/api/decode.ts",
+          "lines": "211",
+          "excerpt": ".from('image_cache')",
+          "url": "https://github.com/FilipaoVfx/pixelatmos/blob/fdc1f4d73b0ffaa8449f9a3b354aff78ba352ce9/src/pages/api/decode.ts#L211"
+        },
+        {
+          "type": "source",
+          "path": "src/pages/api/decode.ts",
+          "lines": "245",
+          "excerpt": ".from('usage_windows')",
+          "url": "https://github.com/FilipaoVfx/pixelatmos/blob/fdc1f4d73b0ffaa8449f9a3b354aff78ba352ce9/src/pages/api/decode.ts#L245"
+        },
+        {
+          "type": "source",
+          "path": "src/pages/api/decode.ts",
+          "lines": "276",
+          "excerpt": ".from('analysis_jobs')",
+          "url": "https://github.com/FilipaoVfx/pixelatmos/blob/fdc1f4d73b0ffaa8449f9a3b354aff78ba352ce9/src/pages/api/decode.ts#L276"
+        }
+      ],
+      "endpoints": [
+        "image_cache",
+        "usage_windows",
+        "analysis_jobs",
+        "rpc increment_successful_runs"
+      ]
+    },
+    {
+      "id": "decode-api--openrouter",
+      "source": "decode-api",
+      "target": "openrouter",
+      "type": "http",
+      "label": "Análisis de visión",
+      "description": "Chat completions con la imagen y un prompt versionado.",
+      "detected": true,
+      "confidence": "confirmed",
+      "evidence": [
+        {
+          "type": "api-call",
+          "path": "src/pages/api/decode.ts",
+          "lines": "300",
+          "excerpt": "const aiResponse = await fetch('https://openrouter.ai/api/v1/chat/completions', {",
+          "note": "openrouter.ai",
+          "url": "https://github.com/FilipaoVfx/pixelatmos/blob/fdc1f4d73b0ffaa8449f9a3b354aff78ba352ce9/src/pages/api/decode.ts#L300"
+        }
+      ]
+    },
+    {
+      "id": "contact-fn--resend",
+      "source": "contact-fn",
+      "target": "resend",
+      "type": "http",
+      "label": "Envía el correo",
+      "description": "Solo si el mensaje pasa el honeypot.",
+      "detected": true,
+      "confidence": "confirmed",
+      "evidence": [
+        {
+          "type": "api-call",
+          "path": "supabase/functions/contact/index.ts",
+          "lines": "103",
+          "excerpt": "const resendRes = await fetch(\"https://api.resend.com/emails\", {",
+          "note": "api.resend.com",
+          "url": "https://github.com/FilipaoVfx/pixelatmos/blob/fdc1f4d73b0ffaa8449f9a3b354aff78ba352ce9/supabase/functions/contact/index.ts#L103"
+        }
+      ]
+    },
+    {
+      "id": "contact-fn--supabase-db",
+      "source": "contact-fn",
+      "target": "supabase-db",
+      "type": "sql",
+      "label": "Registro de honeypot",
+      "description": "Guarda IP, user agent y payload de los envíos marcados como bot.",
+      "detected": false,
+      "confidence": "confirmed",
+      "evidence": [
+        {
+          "type": "source",
+          "path": "supabase/functions/contact/index.ts",
+          "lines": "133",
+          "excerpt": ".from('honeypot_logs')",
+          "url": "https://github.com/FilipaoVfx/pixelatmos/blob/fdc1f4d73b0ffaa8449f9a3b354aff78ba352ce9/supabase/functions/contact/index.ts#L133"
+        }
+      ]
+    },
+    {
+      "id": "lab-3d--svg3d",
+      "source": "lab-3d",
+      "target": "svg3d",
+      "type": "sdk",
+      "label": "Motor 3D",
+      "description": "Análisis de SVG, presets, render y export PNG/GLB.",
+      "detected": true,
+      "confidence": "confirmed",
+      "evidence": [
+        {
+          "type": "import",
+          "path": "src/components/Svg3DLab.tsx",
+          "lines": "2",
+          "excerpt": "import { PRESETS, analyzeSvg, exportCanvasPng, exportSceneGlb, exportHighLodGlb, readSvgFile, type PresetName, type AssetProfile, type MaterialPreset } from '@…",
+          "url": "https://github.com/FilipaoVfx/pixelatmos/blob/fdc1f4d73b0ffaa8449f9a3b354aff78ba352ce9/src/components/Svg3DLab.tsx#L2"
+        },
+        {
+          "type": "import",
+          "path": "src/components/Svg3DLab.tsx",
+          "lines": "5",
+          "excerpt": "const Svg3D = lazy(() => import('@filipaovfx/svg3d').then((m) => ({ default: m.Svg3D })));",
+          "url": "https://github.com/FilipaoVfx/pixelatmos/blob/fdc1f4d73b0ffaa8449f9a3b354aff78ba352ce9/src/components/Svg3DLab.tsx#L5"
+        },
+        {
+          "type": "import",
+          "path": "src/components/Svg3DLab.tsx",
+          "lines": "6",
+          "excerpt": "const LayeredSvg3D = lazy(() => import('@filipaovfx/svg3d').then((m) => ({ default: m.LayeredSvg3D })));",
+          "url": "https://github.com/FilipaoVfx/pixelatmos/blob/fdc1f4d73b0ffaa8449f9a3b354aff78ba352ce9/src/components/Svg3DLab.tsx#L6"
+        },
+        {
+          "type": "import",
+          "path": "src/components/SvgOptimizer.tsx",
+          "lines": "3",
+          "excerpt": "import { readSvgFile } from '@filipaovfx/svg3d';",
+          "url": "https://github.com/FilipaoVfx/pixelatmos/blob/fdc1f4d73b0ffaa8449f9a3b354aff78ba352ce9/src/components/SvgOptimizer.tsx#L3"
+        },
+        {
+          "type": "import",
+          "path": "src/components/Text3DGenerator.tsx",
+          "lines": "3",
+          "excerpt": "import { Svg3D, PRESETS, exportCanvasPng, exportSceneGlb, type PresetName } from '@filipaovfx/svg3d';",
+          "url": "https://github.com/FilipaoVfx/pixelatmos/blob/fdc1f4d73b0ffaa8449f9a3b354aff78ba352ce9/src/components/Text3DGenerator.tsx#L3"
+        }
+      ]
+    },
+    {
+      "id": "consent--ads-analytics",
+      "source": "consent",
+      "target": "ads-analytics",
+      "type": "http",
+      "label": "Carga tras aceptar",
+      "description": "AdSense y Clarity no se cargan hasta que el visitante acepta; la elección persiste en localStorage.",
+      "detected": false,
+      "confidence": "confirmed",
+      "evidence": [
+        {
+          "type": "config",
+          "path": "src/config/adsense.ts",
+          "lines": "24",
+          "excerpt": "export const AD_LOADER_SRC = `https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${AD_CLIENT}`;",
+          "url": "https://github.com/FilipaoVfx/pixelatmos/blob/fdc1f4d73b0ffaa8449f9a3b354aff78ba352ce9/src/config/adsense.ts#L24"
+        },
+        {
+          "type": "source",
+          "path": "src/components/ConsentBanner.astro",
+          "lines": "47",
+          "excerpt": "gtag('consent', 'update', {",
+          "url": "https://github.com/FilipaoVfx/pixelatmos/blob/fdc1f4d73b0ffaa8449f9a3b354aff78ba352ce9/src/components/ConsentBanner.astro#L47"
+        }
+      ]
+    }
+  ],
+  "flows": [
+    {
+      "id": "visual-protocol",
+      "kind": "runtime",
+      "name": "Visual Protocol",
+      "summary": "De una imagen subida a un brief creativo estructurado.",
+      "steps": [
+        {
+          "id": "visual-protocol-1",
+          "label": "El usuario sube una imagen",
+          "detail": "Se envía como multipart al endpoint del Worker.",
+          "confidence": "confirmed",
+          "evidence": [
+            {
+              "type": "source",
+              "path": "src/components/ImageAnalyzer.tsx",
+              "lines": "78",
+              "excerpt": "formData.append('image', fileToUpload);",
+              "url": "https://github.com/FilipaoVfx/pixelatmos/blob/fdc1f4d73b0ffaa8449f9a3b354aff78ba352ce9/src/components/ImageAnalyzer.tsx#L78"
+            }
+          ],
+          "component": "visual-protocol"
+        },
+        {
+          "id": "visual-protocol-2",
+          "label": "Adjunta la sesión si existe",
+          "detail": "Con usuario, la cuota es por cuenta; sin él, por IP.",
+          "confidence": "confirmed",
+          "evidence": [
+            {
+              "type": "source",
+              "path": "src/components/ImageAnalyzer.tsx",
+              "lines": "85",
+              "excerpt": "const { data: { session } } = await supabase.auth.getSession();",
+              "url": "https://github.com/FilipaoVfx/pixelatmos/blob/fdc1f4d73b0ffaa8449f9a3b354aff78ba352ce9/src/components/ImageAnalyzer.tsx#L85"
+            }
+          ],
+          "relationship": "visual-protocol--supabase-client"
+        },
+        {
+          "id": "visual-protocol-3",
+          "label": "POST /api/decode",
+          "detail": "Handler SSR, nunca prerenderizado.",
+          "confidence": "confirmed",
+          "evidence": [],
+          "relationship": "visual-protocol--decode-api"
+        },
+        {
+          "id": "visual-protocol-4",
+          "label": "Hash SHA-256 de la imagen",
+          "detail": "La misma imagen produce la misma clave de caché.",
+          "confidence": "confirmed",
+          "evidence": [
+            {
+              "type": "source",
+              "path": "src/pages/api/decode.ts",
+              "lines": "204",
+              "excerpt": "const hashBuffer = await crypto.subtle.digest('SHA-256', arrayBuffer);",
+              "url": "https://github.com/FilipaoVfx/pixelatmos/blob/fdc1f4d73b0ffaa8449f9a3b354aff78ba352ce9/src/pages/api/decode.ts#L204"
+            }
+          ],
+          "component": "decode-api"
+        },
+        {
+          "id": "visual-protocol-5",
+          "label": "¿Ya analizada?",
+          "detail": "Un acierto en image_cache responde sin llamar al modelo.",
+          "confidence": "confirmed",
+          "evidence": [
+            {
+              "type": "source",
+              "path": "src/pages/api/decode.ts",
+              "lines": "211",
+              "excerpt": ".from('image_cache')",
+              "note": "2 ocurrencias",
+              "url": "https://github.com/FilipaoVfx/pixelatmos/blob/fdc1f4d73b0ffaa8449f9a3b354aff78ba352ce9/src/pages/api/decode.ts#L211"
+            }
+          ],
+          "relationship": "decode-api--supabase-db"
+        },
+        {
+          "id": "visual-protocol-6",
+          "label": "Cuota diaria",
+          "detail": "2 análisis al día anónimo, 6 con cuenta.",
+          "confidence": "confirmed",
+          "evidence": [
+            {
+              "type": "source",
+              "path": "src/pages/api/decode.ts",
+              "lines": "9",
+              "excerpt": "const QUOTA_ANON = 2; // anonymous users: 2 per day (by IP)",
+              "url": "https://github.com/FilipaoVfx/pixelatmos/blob/fdc1f4d73b0ffaa8449f9a3b354aff78ba352ce9/src/pages/api/decode.ts#L9"
+            },
+            {
+              "type": "source",
+              "path": "src/pages/api/decode.ts",
+              "lines": "245",
+              "excerpt": ".from('usage_windows')",
+              "url": "https://github.com/FilipaoVfx/pixelatmos/blob/fdc1f4d73b0ffaa8449f9a3b354aff78ba352ce9/src/pages/api/decode.ts#L245"
+            }
+          ],
+          "component": "decode-api"
+        },
+        {
+          "id": "visual-protocol-7",
+          "label": "LLM de visión",
+          "detail": "OpenRouter con el prompt versionado.",
+          "confidence": "confirmed",
+          "evidence": [],
+          "relationship": "decode-api--openrouter"
+        },
+        {
+          "id": "visual-protocol-8",
+          "label": "Persiste resultado y uso",
+          "detail": "Incrementa el contador de la ventana y guarda el resultado en caché.",
+          "confidence": "confirmed",
+          "evidence": [
+            {
+              "type": "source",
+              "path": "src/pages/api/decode.ts",
+              "lines": "388",
+              "excerpt": "const { error: runsRpcError } = await supabase.rpc('increment_successful_runs', {",
+              "url": "https://github.com/FilipaoVfx/pixelatmos/blob/fdc1f4d73b0ffaa8449f9a3b354aff78ba352ce9/src/pages/api/decode.ts#L388"
+            }
+          ],
+          "relationship": "decode-api--supabase-db"
+        }
+      ]
+    },
+    {
+      "id": "gallery-visit",
+      "kind": "runtime",
+      "name": "Visita a la galería",
+      "summary": "HTML generado en build, imágenes desde Storage y contadores en vivo.",
+      "steps": [
+        {
+          "id": "gallery-visit-1",
+          "label": "Build: lee los wallpapers",
+          "detail": "getStaticPaths genera una página por wallpaper.",
+          "confidence": "confirmed",
+          "evidence": [
+            {
+              "type": "source",
+              "path": "src/pages/[category]/[slug].astro",
+              "lines": "10",
+              "excerpt": "export async function getStaticPaths() {",
+              "url": "https://github.com/FilipaoVfx/pixelatmos/blob/fdc1f4d73b0ffaa8449f9a3b354aff78ba352ce9/src/pages/[category]/[slug].astro#L10"
+            }
+          ],
+          "relationship": "site--wallpaper-service"
+        },
+        {
+          "id": "gallery-visit-2",
+          "label": "Supabase o JSON local",
+          "detail": "Si la consulta falla o viene vacía, el build usa el contenido local en vez de romperse.",
+          "confidence": "confirmed",
+          "evidence": [
+            {
+              "type": "source",
+              "path": "src/services/wallpaperService.ts",
+              "lines": "26",
+              "excerpt": "console.warn('No wallpapers found in Supabase, using local content');",
+              "url": "https://github.com/FilipaoVfx/pixelatmos/blob/fdc1f4d73b0ffaa8449f9a3b354aff78ba352ce9/src/services/wallpaperService.ts#L26"
+            }
+          ],
+          "component": "wallpaper-service"
+        },
+        {
+          "id": "gallery-visit-3",
+          "label": "Deploy de HTML estático",
+          "detail": "Las páginas prerenderizadas salen del asset store, sin ejecutar el Worker.",
+          "confidence": "confirmed",
+          "evidence": [],
+          "relationship": "cloudflare--site"
+        },
+        {
+          "id": "gallery-visit-4",
+          "label": "Imágenes desde Storage",
+          "detail": "El navegador las pide directamente al bucket público.",
+          "confidence": "confirmed",
+          "evidence": [],
+          "relationship": "wallpaper-service--supabase-storage"
+        },
+        {
+          "id": "gallery-visit-5",
+          "label": "Like o descarga",
+          "detail": "RPC atómica sobre el contador, con sesión.",
+          "confidence": "confirmed",
+          "evidence": [
+            {
+              "type": "source",
+              "path": "src/services/wallpaperService.ts",
+              "lines": "148",
+              "excerpt": "const { error: updateError } = await supabase.rpc('increment_likes', {",
+              "url": "https://github.com/FilipaoVfx/pixelatmos/blob/fdc1f4d73b0ffaa8449f9a3b354aff78ba352ce9/src/services/wallpaperService.ts#L148"
+            }
+          ],
+          "relationship": "gallery--wallpaper-service"
+        }
+      ]
+    },
+    {
+      "id": "ascii",
+      "kind": "data",
+      "name": "ASCII Lab: vídeo → ASCII",
+      "summary": "Todo ocurre en el dispositivo; ningún frame sale del navegador.",
+      "steps": [
+        {
+          "id": "ascii-1",
+          "label": "Vídeo validado",
+          "detail": "Formato, duración y tamaño antes de procesar.",
+          "confidence": "confirmed",
+          "evidence": [
+            {
+              "type": "source",
+              "path": "src/features/ascii-video/core/video-preprocess.ts",
+              "lines": "11",
+              "excerpt": "export async function validateVideo(file: File): Promise<ValidationResult> {",
+              "url": "https://github.com/FilipaoVfx/pixelatmos/blob/fdc1f4d73b0ffaa8449f9a3b354aff78ba352ce9/src/features/ascii-video/core/video-preprocess.ts#L11"
+            }
+          ],
+          "component": "ascii-lab",
+          "artifact": "File"
+        },
+        {
+          "id": "ascii-2",
+          "label": "Frames extraídos",
+          "detail": "Muestreo a los fps elegidos sobre un canvas.",
+          "confidence": "confirmed",
+          "evidence": [
+            {
+              "type": "source",
+              "path": "src/features/ascii-video/core/ascii-convert.ts",
+              "lines": "9",
+              "excerpt": "export async function extractFrames(",
+              "url": "https://github.com/FilipaoVfx/pixelatmos/blob/fdc1f4d73b0ffaa8449f9a3b354aff78ba352ce9/src/features/ascii-video/core/ascii-convert.ts#L9"
+            }
+          ],
+          "component": "ascii-lab",
+          "artifact": "ImageData[]"
+        },
+        {
+          "id": "ascii-3",
+          "label": "Luminancia por píxel",
+          "detail": "Brillo, contraste, gamma y detección de bordes en un Web Worker.",
+          "confidence": "confirmed",
+          "evidence": [
+            {
+              "type": "source",
+              "path": "src/features/ascii-video/workers/ascii.worker.ts",
+              "lines": "210",
+              "excerpt": "self.onmessage = (e: MessageEvent) => {",
+              "url": "https://github.com/FilipaoVfx/pixelatmos/blob/fdc1f4d73b0ffaa8449f9a3b354aff78ba352ce9/src/features/ascii-video/workers/ascii.worker.ts#L210"
+            }
+          ],
+          "component": "ascii-lab",
+          "artifact": "campo de luminancia"
+        },
+        {
+          "id": "ascii-4",
+          "label": "Glifos por densidad",
+          "detail": "Cada nivel de luminancia se mapea al carácter con cobertura equivalente.",
+          "confidence": "confirmed",
+          "evidence": [
+            {
+              "type": "source",
+              "path": "src/features/ascii-video/utils/charset.ts",
+              "lines": "1",
+              "excerpt": "export const CHARSETS = {",
+              "url": "https://github.com/FilipaoVfx/pixelatmos/blob/fdc1f4d73b0ffaa8449f9a3b354aff78ba352ce9/src/features/ascii-video/utils/charset.ts#L1"
+            }
+          ],
+          "component": "ascii-lab",
+          "artifact": "string[] por frame"
+        },
+        {
+          "id": "ascii-5",
+          "label": "Export",
+          "detail": "Descarga directa, sin servidor.",
+          "confidence": "confirmed",
+          "evidence": [
+            {
+              "type": "source",
+              "path": "src/features/ascii-video/utils/export.ts",
+              "lines": "21",
+              "excerpt": "export function exportHtml(frames: string[], fps: number) {",
+              "url": "https://github.com/FilipaoVfx/pixelatmos/blob/fdc1f4d73b0ffaa8449f9a3b354aff78ba352ce9/src/features/ascii-video/utils/export.ts#L21"
+            }
+          ],
+          "component": "ascii-lab",
+          "artifact": "TXT · JSON · HTML"
+        }
+      ]
+    }
+  ],
+  "decisions": [
+    {
+      "id": "compute-on-device",
+      "title": "El cómputo lo pone el dispositivo",
+      "why": "3D Lab y ASCII Lab no suben archivos: el motor 3D y la conversión ASCII (en un Web Worker) corren en el navegador. No hay cola de trabajos ni coste de cómputo por uso en el servidor.",
+      "basis": "observed",
+      "components": [
+        "lab-3d",
+        "ascii-lab"
+      ],
+      "confidence": "confirmed",
+      "evidence": [
+        {
+          "type": "source",
+          "path": "src/features/ascii-video/hooks/useAsciiGenerator.ts",
+          "lines": "75",
+          "excerpt": "const worker = new Worker(",
+          "url": "https://github.com/FilipaoVfx/pixelatmos/blob/fdc1f4d73b0ffaa8449f9a3b354aff78ba352ce9/src/features/ascii-video/hooks/useAsciiGenerator.ts#L75"
+        },
+        {
+          "type": "import",
+          "path": "src/components/Svg3DLab.tsx",
+          "lines": "2",
+          "excerpt": "import { PRESETS, analyzeSvg, exportCanvasPng, exportSceneGlb, exportHighLodGlb, readSvgFile, type PresetName, type AssetProfile, type MaterialPreset } from '@…",
+          "note": "3 ocurrencias",
+          "url": "https://github.com/FilipaoVfx/pixelatmos/blob/fdc1f4d73b0ffaa8449f9a3b354aff78ba352ce9/src/components/Svg3DLab.tsx#L2"
+        }
+      ]
+    },
+    {
+      "id": "hash-cache",
+      "title": "Caché por hash antes de llamar al LLM",
+      "why": "La imagen se identifica por su SHA-256; si ya se analizó, la respuesta sale de image_cache sin gastar una llamada al modelo.",
+      "basis": "observed",
+      "components": [
+        "decode-api",
+        "supabase-db"
+      ],
+      "confidence": "confirmed",
+      "evidence": [
+        {
+          "type": "source",
+          "path": "src/pages/api/decode.ts",
+          "lines": "204",
+          "excerpt": "const hashBuffer = await crypto.subtle.digest('SHA-256', arrayBuffer);",
+          "url": "https://github.com/FilipaoVfx/pixelatmos/blob/fdc1f4d73b0ffaa8449f9a3b354aff78ba352ce9/src/pages/api/decode.ts#L204"
+        },
+        {
+          "type": "migration",
+          "path": "supabase/migrations/20260331195844_analysis_feature.sql",
+          "lines": "34",
+          "excerpt": "CREATE TABLE IF NOT EXISTS public.image_cache (",
+          "url": "https://github.com/FilipaoVfx/pixelatmos/blob/fdc1f4d73b0ffaa8449f9a3b354aff78ba352ce9/supabase/migrations/20260331195844_analysis_feature.sql#L34"
+        }
+      ]
+    },
+    {
+      "id": "daily-quota",
+      "title": "Cuota diaria por identidad",
+      "why": "El único camino con coste variable está acotado: 2 análisis al día por IP, 6 con cuenta. La ventana vive en Postgres, no en memoria del Worker.",
+      "basis": "observed",
+      "components": [
+        "decode-api",
+        "supabase-db"
+      ],
+      "confidence": "confirmed",
+      "evidence": [
+        {
+          "type": "source",
+          "path": "src/pages/api/decode.ts",
+          "lines": "9-10",
+          "excerpt": "const QUOTA_ANON = 2; // anonymous users: 2 per day (by IP)",
+          "url": "https://github.com/FilipaoVfx/pixelatmos/blob/fdc1f4d73b0ffaa8449f9a3b354aff78ba352ce9/src/pages/api/decode.ts#L9-L10"
+        },
+        {
+          "type": "migration",
+          "path": "supabase/migrations/20260331195844_analysis_feature.sql",
+          "lines": "4",
+          "excerpt": "CREATE TABLE IF NOT EXISTS public.usage_windows (",
+          "url": "https://github.com/FilipaoVfx/pixelatmos/blob/fdc1f4d73b0ffaa8449f9a3b354aff78ba352ce9/supabase/migrations/20260331195844_analysis_feature.sql#L4"
+        }
+      ]
+    },
+    {
+      "id": "prerender-fallback",
+      "title": "Galería prerenderizada con fallback local",
+      "why": "Las páginas de wallpapers se generan en build. Si Supabase no responde, el servicio usa el JSON local y el deploy no se rompe.",
+      "basis": "observed",
+      "components": [
+        "site",
+        "wallpaper-service"
+      ],
+      "confidence": "confirmed",
+      "evidence": [
+        {
+          "type": "config",
+          "path": "src/pages/[category]/[slug].astro",
+          "lines": "2",
+          "excerpt": "export const prerender = true;",
+          "url": "https://github.com/FilipaoVfx/pixelatmos/blob/fdc1f4d73b0ffaa8449f9a3b354aff78ba352ce9/src/pages/[category]/[slug].astro#L2"
+        },
+        {
+          "type": "source",
+          "path": "src/services/wallpaperService.ts",
+          "lines": "26",
+          "excerpt": "console.warn('No wallpapers found in Supabase, using local content');",
+          "url": "https://github.com/FilipaoVfx/pixelatmos/blob/fdc1f4d73b0ffaa8449f9a3b354aff78ba352ce9/src/services/wallpaperService.ts#L26"
+        }
+      ]
+    },
+    {
+      "id": "engine-own-repo",
+      "title": "El motor 3D vive en su propio repositorio",
+      "why": "El sitio consume @filipaovfx/svg3d fijado a un commit de su repo: la lógica SVG → 3D es un paquete con API propia, no código pegado a una página.",
+      "basis": "observed",
+      "components": [
+        "svg3d",
+        "lab-3d"
+      ],
+      "confidence": "confirmed",
+      "evidence": [
+        {
+          "type": "dependency",
+          "path": "package.json",
+          "lines": "22",
+          "excerpt": "\"@filipaovfx/svg3d\": \"github:FilipaoVfx/Svg3Ddesign#a8cf5d3\",",
+          "url": "https://github.com/FilipaoVfx/pixelatmos/blob/fdc1f4d73b0ffaa8449f9a3b354aff78ba352ce9/package.json#L22"
+        }
+      ]
+    },
+    {
+      "id": "consent-gated",
+      "title": "Anuncios y analítica detrás del consentimiento",
+      "why": "Consent Mode v2 arranca en denegado; Clarity y los anuncios personalizados solo se cargan tras aceptar.",
+      "basis": "documented",
+      "components": [
+        "consent",
+        "ads-analytics"
+      ],
+      "confidence": "confirmed",
+      "evidence": [
+        {
+          "type": "documentation",
+          "path": "src/layouts/AppLayout.astro",
+          "lines": "115-116",
+          "excerpt": "<!-- Microsoft Clarity — loaded ONLY after analytics consent (see ConsentBanner).",
+          "url": "https://github.com/FilipaoVfx/pixelatmos/blob/fdc1f4d73b0ffaa8449f9a3b354aff78ba352ce9/src/layouts/AppLayout.astro#L115-L116"
+        },
+        {
+          "type": "source",
+          "path": "src/components/ConsentBanner.astro",
+          "lines": "47",
+          "excerpt": "gtag('consent', 'update', {",
+          "url": "https://github.com/FilipaoVfx/pixelatmos/blob/fdc1f4d73b0ffaa8449f9a3b354aff78ba352ce9/src/components/ConsentBanner.astro#L47"
+        }
+      ]
+    },
+    {
+      "id": "headers-single-source",
+      "title": "Una sola fuente para las cabeceras de seguridad",
+      "why": "Las rutas SSR las reciben del middleware y las prerenderizadas de public/_headers; ambas salen del mismo módulo y un test falla si divergen.",
+      "basis": "documented",
+      "components": [
+        "site"
+      ],
+      "confidence": "confirmed",
+      "evidence": [
+        {
+          "type": "documentation",
+          "path": "src/middleware.ts",
+          "lines": "5-11",
+          "excerpt": "* Security headers for SSR routes only.",
+          "url": "https://github.com/FilipaoVfx/pixelatmos/blob/fdc1f4d73b0ffaa8449f9a3b354aff78ba352ce9/src/middleware.ts#L5-L11"
+        },
+        {
+          "type": "source",
+          "path": "src/middleware.ts",
+          "lines": "12",
+          "excerpt": "export const onRequest = defineMiddleware(async (_context, next) => {",
+          "url": "https://github.com/FilipaoVfx/pixelatmos/blob/fdc1f4d73b0ffaa8449f9a3b354aff78ba352ce9/src/middleware.ts#L12"
+        }
+      ]
+    },
+    {
+      "id": "model-configurable",
+      "title": "Modelo de visión intercambiable",
+      "why": "El modelo se elige por variable de entorno para sobrevivir a que OpenRouter retire el modelo por defecto sin redeploy de código.",
+      "basis": "documented",
+      "components": [
+        "decode-api",
+        "openrouter"
+      ],
+      "confidence": "supported",
+      "evidence": [
+        {
+          "type": "documentation",
+          "path": "src/pages/api/decode.ts",
+          "lines": "19-20",
+          "excerpt": "// Vision model used for image analysis. Override via OPENROUTER_MODEL env var",
+          "url": "https://github.com/FilipaoVfx/pixelatmos/blob/fdc1f4d73b0ffaa8449f9a3b354aff78ba352ce9/src/pages/api/decode.ts#L19-L20"
+        }
+      ]
+    },
+    {
+      "id": "contact-edge-fn",
+      "title": "El contacto vive en una Edge Function",
+      "why": "Inferencia del análisis: el formulario apunta a la función de Supabase, que agrupa honeypot, registro y envío junto a la base; el endpoint equivalente del Worker quedó sin uso. El repo no explica el cambio.",
+      "basis": "inferred",
+      "components": [
+        "contact-fn",
+        "site"
+      ],
+      "confidence": "inferred",
+      "evidence": [
+        {
+          "type": "source",
+          "path": "src/components/ContactForm.tsx",
+          "lines": "33",
+          "excerpt": "const response = await fetch(CONTACT_URL, {",
+          "url": "https://github.com/FilipaoVfx/pixelatmos/blob/fdc1f4d73b0ffaa8449f9a3b354aff78ba352ce9/src/components/ContactForm.tsx#L33"
+        }
+      ]
+    }
+  ],
+  "findings": [
+    {
+      "id": "dead-endpoints",
+      "severity": "warning",
+      "title": "/api/contact y /api/test se despliegan pero nada los llama",
+      "detail": "El formulario usa la Edge Function; ningún módulo hace fetch a estos endpoints del Worker, que siguen expuestos.",
+      "evidence": [
+        {
+          "type": "source",
+          "path": "src/pages/api/contact.ts",
+          "lines": "5",
+          "excerpt": "export const POST: APIRoute = async ({ request }) => {",
+          "url": "https://github.com/FilipaoVfx/pixelatmos/blob/fdc1f4d73b0ffaa8449f9a3b354aff78ba352ce9/src/pages/api/contact.ts#L5"
+        },
+        {
+          "type": "source",
+          "path": "src/pages/api/test.ts",
+          "lines": "5",
+          "excerpt": "export const GET: APIRoute = async () => {",
+          "url": "https://github.com/FilipaoVfx/pixelatmos/blob/fdc1f4d73b0ffaa8449f9a3b354aff78ba352ce9/src/pages/api/test.ts#L5"
+        },
+        {
+          "type": "source",
+          "path": "src/components/ContactForm.tsx",
+          "lines": "33",
+          "excerpt": "const response = await fetch(CONTACT_URL, {",
+          "url": "https://github.com/FilipaoVfx/pixelatmos/blob/fdc1f4d73b0ffaa8449f9a3b354aff78ba352ce9/src/components/ContactForm.tsx#L33"
+        }
+      ]
+    },
+    {
+      "id": "unused-3dsvg",
+      "severity": "info",
+      "title": "3dsvg está declarado y parcheado, pero ningún módulo lo importa",
+      "detail": "El motor que usa el 3D Lab es @filipaovfx/svg3d; 3dsvg solo aparece como dependencia, en un parche y en enlaces de créditos.",
+      "evidence": [
+        {
+          "type": "dependency",
+          "path": "package.json",
+          "lines": "26",
+          "excerpt": "\"3dsvg\": \"^0.2.1\",",
+          "url": "https://github.com/FilipaoVfx/pixelatmos/blob/fdc1f4d73b0ffaa8449f9a3b354aff78ba352ce9/package.json#L26"
+        },
+        {
+          "type": "dependency",
+          "path": "patches/3dsvg+0.2.1.patch",
+          "note": "37 líneas",
+          "url": "https://github.com/FilipaoVfx/pixelatmos/blob/fdc1f4d73b0ffaa8449f9a3b354aff78ba352ce9/patches/3dsvg+0.2.1.patch"
+        }
+      ]
+    },
+    {
+      "id": "deploy-doc",
+      "severity": "info",
+      "title": "docs/deploy.md describe un sitio estático; el código despliega un Worker SSR",
+      "detail": "La guía habla de Cloudflare Pages estático, pero astro.config usa output server y wrangler publica dist/_worker.js.",
+      "evidence": [
+        {
+          "type": "documentation",
+          "path": "docs/deploy.md",
+          "lines": "4",
+          "excerpt": "This project is configured for Cloudflare Pages (Static).",
+          "url": "https://github.com/FilipaoVfx/pixelatmos/blob/fdc1f4d73b0ffaa8449f9a3b354aff78ba352ce9/docs/deploy.md#L4"
+        },
+        {
+          "type": "config",
+          "path": "astro.config.mjs",
+          "lines": "23",
+          "excerpt": "output: 'server',",
+          "url": "https://github.com/FilipaoVfx/pixelatmos/blob/fdc1f4d73b0ffaa8449f9a3b354aff78ba352ce9/astro.config.mjs#L23"
+        }
+      ]
+    }
+  ]
+}

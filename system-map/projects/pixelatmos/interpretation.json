@@ -1,0 +1,1189 @@
+{
+  "summary": "Herramientas creativas que corren en el navegador y una galería curada, servidas por Astro SSR en un Worker de Cloudflare.",
+  "description": "Tres herramientas (3D Lab, ASCII Lab, Visual Protocol) y una galería de wallpapers. Solo Visual Protocol sale del navegador: pasa por /api/decode, que cachea por hash, aplica cuota diaria y llama a un LLM de visión.",
+  "technologies": [
+    "Astro 5",
+    "React 19",
+    "Cloudflare Workers",
+    "Supabase",
+    "OpenRouter",
+    "Three.js",
+    "Web Workers"
+  ],
+  "groups": [
+    {
+      "id": "browser",
+      "name": "Navegador"
+    },
+    {
+      "id": "packages",
+      "name": "Paquete propio"
+    },
+    {
+      "id": "ops",
+      "name": "Operación"
+    },
+    {
+      "id": "edge",
+      "name": "Worker · Astro SSR"
+    },
+    {
+      "id": "core",
+      "name": "Servicios de la app"
+    },
+    {
+      "id": "supabase",
+      "name": "Supabase"
+    },
+    {
+      "id": "external",
+      "name": "Servicios externos"
+    }
+  ],
+  "sharedModules": [
+    "src/components/BrutalButton.tsx"
+  ],
+  "components": [
+    {
+      "id": "lab-3d",
+      "name": "3D Lab",
+      "type": "client",
+      "group": "browser",
+      "summary": "SVG o texto → objeto 3D interactivo, con export PNG y GLB. 100% en el navegador.",
+      "role": "Isla React sobre el motor @filipaovfx/svg3d: analiza el SVG, aplica presets de material y exporta la escena.",
+      "technologies": [
+        "React",
+        "Three.js",
+        "WebGL"
+      ],
+      "paths": [
+        "src/components/Svg3DLab.tsx",
+        "src/components/Text3DGenerator.tsx",
+        "src/components/SvgOptimizer.tsx",
+        "src/lib/svgOptimize.ts"
+      ],
+      "evidence": [
+        {
+          "import": {
+            "file": "src/components/Svg3DLab.tsx",
+            "specifier": "@filipaovfx/svg3d"
+          }
+        }
+      ]
+    },
+    {
+      "id": "ascii-lab",
+      "name": "ASCII Lab",
+      "type": "client",
+      "group": "browser",
+      "summary": "Imagen o vídeo → ASCII animado, convertido en un Web Worker y exportado a TXT, JSON o HTML.",
+      "role": "Pipeline local: valida el vídeo, extrae frames, convierte por luminancia en un worker y reproduce o exporta.",
+      "technologies": [
+        "React",
+        "Web Worker",
+        "Canvas"
+      ],
+      "paths": [
+        "src/features/ascii-video"
+      ],
+      "evidence": [
+        {
+          "pattern": {
+            "file": "src/features/ascii-video/hooks/useAsciiGenerator.ts",
+            "regex": "const worker = new Worker\\("
+          }
+        }
+      ]
+    },
+    {
+      "id": "visual-protocol",
+      "name": "Visual Protocol",
+      "type": "client",
+      "group": "browser",
+      "summary": "Imagen → brief creativo estructurado. La única herramienta asistida por servidor.",
+      "role": "Sube la imagen a /api/decode con la sesión del usuario si existe, y muestra el análisis o el límite de cuota.",
+      "technologies": [
+        "React"
+      ],
+      "paths": [
+        "src/components/ImageAnalyzer.tsx"
+      ]
+    },
+    {
+      "id": "gallery",
+      "name": "Galería",
+      "type": "client",
+      "group": "browser",
+      "summary": "Grid de wallpapers con filtro por categoría, modal, likes y descargas.",
+      "role": "Islas React sobre HTML prerenderizado; likes y descargas requieren sesión.",
+      "technologies": [
+        "React",
+        "framer-motion"
+      ],
+      "paths": [
+        "src/components/WallpapersGridContainer.tsx",
+        "src/components/WallpaperGrid.tsx",
+        "src/components/WallpaperCard.tsx",
+        "src/components/WallpaperModal.tsx",
+        "src/components/CategoryFilter.tsx"
+      ]
+    },
+    {
+      "id": "consent",
+      "name": "Consentimiento y anuncios",
+      "type": "client",
+      "group": "browser",
+      "summary": "Banner de Consent Mode v2: AdSense y Clarity solo cargan tras aceptar.",
+      "role": "Guarda la elección en localStorage y actualiza el consentimiento de gtag; las unidades de anuncio se rellenan después.",
+      "technologies": [
+        "Google Consent Mode v2"
+      ],
+      "paths": [
+        "src/components/ConsentBanner.astro",
+        "src/components/AdUnit.astro",
+        "src/config/adsense.ts"
+      ],
+      "evidence": [
+        {
+          "pattern": {
+            "file": "src/components/ConsentBanner.astro",
+            "regex": "gtag\\('consent', 'update'"
+          }
+        }
+      ]
+    },
+    {
+      "id": "site",
+      "name": "Sitio Astro",
+      "type": "service",
+      "group": "edge",
+      "summary": "Páginas, layouts y middleware. La galería y el blog se prerenderizan; el resto se sirve por SSR en el edge.",
+      "role": "Monta las islas de cada herramienta, aplica cabeceras de seguridad a las rutas SSR y genera sitemaps.",
+      "technologies": [
+        "Astro 5",
+        "@astrojs/cloudflare",
+        "Tailwind"
+      ],
+      "paths": [
+        "src/pages",
+        "src/layouts",
+        "src/middleware.ts",
+        "src/components/layout",
+        "src/components/Header.tsx",
+        "src/components/HeaderContainer.tsx",
+        "src/components/ContactForm.tsx",
+        "src/components/SEO.astro",
+        "src/components/Breadcrumbs.astro",
+        "src/components/FaqSection.astro",
+        "src/components/ToolHub.astro",
+        "src/config/securityHeaders.ts",
+        "src/config/labs.ts",
+        "src/config/toolHubs.ts",
+        "astro.config.mjs"
+      ],
+      "evidence": [
+        {
+          "pattern": {
+            "file": "astro.config.mjs",
+            "regex": "output: 'server'",
+            "type": "config"
+          }
+        },
+        {
+          "pattern": {
+            "file": "src/middleware.ts",
+            "regex": "^export const onRequest"
+          }
+        }
+      ]
+    },
+    {
+      "id": "decode-api",
+      "name": "API /api/decode",
+      "type": "service",
+      "group": "edge",
+      "summary": "Endpoint SSR de Visual Protocol: caché por hash, cuota diaria y LLM de visión.",
+      "role": "Resuelve la identidad (usuario o anónimo), consulta la caché, controla la cuota, llama a OpenRouter y persiste resultado y uso.",
+      "technologies": [
+        "Astro API route",
+        "supabase-js"
+      ],
+      "paths": [
+        "src/pages/api/decode.ts",
+        "src/lib/promptImage.ts"
+      ],
+      "evidence": [
+        {
+          "pattern": {
+            "file": "src/pages/api/decode.ts",
+            "regex": "^export const prerender = false",
+            "type": "config"
+          }
+        }
+      ]
+    },
+    {
+      "id": "wallpaper-service",
+      "name": "WallpaperService",
+      "type": "module",
+      "group": "core",
+      "summary": "Acceso a wallpapers, likes y descargas, con fallback a un JSON local si Supabase falla.",
+      "role": "Lo usan tanto el build (páginas prerenderizadas) como la galería en el cliente.",
+      "technologies": [
+        "supabase-js"
+      ],
+      "paths": [
+        "src/services/wallpaperService.ts",
+        "src/content/wallpapers.json",
+        "src/utils/wallpaper.ts"
+      ],
+      "evidence": [
+        {
+          "pattern": {
+            "file": "src/services/wallpaperService.ts",
+            "regex": "^export class WallpaperService"
+          }
+        }
+      ]
+    },
+    {
+      "id": "supabase-client",
+      "name": "Auth y cliente Supabase",
+      "type": "module",
+      "group": "core",
+      "summary": "Cliente con clave anónima, hook de sesión y modal de login.",
+      "role": "Punto único de acceso a Supabase desde el navegador; la sesión se reutiliza para cuotas y likes.",
+      "technologies": [
+        "Supabase Auth"
+      ],
+      "paths": [
+        "src/lib/supabase.ts",
+        "src/hooks/useAuth.ts",
+        "src/components/AuthModal.tsx"
+      ],
+      "evidence": [
+        {
+          "pattern": {
+            "file": "src/hooks/useAuth.ts",
+            "regex": "supabase\\.auth\\.onAuthStateChange"
+          }
+        }
+      ]
+    },
+    {
+      "id": "svg3d",
+      "name": "Motor svg3d",
+      "type": "module",
+      "group": "packages",
+      "summary": "Motor SVG → 3D publicado en su propio repositorio y fijado a un commit.",
+      "role": "Análisis de SVG, presets de material, render y export; el sitio solo lo consume.",
+      "technologies": [
+        "Three.js"
+      ],
+      "packages": [
+        "@filipaovfx/svg3d"
+      ],
+      "evidence": [
+        {
+          "dependency": {
+            "manifest": "package.json",
+            "name": "@filipaovfx/svg3d"
+          },
+          "note": "github:FilipaoVfx/Svg3Ddesign fijado a un commit"
+        }
+      ]
+    },
+    {
+      "id": "supabase-db",
+      "name": "Postgres",
+      "type": "database",
+      "group": "supabase",
+      "summary": "Wallpapers, likes, descargas, caché de análisis, cuotas y jobs.",
+      "role": "Estado de la galería y de Visual Protocol, con RPC para contadores atómicos.",
+      "technologies": [
+        "PostgreSQL",
+        "RPC"
+      ],
+      "paths": [
+        "supabase/migrations",
+        "db"
+      ],
+      "packages": [
+        "@supabase/supabase-js"
+      ],
+      "evidence": [
+        {
+          "dir": {
+            "path": "supabase/migrations",
+            "type": "migration",
+            "ext": ".sql"
+          }
+        }
+      ]
+    },
+    {
+      "id": "supabase-storage",
+      "name": "Storage",
+      "type": "external",
+      "group": "supabase",
+      "summary": "Bucket público con las imágenes de los wallpapers.",
+      "role": "Las páginas enlazan las imágenes directamente; no pasan por el Worker.",
+      "technologies": [
+        "Supabase Storage"
+      ],
+      "evidence": [
+        {
+          "pattern": {
+            "file": "src/content/wallpapers.json",
+            "regex": "/storage/v1/object/public/images/",
+            "type": "config"
+          }
+        }
+      ]
+    },
+    {
+      "id": "contact-fn",
+      "name": "Edge Function contact",
+      "type": "service",
+      "group": "supabase",
+      "summary": "Función Deno que recibe el formulario de contacto, filtra bots y envía el correo.",
+      "role": "Honeypot con registro en Postgres y envío vía Resend.",
+      "technologies": [
+        "Deno",
+        "Supabase Edge Functions"
+      ],
+      "paths": [
+        "supabase/functions"
+      ]
+    },
+    {
+      "id": "openrouter",
+      "name": "OpenRouter",
+      "type": "external",
+      "group": "external",
+      "summary": "LLM de visión para Visual Protocol, modelo configurable por variable de entorno.",
+      "role": "Solo lo llama /api/decode, con la clave en el servidor.",
+      "technologies": [
+        "LLM de visión"
+      ],
+      "hosts": [
+        "openrouter.ai"
+      ],
+      "evidence": [
+        {
+          "call": {
+            "file": "src/pages/api/decode.ts",
+            "host": "openrouter.ai"
+          }
+        }
+      ]
+    },
+    {
+      "id": "resend",
+      "name": "Resend",
+      "type": "external",
+      "group": "external",
+      "summary": "Envío de correo del formulario de contacto.",
+      "role": "Proveedor transaccional.",
+      "technologies": [
+        "Email API"
+      ],
+      "hosts": [
+        "api.resend.com"
+      ],
+      "evidence": [
+        {
+          "call": {
+            "file": "supabase/functions/contact/index.ts",
+            "host": "api.resend.com"
+          }
+        }
+      ]
+    },
+    {
+      "id": "ads-analytics",
+      "name": "AdSense + Clarity",
+      "type": "external",
+      "group": "external",
+      "summary": "Anuncios y analítica de comportamiento, ambos detrás del consentimiento.",
+      "role": "Monetización y medición; se cargan solo si el visitante acepta.",
+      "technologies": [
+        "Google AdSense",
+        "Microsoft Clarity"
+      ],
+      "evidence": [
+        {
+          "pattern": {
+            "file": "src/config/adsense.ts",
+            "regex": "^export const AD_LOADER_SRC",
+            "type": "config"
+          }
+        },
+        {
+          "pattern": {
+            "file": "src/layouts/AppLayout.astro",
+            "regex": "https://www\\.clarity\\.ms/tag/",
+            "type": "source"
+          }
+        }
+      ]
+    },
+    {
+      "id": "cloudflare",
+      "name": "Cloudflare Workers",
+      "type": "infrastructure",
+      "group": "ops",
+      "summary": "Build desde Git, Worker con assets estáticos y Workers Logs activados.",
+      "role": "Cada push a main construye y despliega; los assets prerenderizados salen del asset store, lo demás del Worker.",
+      "technologies": [
+        "Workers",
+        "Static Assets",
+        "Workers Logs"
+      ],
+      "paths": [
+        "wrangler.toml"
+      ],
+      "evidence": [
+        {
+          "pattern": {
+            "file": "wrangler.toml",
+            "regex": "^main = \"\\./dist/_worker\\.js\"",
+            "type": "deployment"
+          }
+        },
+        {
+          "pattern": {
+            "file": "wrangler.toml",
+            "regex": "^command = \"npm ci && npm run build\"",
+            "type": "deployment"
+          }
+        }
+      ]
+    }
+  ],
+  "relationships": [
+    {
+      "source": "cloudflare",
+      "target": "site",
+      "label": "Build + deploy del Worker",
+      "description": "Cada push a main ejecuta npm ci && npm run build y publica dist/_worker.js con los assets prerenderizados.",
+      "type": "deploy",
+      "evidence": [
+        {
+          "pattern": {
+            "file": "wrangler.toml",
+            "regex": "^main = \"\\./dist/_worker\\.js\"",
+            "type": "deployment"
+          }
+        },
+        {
+          "pattern": {
+            "file": "wrangler.toml",
+            "regex": "^command = \"npm ci && npm run build\"",
+            "type": "deployment"
+          }
+        }
+      ]
+    },
+    {
+      "source": "site",
+      "target": "lab-3d",
+      "label": "Monta la isla del 3D Lab",
+      "description": "Las páginas /3d-lab y /3d-text-generator cargan el componente en el cliente."
+    },
+    {
+      "source": "site",
+      "target": "ascii-lab",
+      "label": "Monta la isla del ASCII Lab",
+      "description": "/ascii-lab carga el laboratorio completo en el cliente."
+    },
+    {
+      "source": "site",
+      "target": "visual-protocol",
+      "label": "Monta la isla de Visual Protocol",
+      "description": "/visual-protocol carga el analizador de imágenes."
+    },
+    {
+      "source": "site",
+      "target": "gallery",
+      "label": "Monta la galería",
+      "description": "Las páginas de wallpapers y categorías hidratan el grid sobre HTML prerenderizado."
+    },
+    {
+      "source": "site",
+      "target": "consent",
+      "label": "Banner en el layout",
+      "description": "Ambos layouts incluyen el banner y las unidades de anuncio."
+    },
+    {
+      "source": "site",
+      "target": "wallpaper-service",
+      "label": "Datos en build",
+      "description": "getStaticPaths lee los wallpapers al compilar: la galería y sus páginas salen prerenderizadas."
+    },
+    {
+      "source": "site",
+      "target": "supabase-client",
+      "label": "Sesión en la cabecera",
+      "description": "La cabecera muestra el estado de sesión con el mismo hook de auth."
+    },
+    {
+      "source": "site",
+      "target": "contact-fn",
+      "label": "Formulario de contacto",
+      "description": "El formulario envía directamente a la Edge Function de Supabase configurada por variable pública.",
+      "type": "http",
+      "evidence": [
+        {
+          "pattern": {
+            "file": "src/components/ContactForm.tsx",
+            "regex": "await fetch\\(CONTACT_URL"
+          }
+        },
+        {
+          "env": {
+            "file": "src/components/ContactForm.tsx",
+            "name": "PUBLIC_CONTACT_FUNCTION_URL"
+          }
+        }
+      ]
+    },
+    {
+      "source": "site",
+      "target": "resend",
+      "label": "Endpoint /api/contact sin llamadas",
+      "description": "El Worker aún expone un endpoint que envía por Resend, pero ningún componente lo llama.",
+      "cap": "supported",
+      "caveat": "El código existe y se despliega; el formulario usa la Edge Function, así que este camino no se ejerce."
+    },
+    {
+      "source": "visual-protocol",
+      "target": "decode-api",
+      "label": "POST /api/decode",
+      "description": "Sube la imagen como multipart y recibe el brief, el estado de caché o el error de cuota."
+    },
+    {
+      "source": "visual-protocol",
+      "target": "supabase-client",
+      "label": "Adjunta la sesión",
+      "description": "Si hay usuario, envía su token para que la cuota sea por cuenta y no por IP."
+    },
+    {
+      "source": "gallery",
+      "target": "wallpaper-service",
+      "label": "Likes y descargas",
+      "description": "Los contadores se actualizan con RPC atómicas."
+    },
+    {
+      "source": "gallery",
+      "target": "supabase-client",
+      "label": "Sesión para likes",
+      "description": "Sin sesión, like y favoritos abren el modal de login."
+    },
+    {
+      "source": "wallpaper-service",
+      "target": "supabase-client",
+      "label": "Mismo cliente",
+      "description": "Reutiliza el cliente anónimo compartido."
+    },
+    {
+      "source": "wallpaper-service",
+      "target": "supabase-storage",
+      "label": "Imágenes públicas",
+      "description": "Cada wallpaper apunta a su objeto público en el bucket de imágenes.",
+      "type": "http",
+      "evidence": [
+        {
+          "pattern": {
+            "file": "src/content/wallpapers.json",
+            "regex": "/storage/v1/object/public/images/",
+            "type": "config"
+          }
+        }
+      ]
+    },
+    {
+      "source": "supabase-client",
+      "target": "supabase-db",
+      "label": "Auth + consultas anónimas",
+      "description": "Consultas con la clave anónima; las políticas de la base deciden qué puede leer cada rol."
+    },
+    {
+      "source": "decode-api",
+      "target": "supabase-db",
+      "label": "Caché, cuota y jobs",
+      "description": "Lee y escribe image_cache, usage_windows y analysis_jobs con la clave de servicio."
+    },
+    {
+      "source": "decode-api",
+      "target": "openrouter",
+      "label": "Análisis de visión",
+      "description": "Chat completions con la imagen y un prompt versionado."
+    },
+    {
+      "source": "contact-fn",
+      "target": "resend",
+      "label": "Envía el correo",
+      "description": "Solo si el mensaje pasa el honeypot."
+    },
+    {
+      "source": "contact-fn",
+      "target": "supabase-db",
+      "label": "Registro de honeypot",
+      "description": "Guarda IP, user agent y payload de los envíos marcados como bot.",
+      "type": "sql",
+      "evidence": [
+        {
+          "table": {
+            "file": "supabase/functions/contact/index.ts",
+            "name": "honeypot_logs"
+          }
+        }
+      ]
+    },
+    {
+      "source": "lab-3d",
+      "target": "svg3d",
+      "label": "Motor 3D",
+      "description": "Análisis de SVG, presets, render y export PNG/GLB."
+    },
+    {
+      "source": "consent",
+      "target": "ads-analytics",
+      "label": "Carga tras aceptar",
+      "description": "AdSense y Clarity no se cargan hasta que el visitante acepta; la elección persiste en localStorage.",
+      "type": "http",
+      "evidence": [
+        {
+          "pattern": {
+            "file": "src/config/adsense.ts",
+            "regex": "^export const AD_LOADER_SRC",
+            "type": "config"
+          }
+        },
+        {
+          "pattern": {
+            "file": "src/components/ConsentBanner.astro",
+            "regex": "gtag\\('consent', 'update'"
+          }
+        }
+      ]
+    }
+  ],
+  "flows": [
+    {
+      "id": "visual-protocol",
+      "kind": "runtime",
+      "name": "Visual Protocol",
+      "summary": "De una imagen subida a un brief creativo estructurado.",
+      "steps": [
+        {
+          "label": "El usuario sube una imagen",
+          "detail": "Se envía como multipart al endpoint del Worker.",
+          "component": "visual-protocol",
+          "evidence": [
+            {
+              "pattern": {
+                "file": "src/components/ImageAnalyzer.tsx",
+                "regex": "formData\\.append\\('image'"
+              }
+            }
+          ]
+        },
+        {
+          "label": "Adjunta la sesión si existe",
+          "detail": "Con usuario, la cuota es por cuenta; sin él, por IP.",
+          "relationship": "visual-protocol->supabase-client",
+          "evidence": [
+            {
+              "pattern": {
+                "file": "src/components/ImageAnalyzer.tsx",
+                "regex": "supabase\\.auth\\.getSession"
+              }
+            }
+          ]
+        },
+        {
+          "label": "POST /api/decode",
+          "detail": "Handler SSR, nunca prerenderizado.",
+          "relationship": "visual-protocol->decode-api"
+        },
+        {
+          "label": "Hash SHA-256 de la imagen",
+          "detail": "La misma imagen produce la misma clave de caché.",
+          "component": "decode-api",
+          "evidence": [
+            {
+              "pattern": {
+                "file": "src/pages/api/decode.ts",
+                "regex": "crypto\\.subtle\\.digest\\('SHA-256'"
+              }
+            }
+          ]
+        },
+        {
+          "label": "¿Ya analizada?",
+          "detail": "Un acierto en image_cache responde sin llamar al modelo.",
+          "relationship": "decode-api->supabase-db",
+          "evidence": [
+            {
+              "table": {
+                "file": "src/pages/api/decode.ts",
+                "name": "image_cache"
+              }
+            }
+          ]
+        },
+        {
+          "label": "Cuota diaria",
+          "detail": "2 análisis al día anónimo, 6 con cuenta.",
+          "component": "decode-api",
+          "evidence": [
+            {
+              "pattern": {
+                "file": "src/pages/api/decode.ts",
+                "regex": "^const QUOTA_ANON"
+              }
+            },
+            {
+              "table": {
+                "file": "src/pages/api/decode.ts",
+                "name": "usage_windows"
+              }
+            }
+          ]
+        },
+        {
+          "label": "LLM de visión",
+          "detail": "OpenRouter con el prompt versionado.",
+          "relationship": "decode-api->openrouter"
+        },
+        {
+          "label": "Persiste resultado y uso",
+          "detail": "Incrementa el contador de la ventana y guarda el resultado en caché.",
+          "relationship": "decode-api->supabase-db",
+          "evidence": [
+            {
+              "rpc": {
+                "file": "src/pages/api/decode.ts",
+                "name": "increment_successful_runs"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "gallery-visit",
+      "kind": "runtime",
+      "name": "Visita a la galería",
+      "summary": "HTML generado en build, imágenes desde Storage y contadores en vivo.",
+      "steps": [
+        {
+          "label": "Build: lee los wallpapers",
+          "detail": "getStaticPaths genera una página por wallpaper.",
+          "relationship": "site->wallpaper-service",
+          "evidence": [
+            {
+              "pattern": {
+                "file": "src/pages/[category]/[slug].astro",
+                "regex": "^export async function getStaticPaths"
+              }
+            }
+          ]
+        },
+        {
+          "label": "Supabase o JSON local",
+          "detail": "Si la consulta falla o viene vacía, el build usa el contenido local en vez de romperse.",
+          "component": "wallpaper-service",
+          "evidence": [
+            {
+              "pattern": {
+                "file": "src/services/wallpaperService.ts",
+                "regex": "using local content"
+              }
+            }
+          ]
+        },
+        {
+          "label": "Deploy de HTML estático",
+          "detail": "Las páginas prerenderizadas salen del asset store, sin ejecutar el Worker.",
+          "relationship": "cloudflare->site"
+        },
+        {
+          "label": "Imágenes desde Storage",
+          "detail": "El navegador las pide directamente al bucket público.",
+          "relationship": "wallpaper-service->supabase-storage"
+        },
+        {
+          "label": "Like o descarga",
+          "detail": "RPC atómica sobre el contador, con sesión.",
+          "relationship": "gallery->wallpaper-service",
+          "evidence": [
+            {
+              "rpc": {
+                "file": "src/services/wallpaperService.ts",
+                "name": "increment_likes"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "ascii",
+      "kind": "data",
+      "name": "ASCII Lab: vídeo → ASCII",
+      "summary": "Todo ocurre en el dispositivo; ningún frame sale del navegador.",
+      "steps": [
+        {
+          "label": "Vídeo validado",
+          "artifact": "File",
+          "detail": "Formato, duración y tamaño antes de procesar.",
+          "component": "ascii-lab",
+          "evidence": [
+            {
+              "pattern": {
+                "file": "src/features/ascii-video/core/video-preprocess.ts",
+                "regex": "^export async function validateVideo"
+              }
+            }
+          ]
+        },
+        {
+          "label": "Frames extraídos",
+          "artifact": "ImageData[]",
+          "detail": "Muestreo a los fps elegidos sobre un canvas.",
+          "component": "ascii-lab",
+          "evidence": [
+            {
+              "pattern": {
+                "file": "src/features/ascii-video/core/ascii-convert.ts",
+                "regex": "^export async function extractFrames"
+              }
+            }
+          ]
+        },
+        {
+          "label": "Luminancia por píxel",
+          "artifact": "campo de luminancia",
+          "detail": "Brillo, contraste, gamma y detección de bordes en un Web Worker.",
+          "component": "ascii-lab",
+          "evidence": [
+            {
+              "pattern": {
+                "file": "src/features/ascii-video/workers/ascii.worker.ts",
+                "regex": "^self\\.onmessage"
+              }
+            }
+          ]
+        },
+        {
+          "label": "Glifos por densidad",
+          "artifact": "string[] por frame",
+          "detail": "Cada nivel de luminancia se mapea al carácter con cobertura equivalente.",
+          "component": "ascii-lab",
+          "evidence": [
+            {
+              "pattern": {
+                "file": "src/features/ascii-video/utils/charset.ts",
+                "regex": "^export const CHARSETS"
+              }
+            }
+          ]
+        },
+        {
+          "label": "Export",
+          "artifact": "TXT · JSON · HTML",
+          "detail": "Descarga directa, sin servidor.",
+          "component": "ascii-lab",
+          "evidence": [
+            {
+              "pattern": {
+                "file": "src/features/ascii-video/utils/export.ts",
+                "regex": "^export function exportHtml"
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "decisions": [
+    {
+      "id": "compute-on-device",
+      "title": "El cómputo lo pone el dispositivo",
+      "why": "3D Lab y ASCII Lab no suben archivos: el motor 3D y la conversión ASCII (en un Web Worker) corren en el navegador. No hay cola de trabajos ni coste de cómputo por uso en el servidor.",
+      "basis": "observed",
+      "components": [
+        "lab-3d",
+        "ascii-lab"
+      ],
+      "evidence": [
+        {
+          "pattern": {
+            "file": "src/features/ascii-video/hooks/useAsciiGenerator.ts",
+            "regex": "const worker = new Worker\\("
+          }
+        },
+        {
+          "import": {
+            "file": "src/components/Svg3DLab.tsx",
+            "specifier": "@filipaovfx/svg3d"
+          }
+        }
+      ]
+    },
+    {
+      "id": "hash-cache",
+      "title": "Caché por hash antes de llamar al LLM",
+      "why": "La imagen se identifica por su SHA-256; si ya se analizó, la respuesta sale de image_cache sin gastar una llamada al modelo.",
+      "basis": "observed",
+      "components": [
+        "decode-api",
+        "supabase-db"
+      ],
+      "evidence": [
+        {
+          "pattern": {
+            "file": "src/pages/api/decode.ts",
+            "regex": "crypto\\.subtle\\.digest\\('SHA-256'"
+          }
+        },
+        {
+          "sql": {
+            "file": "supabase/migrations/20260331195844_analysis_feature.sql",
+            "object": "image_cache"
+          }
+        }
+      ]
+    },
+    {
+      "id": "daily-quota",
+      "title": "Cuota diaria por identidad",
+      "why": "El único camino con coste variable está acotado: 2 análisis al día por IP, 6 con cuenta. La ventana vive en Postgres, no en memoria del Worker.",
+      "basis": "observed",
+      "components": [
+        "decode-api",
+        "supabase-db"
+      ],
+      "evidence": [
+        {
+          "pattern": {
+            "file": "src/pages/api/decode.ts",
+            "regex": "^const QUOTA_ANON",
+            "span": 2
+          }
+        },
+        {
+          "sql": {
+            "file": "supabase/migrations/20260331195844_analysis_feature.sql",
+            "object": "usage_windows"
+          }
+        }
+      ]
+    },
+    {
+      "id": "prerender-fallback",
+      "title": "Galería prerenderizada con fallback local",
+      "why": "Las páginas de wallpapers se generan en build. Si Supabase no responde, el servicio usa el JSON local y el deploy no se rompe.",
+      "basis": "observed",
+      "components": [
+        "site",
+        "wallpaper-service"
+      ],
+      "evidence": [
+        {
+          "pattern": {
+            "file": "src/pages/[category]/[slug].astro",
+            "regex": "^export const prerender = true",
+            "type": "config"
+          }
+        },
+        {
+          "pattern": {
+            "file": "src/services/wallpaperService.ts",
+            "regex": "using local content"
+          }
+        }
+      ]
+    },
+    {
+      "id": "engine-own-repo",
+      "title": "El motor 3D vive en su propio repositorio",
+      "why": "El sitio consume @filipaovfx/svg3d fijado a un commit de su repo: la lógica SVG → 3D es un paquete con API propia, no código pegado a una página.",
+      "basis": "observed",
+      "components": [
+        "svg3d",
+        "lab-3d"
+      ],
+      "evidence": [
+        {
+          "dependency": {
+            "manifest": "package.json",
+            "name": "@filipaovfx/svg3d"
+          }
+        }
+      ]
+    },
+    {
+      "id": "consent-gated",
+      "title": "Anuncios y analítica detrás del consentimiento",
+      "why": "Consent Mode v2 arranca en denegado; Clarity y los anuncios personalizados solo se cargan tras aceptar.",
+      "basis": "documented",
+      "components": [
+        "consent",
+        "ads-analytics"
+      ],
+      "evidence": [
+        {
+          "pattern": {
+            "file": "src/layouts/AppLayout.astro",
+            "regex": "Microsoft Clarity — loaded ONLY after analytics consent",
+            "type": "documentation",
+            "span": 2
+          }
+        },
+        {
+          "pattern": {
+            "file": "src/components/ConsentBanner.astro",
+            "regex": "gtag\\('consent', 'update'"
+          }
+        }
+      ]
+    },
+    {
+      "id": "headers-single-source",
+      "title": "Una sola fuente para las cabeceras de seguridad",
+      "why": "Las rutas SSR las reciben del middleware y las prerenderizadas de public/_headers; ambas salen del mismo módulo y un test falla si divergen.",
+      "basis": "documented",
+      "components": [
+        "site"
+      ],
+      "evidence": [
+        {
+          "pattern": {
+            "file": "src/middleware.ts",
+            "regex": "Security headers for SSR routes only",
+            "type": "documentation",
+            "span": 7
+          }
+        },
+        {
+          "pattern": {
+            "file": "src/middleware.ts",
+            "regex": "^export const onRequest"
+          }
+        }
+      ]
+    },
+    {
+      "id": "model-configurable",
+      "title": "Modelo de visión intercambiable",
+      "why": "El modelo se elige por variable de entorno para sobrevivir a que OpenRouter retire el modelo por defecto sin redeploy de código.",
+      "basis": "documented",
+      "components": [
+        "decode-api",
+        "openrouter"
+      ],
+      "evidence": [
+        {
+          "pattern": {
+            "file": "src/pages/api/decode.ts",
+            "regex": "Override via OPENROUTER_MODEL",
+            "type": "documentation",
+            "span": 2
+          }
+        }
+      ]
+    },
+    {
+      "id": "contact-edge-fn",
+      "title": "El contacto vive en una Edge Function",
+      "why": "Inferencia del análisis: el formulario apunta a la función de Supabase, que agrupa honeypot, registro y envío junto a la base; el endpoint equivalente del Worker quedó sin uso. El repo no explica el cambio.",
+      "basis": "inferred",
+      "components": [
+        "contact-fn",
+        "site"
+      ],
+      "evidence": [
+        {
+          "pattern": {
+            "file": "src/components/ContactForm.tsx",
+            "regex": "await fetch\\(CONTACT_URL"
+          }
+        }
+      ]
+    }
+  ],
+  "findings": [
+    {
+      "id": "dead-endpoints",
+      "severity": "warning",
+      "title": "/api/contact y /api/test se despliegan pero nada los llama",
+      "detail": "El formulario usa la Edge Function; ningún módulo hace fetch a estos endpoints del Worker, que siguen expuestos.",
+      "evidence": [
+        {
+          "pattern": {
+            "file": "src/pages/api/contact.ts",
+            "regex": "^export const POST"
+          }
+        },
+        {
+          "pattern": {
+            "file": "src/pages/api/test.ts",
+            "regex": "^export const GET"
+          }
+        },
+        {
+          "pattern": {
+            "file": "src/components/ContactForm.tsx",
+            "regex": "await fetch\\(CONTACT_URL"
+          }
+        }
+      ]
+    },
+    {
+      "id": "unused-3dsvg",
+      "severity": "info",
+      "title": "3dsvg está declarado y parcheado, pero ningún módulo lo importa",
+      "detail": "El motor que usa el 3D Lab es @filipaovfx/svg3d; 3dsvg solo aparece como dependencia, en un parche y en enlaces de créditos.",
+      "evidence": [
+        {
+          "dependency": {
+            "manifest": "package.json",
+            "name": "3dsvg"
+          }
+        },
+        {
+          "file": {
+            "path": "patches/3dsvg+0.2.1.patch",
+            "type": "dependency"
+          }
+        }
+      ]
+    },
+    {
+      "id": "deploy-doc",
+      "severity": "info",
+      "title": "docs/deploy.md describe un sitio estático; el código despliega un Worker SSR",
+      "detail": "La guía habla de Cloudflare Pages estático, pero astro.config usa output server y wrangler publica dist/_worker.js.",
+      "evidence": [
+        {
+          "pattern": {
+            "file": "docs/deploy.md",
+            "regex": "configured for Cloudflare Pages \\(Static\\)",
+            "type": "documentation"
+          }
+        },
+        {
+          "pattern": {
+            "file": "astro.config.mjs",
+            "regex": "output: 'server'",
+            "type": "config"
+          }
+        }
+      ]
+    }
+  ]
+}

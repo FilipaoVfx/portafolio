@@ -1,0 +1,1047 @@
+{
+  "schemaVersion": "0.1",
+  "generatorVersion": "system-map/0.1.0",
+  "analysisVersion": "static-facts/1",
+  "generatedAt": "2026-09-23T20:17:10.506Z",
+  "project": {
+    "slug": "clippy",
+    "name": "Clippy",
+    "summary": "Portapapeles compartido en tiempo real: dispositivos emparejados por código, un canal WebSocket y nada que sobreviva al TTL.",
+    "description": "PWA sin framework servida desde Cloudflare Pages. Un router en el edge envía cada conexión al Durable Object de su código de sesión, que coordina hasta 5 dispositivos, hiberna cuando no hay tráfico y limpia por alarma. Un servidor Node implementa el mismo protocolo para self-host y desarrollo.",
+    "technologies": [
+      "JavaScript",
+      "WebSockets",
+      "Cloudflare Pages",
+      "Durable Objects",
+      "PWA",
+      "Node",
+      "Vitest"
+    ]
+  },
+  "source": {
+    "repository": "FilipaoVfx/clippy",
+    "url": "https://github.com/FilipaoVfx/clippy",
+    "branch": "main",
+    "commit": "444e540cba31e004cf125f2b6b273495481fd93e",
+    "committedAt": "2026-08-31T18:47:05-05:00"
+  },
+  "analysis": {
+    "filesScanned": 33,
+    "excluded": {
+      "secret": 1,
+      "binary": 3,
+      "lockfile": 1,
+      "too-large": 0,
+      "ignored-dir": 1,
+      "project-exclude": 0
+    },
+    "languages": {
+      "YAML": {
+        "files": 1,
+        "lines": 65
+      },
+      "Markdown": {
+        "files": 5,
+        "lines": 1179
+      },
+      "JavaScript": {
+        "files": 19,
+        "lines": 6404
+      },
+      "TOML": {
+        "files": 2,
+        "lines": 36
+      },
+      "JSON": {
+        "files": 1,
+        "lines": 36
+      },
+      "CSS": {
+        "files": 1,
+        "lines": 1160
+      },
+      "HTML": {
+        "files": 1,
+        "lines": 266
+      }
+    },
+    "factsByKind": {
+      "dependency": 5,
+      "env": 8,
+      "heading": 65,
+      "host": 13,
+      "import": 28,
+      "package": 1,
+      "route": 7,
+      "script": 11,
+      "workflow": 1,
+      "workflow-run": 3,
+      "workflow-uses": 2
+    },
+    "coverage": {
+      "codeFiles": 21,
+      "mappedFiles": 14,
+      "unmappedFiles": [
+        "tests/__mocks__/cloudflare-workers.js",
+        "tests/client/qr.test.js",
+        "tests/client/ws.test.js",
+        "tests/cloudflare/coordinator.test.js",
+        "tests/server/imageValidation.test.js",
+        "tests/server/sessionManager.test.js",
+        "vitest.config.js"
+      ]
+    },
+    "externalHosts": [
+      {
+        "host": "clippy.internal",
+        "component": null
+      }
+    ],
+    "sharedModules": []
+  },
+  "groups": [
+    {
+      "id": "device",
+      "name": "Dispositivo"
+    },
+    {
+      "id": "ops",
+      "name": "Operación"
+    },
+    {
+      "id": "edge",
+      "name": "Edge · Cloudflare"
+    },
+    {
+      "id": "selfhost",
+      "name": "Self-host"
+    }
+  ],
+  "components": [
+    {
+      "id": "pwa",
+      "name": "PWA",
+      "type": "client",
+      "group": "device",
+      "summary": "Una pantalla en JS vanilla: emparejar, copiar, recibir. QR propio, sin CDN.",
+      "role": "Elige el código de sesión, abre el WebSocket con reconexión y resume token, y envía texto, imágenes y transferencias grandes en chunks binarios.",
+      "technologies": [
+        "JavaScript",
+        "WebSocket",
+        "PWA"
+      ],
+      "paths": [
+        "public/index.html",
+        "public/js",
+        "public/css",
+        "public/manifest.webmanifest"
+      ],
+      "metrics": {
+        "files": 7,
+        "lines": 3557
+      },
+      "confidence": "confirmed",
+      "evidence": [
+        {
+          "type": "source",
+          "path": "public/js/ws.js",
+          "lines": "63",
+          "excerpt": "socket = new WebSocket(url);",
+          "url": "https://github.com/FilipaoVfx/clippy/blob/444e540cba31e004cf125f2b6b273495481fd93e/public/js/ws.js#L63"
+        },
+        {
+          "type": "source",
+          "path": "public/index.html",
+          "note": "266 líneas",
+          "url": "https://github.com/FilipaoVfx/clippy/blob/444e540cba31e004cf125f2b6b273495481fd93e/public/index.html"
+        },
+        {
+          "type": "source",
+          "path": "public/js",
+          "dir": true,
+          "note": "4 archivos",
+          "url": "https://github.com/FilipaoVfx/clippy/tree/444e540cba31e004cf125f2b6b273495481fd93e/public/js"
+        },
+        {
+          "type": "source",
+          "path": "public/css",
+          "dir": true,
+          "note": "1 archivos",
+          "url": "https://github.com/FilipaoVfx/clippy/tree/444e540cba31e004cf125f2b6b273495481fd93e/public/css"
+        }
+      ]
+    },
+    {
+      "id": "sw",
+      "name": "Service worker",
+      "type": "client",
+      "group": "device",
+      "summary": "App shell offline; un deploy nuevo entra sin reinstalar la PWA.",
+      "role": "Precache + skipWaiting, navegación network-first y assets stale-while-revalidate.",
+      "technologies": [
+        "Service Worker"
+      ],
+      "paths": [
+        "public/sw.js"
+      ],
+      "metrics": {
+        "files": 1,
+        "lines": 109
+      },
+      "confidence": "confirmed",
+      "evidence": [
+        {
+          "type": "source",
+          "path": "public/sw.js",
+          "lines": "6",
+          "excerpt": "* - install: precache the app shell, then skipWaiting() so the new SW",
+          "url": "https://github.com/FilipaoVfx/clippy/blob/444e540cba31e004cf125f2b6b273495481fd93e/public/sw.js#L6"
+        }
+      ]
+    },
+    {
+      "id": "ci-cd",
+      "name": "GitHub Actions",
+      "type": "infrastructure",
+      "group": "ops",
+      "summary": "En cada push a main despliega el Worker realtime y la PWA.",
+      "role": "Verifica credenciales, crea el proyecto de Pages si falta y sella el service worker con el commit.",
+      "technologies": [
+        "GitHub Actions",
+        "Wrangler"
+      ],
+      "paths": [
+        ".github/workflows/deploy-pages.yml"
+      ],
+      "metrics": {
+        "files": 1,
+        "lines": 65
+      },
+      "confidence": "confirmed",
+      "evidence": [
+        {
+          "type": "source",
+          "path": ".github/workflows/deploy-pages.yml",
+          "note": "65 líneas",
+          "url": "https://github.com/FilipaoVfx/clippy/blob/444e540cba31e004cf125f2b6b273495481fd93e/.github/workflows/deploy-pages.yml"
+        }
+      ]
+    },
+    {
+      "id": "edge-router",
+      "name": "Router edge",
+      "type": "service",
+      "group": "edge",
+      "summary": "Pages Function: /ws y /health al Durable Object del código; el resto, assets con caché controlada.",
+      "role": "Punto de entrada único en producción. Decide el shard por código y evita servir HTML o service worker cacheados.",
+      "technologies": [
+        "Cloudflare Pages",
+        "Pages Functions"
+      ],
+      "paths": [
+        "public/_worker.js",
+        "wrangler.toml"
+      ],
+      "metrics": {
+        "files": 2,
+        "lines": 103
+      },
+      "confidence": "confirmed",
+      "evidence": [
+        {
+          "type": "source",
+          "path": "public/_worker.js",
+          "lines": "11",
+          "excerpt": "function getCoordinator(env, request) {",
+          "url": "https://github.com/FilipaoVfx/clippy/blob/444e540cba31e004cf125f2b6b273495481fd93e/public/_worker.js#L11"
+        },
+        {
+          "type": "source",
+          "path": "wrangler.toml",
+          "note": "13 líneas",
+          "url": "https://github.com/FilipaoVfx/clippy/blob/444e540cba31e004cf125f2b6b273495481fd93e/wrangler.toml"
+        }
+      ]
+    },
+    {
+      "id": "coordinator",
+      "name": "ClippyCoordinator",
+      "type": "service",
+      "group": "edge",
+      "summary": "Durable Object por código de sesión: dispositivos, TTL, rate limit y reenvío de mensajes.",
+      "role": "Fuente de verdad de cada sesión. Usa la API de hibernación para no cobrar duración mientras está ociosa.",
+      "technologies": [
+        "Durable Objects",
+        "WebSocket Hibernation"
+      ],
+      "paths": [
+        "cloudflare/realtime"
+      ],
+      "metrics": {
+        "files": 2,
+        "lines": 1229
+      },
+      "confidence": "confirmed",
+      "evidence": [
+        {
+          "type": "source",
+          "path": "cloudflare/realtime/src/index.js",
+          "lines": "168",
+          "excerpt": "export class ClippyCoordinator extends DurableObject {",
+          "url": "https://github.com/FilipaoVfx/clippy/blob/444e540cba31e004cf125f2b6b273495481fd93e/cloudflare/realtime/src/index.js#L168"
+        },
+        {
+          "type": "source",
+          "path": "cloudflare/realtime",
+          "dir": true,
+          "note": "2 archivos",
+          "url": "https://github.com/FilipaoVfx/clippy/tree/444e540cba31e004cf125f2b6b273495481fd93e/cloudflare/realtime"
+        }
+      ]
+    },
+    {
+      "id": "do-storage",
+      "name": "Storage del Durable Object",
+      "type": "database",
+      "group": "edge",
+      "summary": "Metadatos de sesión (códigos, dispositivos, expiración). Nunca el contenido copiado.",
+      "role": "Permite hibernar y despertar sin perder la sesión; una alarma borra lo expirado.",
+      "technologies": [
+        "SQLite (DO)"
+      ],
+      "paths": [],
+      "metrics": {
+        "files": 0,
+        "lines": 0
+      },
+      "confidence": "confirmed",
+      "evidence": [
+        {
+          "type": "config",
+          "path": "cloudflare/realtime/wrangler.toml",
+          "lines": "22",
+          "excerpt": "new_sqlite_classes = [\"ClippyCoordinator\"]",
+          "url": "https://github.com/FilipaoVfx/clippy/blob/444e540cba31e004cf125f2b6b273495481fd93e/cloudflare/realtime/wrangler.toml#L22"
+        }
+      ]
+    },
+    {
+      "id": "node-server",
+      "name": "Servidor Node",
+      "type": "service",
+      "group": "selfhost",
+      "summary": "express + ws con el mismo protocolo, sesiones en memoria.",
+      "role": "Runtime alternativo para self-host y desarrollo local; limpieza cada 30 s y /health con estadísticas.",
+      "technologies": [
+        "Node",
+        "Express",
+        "ws"
+      ],
+      "paths": [
+        "server"
+      ],
+      "metrics": {
+        "files": 5,
+        "lines": 958,
+        "routes": 1
+      },
+      "confidence": "confirmed",
+      "evidence": [
+        {
+          "type": "dependency",
+          "path": "package.json",
+          "lines": "30",
+          "excerpt": "\"ws\": \"^8.18.0\"",
+          "url": "https://github.com/FilipaoVfx/clippy/blob/444e540cba31e004cf125f2b6b273495481fd93e/package.json#L30"
+        },
+        {
+          "type": "source",
+          "path": "server/index.js",
+          "lines": "36",
+          "excerpt": "const wss = new WebSocketServer({ server, path: '/ws' });",
+          "url": "https://github.com/FilipaoVfx/clippy/blob/444e540cba31e004cf125f2b6b273495481fd93e/server/index.js#L36"
+        },
+        {
+          "type": "source",
+          "path": "server",
+          "dir": true,
+          "note": "5 archivos",
+          "url": "https://github.com/FilipaoVfx/clippy/tree/444e540cba31e004cf125f2b6b273495481fd93e/server"
+        }
+      ]
+    }
+  ],
+  "relationships": [
+    {
+      "id": "pwa--sw",
+      "source": "pwa",
+      "target": "sw",
+      "type": "message",
+      "label": "Registro y actualización",
+      "description": "La PWA registra el service worker y recarga una sola vez cuando un deploy nuevo toma el control.",
+      "detected": false,
+      "confidence": "confirmed",
+      "evidence": [
+        {
+          "type": "source",
+          "path": "public/index.html",
+          "lines": "256",
+          "excerpt": "navigator.serviceWorker.register('/sw.js').then((reg) => {",
+          "url": "https://github.com/FilipaoVfx/clippy/blob/444e540cba31e004cf125f2b6b273495481fd93e/public/index.html#L256"
+        }
+      ]
+    },
+    {
+      "id": "pwa--edge-router",
+      "source": "pwa",
+      "target": "edge-router",
+      "type": "http",
+      "label": "WebSocket /ws?code=…",
+      "description": "La conexión lleva el código de sesión en la URL: es lo que decide a qué Durable Object llega.",
+      "detected": false,
+      "confidence": "confirmed",
+      "evidence": [
+        {
+          "type": "api-call",
+          "path": "public/js/ws.js",
+          "lines": "60",
+          "excerpt": "const url = `${protocol}//${window.location.host}/ws?code=${encodeURIComponent(currentCode)}`;",
+          "url": "https://github.com/FilipaoVfx/clippy/blob/444e540cba31e004cf125f2b6b273495481fd93e/public/js/ws.js#L60"
+        },
+        {
+          "type": "route",
+          "path": "public/_worker.js",
+          "lines": "65",
+          "excerpt": "if (url.pathname === WS_PATH) {",
+          "url": "https://github.com/FilipaoVfx/clippy/blob/444e540cba31e004cf125f2b6b273495481fd93e/public/_worker.js#L65"
+        }
+      ]
+    },
+    {
+      "id": "edge-router--coordinator",
+      "source": "edge-router",
+      "target": "coordinator",
+      "type": "http",
+      "label": "Shard por código",
+      "description": "idFromName(código) sobre el binding del Durable Object del Worker clippy-realtime.",
+      "detected": false,
+      "confidence": "confirmed",
+      "evidence": [
+        {
+          "type": "source",
+          "path": "public/_worker.js",
+          "lines": "14",
+          "excerpt": "const id = env.CLIPPY_COORDINATOR.idFromName(coordinatorName);",
+          "url": "https://github.com/FilipaoVfx/clippy/blob/444e540cba31e004cf125f2b6b273495481fd93e/public/_worker.js#L14"
+        },
+        {
+          "type": "config",
+          "path": "wrangler.toml",
+          "lines": "12",
+          "excerpt": "script_name = \"clippy-realtime\"",
+          "url": "https://github.com/FilipaoVfx/clippy/blob/444e540cba31e004cf125f2b6b273495481fd93e/wrangler.toml#L12"
+        }
+      ]
+    },
+    {
+      "id": "coordinator--do-storage",
+      "source": "coordinator",
+      "target": "do-storage",
+      "type": "sdk",
+      "label": "Metadatos + alarma de TTL",
+      "description": "Persiste el estado de las sesiones para sobrevivir a la hibernación y programa la alarma de la próxima expiración.",
+      "detected": false,
+      "confidence": "confirmed",
+      "evidence": [
+        {
+          "type": "source",
+          "path": "cloudflare/realtime/src/index.js",
+          "lines": "1098",
+          "excerpt": "await this.ctx.storage.put(\"state\", this.stateData);",
+          "url": "https://github.com/FilipaoVfx/clippy/blob/444e540cba31e004cf125f2b6b273495481fd93e/cloudflare/realtime/src/index.js#L1098"
+        },
+        {
+          "type": "source",
+          "path": "cloudflare/realtime/src/index.js",
+          "lines": "1121",
+          "excerpt": "await this.ctx.storage.setAlarm(Math.max(now + 1000, nextAlarm));",
+          "url": "https://github.com/FilipaoVfx/clippy/blob/444e540cba31e004cf125f2b6b273495481fd93e/cloudflare/realtime/src/index.js#L1121"
+        }
+      ]
+    },
+    {
+      "id": "pwa--node-server",
+      "source": "pwa",
+      "target": "node-server",
+      "type": "http",
+      "label": "Mismo protocolo en self-host",
+      "description": "Sin cambios en el cliente: el servidor Node atiende el mismo /ws y los mismos mensajes.",
+      "detected": false,
+      "confidence": "confirmed",
+      "evidence": [
+        {
+          "type": "api-call",
+          "path": "public/js/ws.js",
+          "lines": "60",
+          "excerpt": "const url = `${protocol}//${window.location.host}/ws?code=${encodeURIComponent(currentCode)}`;",
+          "url": "https://github.com/FilipaoVfx/clippy/blob/444e540cba31e004cf125f2b6b273495481fd93e/public/js/ws.js#L60"
+        },
+        {
+          "type": "route",
+          "path": "server/index.js",
+          "lines": "36",
+          "excerpt": "const wss = new WebSocketServer({ server, path: '/ws' });",
+          "url": "https://github.com/FilipaoVfx/clippy/blob/444e540cba31e004cf125f2b6b273495481fd93e/server/index.js#L36"
+        }
+      ]
+    },
+    {
+      "id": "ci-cd--coordinator",
+      "source": "ci-cd",
+      "target": "coordinator",
+      "type": "deploy",
+      "label": "Deploy del Worker realtime",
+      "description": "Se despliega antes que la PWA para que el protocolo nuevo esté disponible cuando llegue el cliente nuevo.",
+      "detected": false,
+      "confidence": "confirmed",
+      "evidence": [
+        {
+          "type": "deployment",
+          "path": ".github/workflows/deploy-pages.yml",
+          "lines": "50",
+          "excerpt": "run: npm run cf:realtime:deploy",
+          "url": "https://github.com/FilipaoVfx/clippy/blob/444e540cba31e004cf125f2b6b273495481fd93e/.github/workflows/deploy-pages.yml#L50"
+        }
+      ]
+    },
+    {
+      "id": "ci-cd--edge-router",
+      "source": "ci-cd",
+      "target": "edge-router",
+      "type": "deploy",
+      "label": "Deploy a Pages",
+      "description": "Publica public/ (PWA + router) en el proyecto de Pages.",
+      "detected": false,
+      "confidence": "confirmed",
+      "evidence": [
+        {
+          "type": "deployment",
+          "path": ".github/workflows/deploy-pages.yml",
+          "lines": "64",
+          "excerpt": "npx wrangler pages deploy ./public --project-name \"$PROJECT_NAME\"",
+          "url": "https://github.com/FilipaoVfx/clippy/blob/444e540cba31e004cf125f2b6b273495481fd93e/.github/workflows/deploy-pages.yml#L64"
+        }
+      ]
+    },
+    {
+      "id": "ci-cd--sw",
+      "source": "ci-cd",
+      "target": "sw",
+      "type": "deploy",
+      "label": "Sella BUILD_ID con el commit",
+      "description": "Cada deploy cambia la versión del service worker, así el navegador detecta la actualización.",
+      "detected": false,
+      "confidence": "confirmed",
+      "evidence": [
+        {
+          "type": "deployment",
+          "path": ".github/workflows/deploy-pages.yml",
+          "lines": "55",
+          "excerpt": "sed -i \"s/__BUILD_ID__/${BUILD_ID}/g\" public/sw.js",
+          "url": "https://github.com/FilipaoVfx/clippy/blob/444e540cba31e004cf125f2b6b273495481fd93e/.github/workflows/deploy-pages.yml#L55"
+        },
+        {
+          "type": "source",
+          "path": "public/sw.js",
+          "lines": "19",
+          "excerpt": "const BUILD_ID = '__BUILD_ID__';",
+          "url": "https://github.com/FilipaoVfx/clippy/blob/444e540cba31e004cf125f2b6b273495481fd93e/public/sw.js#L19"
+        }
+      ]
+    }
+  ],
+  "flows": [
+    {
+      "id": "pair-and-sync",
+      "kind": "runtime",
+      "name": "Emparejar y sincronizar",
+      "summary": "De dos dispositivos sin relación a un canal compartido.",
+      "steps": [
+        {
+          "id": "pair-and-sync-1",
+          "label": "A elige un código y conecta",
+          "detail": "El código se genera en el cliente y viaja en la URL del WebSocket.",
+          "confidence": "confirmed",
+          "evidence": [
+            {
+              "type": "source",
+              "path": "public/js/app.js",
+              "lines": "160",
+              "excerpt": "state.pendingIntent = { type: 'create' };",
+              "url": "https://github.com/FilipaoVfx/clippy/blob/444e540cba31e004cf125f2b6b273495481fd93e/public/js/app.js#L160"
+            }
+          ],
+          "relationship": "pwa--edge-router"
+        },
+        {
+          "id": "pair-and-sync-2",
+          "label": "Router: shard por código",
+          "detail": "La conexión llega al Durable Object de ese código.",
+          "confidence": "confirmed",
+          "evidence": [],
+          "relationship": "edge-router--coordinator"
+        },
+        {
+          "id": "pair-and-sync-3",
+          "label": "create_session",
+          "detail": "Si el código ya existe, responde code_taken y el cliente reintenta con otro.",
+          "confidence": "confirmed",
+          "evidence": [
+            {
+              "type": "source",
+              "path": "cloudflare/realtime/src/index.js",
+              "lines": "477",
+              "excerpt": "this.sendById(socketId, { type: \"code_taken\", code });",
+              "url": "https://github.com/FilipaoVfx/clippy/blob/444e540cba31e004cf125f2b6b273495481fd93e/cloudflare/realtime/src/index.js#L477"
+            }
+          ],
+          "component": "coordinator"
+        },
+        {
+          "id": "pair-and-sync-4",
+          "label": "QR para el segundo dispositivo",
+          "detail": "El enlace lleva el código; escanear es unirse.",
+          "confidence": "confirmed",
+          "evidence": [
+            {
+              "type": "source",
+              "path": "public/js/app.js",
+              "lines": "535",
+              "excerpt": "UI.showPairingQR(`${location.origin}/?code=${encodeURIComponent(data.code)}`);",
+              "url": "https://github.com/FilipaoVfx/clippy/blob/444e540cba31e004cf125f2b6b273495481fd93e/public/js/app.js#L535"
+            }
+          ],
+          "component": "pwa"
+        },
+        {
+          "id": "pair-and-sync-5",
+          "label": "B se une",
+          "detail": "Mismo código, mismo Durable Object; máximo 5 dispositivos.",
+          "confidence": "confirmed",
+          "evidence": [
+            {
+              "type": "source",
+              "path": "cloudflare/realtime/src/index.js",
+              "lines": "547",
+              "excerpt": "if (connectedDevices >= this.config.maxDevices) {",
+              "url": "https://github.com/FilipaoVfx/clippy/blob/444e540cba31e004cf125f2b6b273495481fd93e/cloudflare/realtime/src/index.js#L547"
+            }
+          ],
+          "component": "coordinator"
+        },
+        {
+          "id": "pair-and-sync-6",
+          "label": "Copiar en A, aparece en B",
+          "detail": "send_clip se valida y se reenvía a los pares conectados.",
+          "confidence": "confirmed",
+          "evidence": [
+            {
+              "type": "source",
+              "path": "cloudflare/realtime/src/index.js",
+              "lines": "658",
+              "excerpt": "async handleSendClip(socketId, data) {",
+              "url": "https://github.com/FilipaoVfx/clippy/blob/444e540cba31e004cf125f2b6b273495481fd93e/cloudflare/realtime/src/index.js#L658"
+            }
+          ],
+          "component": "coordinator"
+        },
+        {
+          "id": "pair-and-sync-7",
+          "label": "Expira por alarma",
+          "detail": "Al vencer el TTL, la alarma borra la sesión y cierra los sockets.",
+          "confidence": "confirmed",
+          "evidence": [],
+          "relationship": "coordinator--do-storage"
+        }
+      ]
+    },
+    {
+      "id": "deploy",
+      "kind": "runtime",
+      "name": "Deploy sin romper la PWA",
+      "summary": "Un push a main llega a los teléfonos que ya la tenían instalada.",
+      "steps": [
+        {
+          "id": "deploy-1",
+          "label": "Worker realtime primero",
+          "detail": "El protocolo nuevo está disponible antes que el cliente nuevo.",
+          "confidence": "confirmed",
+          "evidence": [],
+          "relationship": "ci-cd--coordinator"
+        },
+        {
+          "id": "deploy-2",
+          "label": "BUILD_ID = commit",
+          "detail": "El service worker cambia en cada deploy.",
+          "confidence": "confirmed",
+          "evidence": [],
+          "relationship": "ci-cd--sw"
+        },
+        {
+          "id": "deploy-3",
+          "label": "Deploy de public/",
+          "detail": "PWA y router en Cloudflare Pages.",
+          "confidence": "confirmed",
+          "evidence": [],
+          "relationship": "ci-cd--edge-router"
+        },
+        {
+          "id": "deploy-4",
+          "label": "HTML y SW sin caché",
+          "detail": "El router responde no-cache para HTML, sw.js y manifest.",
+          "confidence": "confirmed",
+          "evidence": [
+            {
+              "type": "source",
+              "path": "public/_worker.js",
+              "lines": "21",
+              "excerpt": "function cacheControlFor(pathname) {",
+              "url": "https://github.com/FilipaoVfx/clippy/blob/444e540cba31e004cf125f2b6b273495481fd93e/public/_worker.js#L21"
+            }
+          ],
+          "component": "edge-router"
+        },
+        {
+          "id": "deploy-5",
+          "label": "El SW nuevo toma el control",
+          "detail": "skipWaiting + una recarga única al detectar el cambio.",
+          "confidence": "confirmed",
+          "evidence": [],
+          "relationship": "pwa--sw"
+        }
+      ]
+    },
+    {
+      "id": "clip",
+      "kind": "data",
+      "name": "Un clip de ida y vuelta",
+      "summary": "Qué forma tiene el dato en cada salto, y dónde deja de existir.",
+      "steps": [
+        {
+          "id": "clip-1",
+          "label": "Texto copiado",
+          "detail": "Lo que el usuario pega o escribe en el dispositivo A.",
+          "confidence": "confirmed",
+          "evidence": [
+            {
+              "type": "source",
+              "path": "public/js/app.js",
+              "lines": "763",
+              "excerpt": "type: 'send_clip',",
+              "url": "https://github.com/FilipaoVfx/clippy/blob/444e540cba31e004cf125f2b6b273495481fd93e/public/js/app.js#L763"
+            }
+          ],
+          "component": "pwa",
+          "artifact": "string"
+        },
+        {
+          "id": "clip-2",
+          "label": "Mensaje JSON",
+          "detail": "Viaja por el WebSocket de la sesión.",
+          "confidence": "confirmed",
+          "evidence": [],
+          "relationship": "pwa--edge-router",
+          "artifact": "{ type: 'send_clip', content }"
+        },
+        {
+          "id": "clip-3",
+          "label": "Validado",
+          "detail": "Tamaño, tipo y rate limit por IP antes de tocar la sesión.",
+          "confidence": "confirmed",
+          "evidence": [
+            {
+              "type": "source",
+              "path": "cloudflare/realtime/src/index.js",
+              "lines": "9",
+              "excerpt": "rateLimitMax: 30,",
+              "url": "https://github.com/FilipaoVfx/clippy/blob/444e540cba31e004cf125f2b6b273495481fd93e/cloudflare/realtime/src/index.js#L9"
+            }
+          ],
+          "component": "coordinator",
+          "artifact": "mensaje aceptado"
+        },
+        {
+          "id": "clip-4",
+          "label": "Reenviado a los pares",
+          "detail": "Solo a los dispositivos conectados, excepto el emisor.",
+          "confidence": "confirmed",
+          "evidence": [
+            {
+              "type": "source",
+              "path": "cloudflare/realtime/src/index.js",
+              "lines": "1136",
+              "excerpt": "broadcastToPeers(code, excludeSocketId, payload) {",
+              "url": "https://github.com/FilipaoVfx/clippy/blob/444e540cba31e004cf125f2b6b273495481fd93e/cloudflare/realtime/src/index.js#L1136"
+            }
+          ],
+          "component": "coordinator",
+          "artifact": "receive_clip"
+        },
+        {
+          "id": "clip-5",
+          "label": "Archivos grandes",
+          "detail": "Imágenes y vídeo van en chunks binarios que el objeto reenvía sin parsear ni guardar.",
+          "confidence": "confirmed",
+          "evidence": [
+            {
+              "type": "source",
+              "path": "cloudflare/realtime/src/index.js",
+              "lines": "1160",
+              "excerpt": "sendRawById(socketId, buffer) {",
+              "url": "https://github.com/FilipaoVfx/clippy/blob/444e540cba31e004cf125f2b6b273495481fd93e/cloudflare/realtime/src/index.js#L1160"
+            }
+          ],
+          "component": "coordinator",
+          "artifact": "frames binarios transfer_*"
+        },
+        {
+          "id": "clip-6",
+          "label": "Recibido en B",
+          "detail": "El contenido existe en los dispositivos, no en el servidor.",
+          "confidence": "confirmed",
+          "evidence": [
+            {
+              "type": "source",
+              "path": "public/js/app.js",
+              "lines": "600",
+              "excerpt": "WS.on('receive_clip', (data) => {",
+              "url": "https://github.com/FilipaoVfx/clippy/blob/444e540cba31e004cf125f2b6b273495481fd93e/public/js/app.js#L600"
+            }
+          ],
+          "component": "pwa",
+          "artifact": "toast + portapapeles"
+        }
+      ]
+    }
+  ],
+  "decisions": [
+    {
+      "id": "shard-by-code",
+      "title": "Un Durable Object por código de sesión",
+      "why": "Un coordinador compartido limitaría todo el servicio al throughput de un solo objeto. Con el código como clave, las sesiones concurrentes no compiten entre sí.",
+      "basis": "documented",
+      "components": [
+        "edge-router",
+        "coordinator"
+      ],
+      "confidence": "confirmed",
+      "evidence": [
+        {
+          "type": "documentation",
+          "path": "cloudflare/realtime/src/index.js",
+          "lines": "1188-1193",
+          "excerpt": "* Route each session to its own Durable Object, keyed by the pairing code.",
+          "url": "https://github.com/FilipaoVfx/clippy/blob/444e540cba31e004cf125f2b6b273495481fd93e/cloudflare/realtime/src/index.js#L1188-L1193"
+        },
+        {
+          "type": "source",
+          "path": "cloudflare/realtime/src/index.js",
+          "lines": "1194",
+          "excerpt": "export function coordinatorNameFor(request) {",
+          "url": "https://github.com/FilipaoVfx/clippy/blob/444e540cba31e004cf125f2b6b273495481fd93e/cloudflare/realtime/src/index.js#L1194"
+        }
+      ]
+    },
+    {
+      "id": "client-picks-code",
+      "title": "El cliente elige el código",
+      "why": "El código tiene que conocerse antes de conectar, porque es lo que enruta al objeto. Generarlo en el servidor lo dejaría en un objeto distinto; las colisiones se resuelven con code_taken.",
+      "basis": "documented",
+      "components": [
+        "pwa",
+        "coordinator"
+      ],
+      "confidence": "confirmed",
+      "evidence": [
+        {
+          "type": "documentation",
+          "path": "cloudflare/realtime/src/index.js",
+          "lines": "466-468",
+          "excerpt": "// The code is chosen by the client and encoded in the connection URL, which",
+          "url": "https://github.com/FilipaoVfx/clippy/blob/444e540cba31e004cf125f2b6b273495481fd93e/cloudflare/realtime/src/index.js#L466-L468"
+        },
+        {
+          "type": "source",
+          "path": "cloudflare/realtime/src/index.js",
+          "lines": "477",
+          "excerpt": "this.sendById(socketId, { type: \"code_taken\", code });",
+          "url": "https://github.com/FilipaoVfx/clippy/blob/444e540cba31e004cf125f2b6b273495481fd93e/cloudflare/realtime/src/index.js#L477"
+        }
+      ]
+    },
+    {
+      "id": "hibernation",
+      "title": "Hibernación para no pagar por sesiones ociosas",
+      "why": "El runtime mantiene los sockets abiertos mientras el objeto sale de memoria, y los pings de keepalive se responden sin despertarlo.",
+      "basis": "documented",
+      "components": [
+        "coordinator"
+      ],
+      "confidence": "confirmed",
+      "evidence": [
+        {
+          "type": "documentation",
+          "path": "cloudflare/realtime/src/index.js",
+          "lines": "265-267",
+          "excerpt": "// Hibernation API: the runtime holds the connection open while this object",
+          "url": "https://github.com/FilipaoVfx/clippy/blob/444e540cba31e004cf125f2b6b273495481fd93e/cloudflare/realtime/src/index.js#L265-L267"
+        },
+        {
+          "type": "source",
+          "path": "cloudflare/realtime/src/index.js",
+          "lines": "268",
+          "excerpt": "this.ctx.acceptWebSocket(server, [socketId]);",
+          "url": "https://github.com/FilipaoVfx/clippy/blob/444e540cba31e004cf125f2b6b273495481fd93e/cloudflare/realtime/src/index.js#L268"
+        },
+        {
+          "type": "documentation",
+          "path": "cloudflare/realtime/src/index.js",
+          "lines": "198-200",
+          "excerpt": "// Answer client keepalives in the runtime itself: this keeps mobile",
+          "url": "https://github.com/FilipaoVfx/clippy/blob/444e540cba31e004cf125f2b6b273495481fd93e/cloudflare/realtime/src/index.js#L198-L200"
+        }
+      ]
+    },
+    {
+      "id": "zero-content-storage",
+      "title": "El contenido nunca se guarda",
+      "why": "Solo se persisten metadatos de sesión; las transferencias en curso viven en memoria a propósito para mantener la garantía de cero almacenamiento del contenido.",
+      "basis": "documented",
+      "components": [
+        "coordinator",
+        "do-storage"
+      ],
+      "confidence": "supported",
+      "evidence": [
+        {
+          "type": "documentation",
+          "path": "cloudflare/realtime/src/index.js",
+          "lines": "191-193",
+          "excerpt": "// In-flight transfers. Deliberately NOT in stateData: stateData is what",
+          "url": "https://github.com/FilipaoVfx/clippy/blob/444e540cba31e004cf125f2b6b273495481fd93e/cloudflare/realtime/src/index.js#L191-L193"
+        }
+      ]
+    },
+    {
+      "id": "deploy-safe-pwa",
+      "title": "Un deploy no rompe la PWA instalada",
+      "why": "Precache + skipWaiting, navegación network-first y BUILD_ID sellado con el commit: la versión nueva entra sola y el icono en la pantalla de inicio sigue funcionando.",
+      "basis": "documented",
+      "components": [
+        "sw",
+        "ci-cd",
+        "edge-router"
+      ],
+      "confidence": "confirmed",
+      "evidence": [
+        {
+          "type": "documentation",
+          "path": "public/sw.js",
+          "lines": "6-10",
+          "excerpt": "* - install: precache the app shell, then skipWaiting() so the new SW",
+          "url": "https://github.com/FilipaoVfx/clippy/blob/444e540cba31e004cf125f2b6b273495481fd93e/public/sw.js#L6-L10"
+        },
+        {
+          "type": "deployment",
+          "path": ".github/workflows/deploy-pages.yml",
+          "lines": "55",
+          "excerpt": "sed -i \"s/__BUILD_ID__/${BUILD_ID}/g\" public/sw.js",
+          "url": "https://github.com/FilipaoVfx/clippy/blob/444e540cba31e004cf125f2b6b273495481fd93e/.github/workflows/deploy-pages.yml#L55"
+        }
+      ]
+    },
+    {
+      "id": "vanilla",
+      "title": "Sin framework en el cliente",
+      "why": "Toda la UI es una pantalla: el package.json solo declara dependencias del servidor Node y el cliente son cuatro módulos ES servidos tal cual.",
+      "basis": "observed",
+      "components": [
+        "pwa"
+      ],
+      "confidence": "confirmed",
+      "evidence": [
+        {
+          "type": "dependency",
+          "path": "package.json",
+          "note": "36 líneas",
+          "url": "https://github.com/FilipaoVfx/clippy/blob/444e540cba31e004cf125f2b6b273495481fd93e/package.json"
+        },
+        {
+          "type": "source",
+          "path": "public/js",
+          "dir": true,
+          "note": "4 archivos",
+          "url": "https://github.com/FilipaoVfx/clippy/tree/444e540cba31e004cf125f2b6b273495481fd93e/public/js"
+        }
+      ]
+    },
+    {
+      "id": "two-runtimes",
+      "title": "Dos runtimes, un protocolo",
+      "why": "Node para self-host y desarrollo, Durable Objects en producción. El coste es mantener el protocolo sincronizado en dos sitios; los tests cubren ambos.",
+      "basis": "documented",
+      "components": [
+        "node-server",
+        "coordinator"
+      ],
+      "confidence": "confirmed",
+      "evidence": [
+        {
+          "type": "documentation",
+          "path": "README.md",
+          "lines": "116-117",
+          "excerpt": "- **Two runtimes** → the protocol has to stay in sync in two places. The tests cover both",
+          "url": "https://github.com/FilipaoVfx/clippy/blob/444e540cba31e004cf125f2b6b273495481fd93e/README.md#L116-L117"
+        },
+        {
+          "type": "source",
+          "path": "tests/cloudflare",
+          "dir": true,
+          "note": "1 archivos",
+          "url": "https://github.com/FilipaoVfx/clippy/tree/444e540cba31e004cf125f2b6b273495481fd93e/tests/cloudflare"
+        },
+        {
+          "type": "source",
+          "path": "tests/server",
+          "dir": true,
+          "note": "2 archivos",
+          "url": "https://github.com/FilipaoVfx/clippy/tree/444e540cba31e004cf125f2b6b273495481fd93e/tests/server"
+        }
+      ]
+    }
+  ],
+  "findings": [
+    {
+      "id": "edge-state-persisted",
+      "severity": "info",
+      "title": "En el edge la sesión no vive solo en memoria",
+      "detail": "El diagrama del README muestra un mapa en memoria. En Cloudflare, los metadatos de sesión se escriben en el storage del Durable Object para sobrevivir a la hibernación y se borran por alarma. El contenido copiado sí se queda fuera.",
+      "evidence": [
+        {
+          "type": "documentation",
+          "path": "README.md",
+          "lines": "43",
+          "excerpt": "│ In-memory session map │",
+          "url": "https://github.com/FilipaoVfx/clippy/blob/444e540cba31e004cf125f2b6b273495481fd93e/README.md#L43"
+        },
+        {
+          "type": "source",
+          "path": "cloudflare/realtime/src/index.js",
+          "lines": "1098",
+          "excerpt": "await this.ctx.storage.put(\"state\", this.stateData);",
+          "url": "https://github.com/FilipaoVfx/clippy/blob/444e540cba31e004cf125f2b6b273495481fd93e/cloudflare/realtime/src/index.js#L1098"
+        }
+      ]
+    }
+  ]
+}

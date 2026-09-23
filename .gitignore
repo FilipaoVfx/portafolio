@@ -8,5 +8,8 @@ node_modules
 
 dist
 
+# system-map: checkouts de los repositorios analizados
+.cache
+
 # impeccable: binario de plataforma, se descarga solo en el primer uso
 .claude/skills/impeccable/scripts/bin/

@@ -1,0 +1,47 @@
+name: System Map
+
+# Contrato del System Map:
+#  - PR / push: tests del pipeline + validación profunda de cada
+#    architecture.json contra el commit que dice haber analizado (paths,
+#    rangos de líneas y extractos deben coincidir con el código).
+#  - Semanal: regenera en modo estricto contra la rama actual de cada repo.
+#    Si el código cambió y la interpretación ya no encaja, el job falla y
+#    avisa; el sitio sigue publicando el último artefacto válido.
+
+on:
+  pull_request:
+    paths:
+      - 'system-map/**'
+      - 'src/lib/system-map/**'
+      - 'src/components/system-map/**'
+      - '.github/workflows/system-map.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'system-map/**'
+  schedule:
+    - cron: '0 6 * * 1'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Pipeline tests
+        run: npm run system-map:test
+
+      - name: Validate artifacts against their commits
+        run: npm run system-map:validate -- --deep
+
+      - name: Detect drift against current branches
+        if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
+        run: npm run system-map:generate -- --strict

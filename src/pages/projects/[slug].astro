@@ -1,6 +1,7 @@
 ---
 import Base from '@/layouts/Base.astro';
 import { projects } from '@/data/projects';
+import { getSystemMap } from '@/lib/system-map';
 
 export function getStaticPaths() {
   return projects.map((p) => ({ params: { slug: p.slug }, props: { project: p } }));
@@ -19,8 +20,10 @@ const statusLabel = {
   wip: 'en proceso',
 };
 const a = accentClass[project.accent];
+const systemMap = getSystemMap(project.slug);
 const baseUrl = import.meta.env.BASE_URL.replace(/\/?$/, '/');
 const sectionPath = (id: string) => `${baseUrl}#${id}`;
+const routePath = (path: string) => `${baseUrl}${path.replace(/^\/+/, '')}`;
 ---
 
 <Base title={`${project.title} — FilipaoVfx`} description={project.tagline}>
@@ -41,6 +44,22 @@ const sectionPath = (id: string) => `${baseUrl}#${id}`;
         {project.title}
       </h1>
       <p class="mt-4 text-xl text-white/70 max-w-2xl">{project.tagline}</p>
+
+      {systemMap && (
+        <a
+          href={routePath(`/projects/${project.slug}/system-map`)}
+          class="group mt-8 flex flex-col gap-3 border-2 border-white/80 bg-ink-900 p-5 shadow-[6px_6px_0_0_rgba(255,255,255,0.85)] transition-transform hover:-translate-x-0.5 hover:-translate-y-0.5 sm:flex-row sm:items-center sm:justify-between"
+        >
+          <span>
+            <span class="label-mono">// system map</span>
+            <span class="mt-1 block heading-display text-xl text-white">Explora la arquitectura, verificable línea a línea</span>
+            <span class="mt-1 block font-mono text-xs text-white/50">
+              {systemMap.components.length} componentes · {systemMap.relationships.length} relaciones · commit {systemMap.source.commit.slice(0, 7)}
+            </span>
+          </span>
+          <span class={`font-mono text-sm font-bold uppercase tracking-wider ${a}`}>System map →</span>
+        </a>
+      )}
 
       <div class="mt-12 prose-invert space-y-12">
         <section>
@@ -106,6 +125,11 @@ const sectionPath = (id: string) => `${baseUrl}#${id}`;
           {project.repo && (
             <a href={project.repo} class="btn-ghost" target="_blank" rel="noreferrer">
               Código ↗
+            </a>
+          )}
+          {systemMap && (
+            <a href={routePath(`/projects/${project.slug}/system-map`)} class="btn-ghost">
+              System map →
             </a>
           )}
           <a href={sectionPath('contact')} class="btn-ghost">Contactar →</a>

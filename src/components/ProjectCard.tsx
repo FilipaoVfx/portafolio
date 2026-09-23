@@ -41,7 +41,7 @@ function chipColor(s: string) {
   return stackColor[s] ?? '#ffffff';
 }
 
-export default function ProjectCard({ project, index }: { project: Project; index: number }) {
+export default function ProjectCard({ project, index, hasSystemMap = false }: { project: Project; index: number; hasSystemMap?: boolean }) {
   const a = accentMap[project.accent];
   const displayUrl = project.link?.replace(/^https?:\/\//, '') ?? '';
 
@@ -125,6 +125,11 @@ export default function ProjectCard({ project, index }: { project: Project; inde
               {project.repo && (
                 <a href={project.repo} className="btn-ghost" target="_blank" rel="noreferrer">
                   Código ↗
+                </a>
+              )}
+              {hasSystemMap && (
+                <a href={routePath(`/projects/${project.slug}/system-map`)} className="btn-ghost">
+                  System map →
                 </a>
               )}
             </div>

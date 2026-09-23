@@ -126,7 +126,7 @@ export const projects: Project[] = [
     architecture: [
       'Extensión Chrome MV3 con cola persistente y reintentos exponenciales',
       'Backend Node 20 sin framework para ingesta, deduplicación y enriquecimiento',
-      'Postgres con FTS tsvector, pg_trgm y funciones RPC · 13 migraciones versionadas',
+      'Postgres con FTS tsvector, pg_trgm y funciones RPC · 16 migraciones versionadas',
       'Búsqueda híbrida con ranking + Goal Mode: objetivo → pasos → herramientas → alternativas',
       'Docker multi-stage, CI/CD y backend desplegado en Render',
     ],

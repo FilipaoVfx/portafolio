@@ -13,6 +13,19 @@ Repositorio ─► análisis estático ─► hechos ─┐
 Todo ocurre en build/CI. En producción el portfolio solo lee JSON estático: sin
 LLM, sin análisis y sin llamadas a GitHub en runtime.
 
+## En el portfolio
+
+Cada tarjeta de proyecto de la home tiene un botón **Ver arquitectura**: la
+tarjeta entera gira y el reverso muestra el mapa. Pulsar un componente o una
+conexión abre su detalle con la evidencia (extracto + enlace a GitHub en el
+commit analizado); **Flujos** resalta un recorrido paso a paso y **Decisiones**
+lista el porqué, separando hecho observado, decisión documentada e inferencia.
+Escape cierra el detalle y, después, devuelve la tarjeta a su frente.
+
+El mapa (`ArchitectureBack`) y el artefacto
+(`/projects/<slug>/architecture.json`) solo se descargan al girar la tarjeta:
+la home no carga ningún mapa por adelantado.
+
 ## Piezas
 
 | Archivo | Rol |
@@ -108,7 +121,7 @@ node system-map/cli.mjs facts indexer --kind route   # hechos crudos, para redac
    afirmación. Describe las relaciones que el generador reporte como "detectada
    sin describir".
 4. `npm run system-map:generate -- <slug> --strict` hasta que valide.
-5. La página `/projects/<slug>/system-map` y los enlaces aparecen solos.
+5. La tarjeta del proyecto en la home muestra el botón "Ver arquitectura" sola.
 
 ## Seguridad
 

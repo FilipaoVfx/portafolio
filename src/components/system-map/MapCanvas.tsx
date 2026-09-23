@@ -22,6 +22,7 @@ export default function MapCanvas({ layout, components, relationships, selectedN
   const wrapperRef = useRef<HTMLDivElement>(null);
   const nodeRefs = useRef(new Map<string, HTMLButtonElement>());
   const [scale, setScale] = useState(1);
+  const [available, setAvailable] = useState(0);
   const [hovered, setHovered] = useState<string | null>(null);
   const [hoveredEdge, setHoveredEdge] = useState<string | null>(null);
   const [focusId, setFocusId] = useState<string>(layout.grid[0]?.[0] ?? '');
@@ -31,7 +32,10 @@ export default function MapCanvas({ layout, components, relationships, selectedN
   useEffect(() => {
     const el = wrapperRef.current;
     if (!el || typeof ResizeObserver === 'undefined') return;
-    const ro = new ResizeObserver(([entry]) => setScale(Math.max(0.72, Math.min(1, entry.contentRect.width / layout.width))));
+    const ro = new ResizeObserver(([entry]) => {
+      setAvailable(entry.contentRect.width);
+      setScale(Math.max(0.72, Math.min(1, entry.contentRect.width / layout.width)));
+    });
     ro.observe(el);
     return () => ro.disconnect();
   }, [layout.width]);
@@ -90,7 +94,11 @@ export default function MapCanvas({ layout, components, relationships, selectedN
 
   return (
     <div ref={wrapperRef} className="relative w-full overflow-x-auto overscroll-x-contain" style={{ height: layout.height * scale + 4 }}>
-      <div className="relative origin-top-left" style={{ width: layout.width, height: layout.height, transform: `scale(${scale})` }}>
+      {/* Un mapa más estrecho que su columna se centra. */}
+      <div
+        className="relative origin-top-left"
+        style={{ width: layout.width, height: layout.height, transform: `scale(${scale})`, marginLeft: Math.max(0, (available - layout.width * scale) / 2) }}
+      >
         {layout.rows.map((row) => (
           <div key={row.id} className="pointer-events-none absolute left-0 right-0 flex items-center gap-3" style={{ top: row.y }}>
             <span className="font-mono text-[10px] uppercase tracking-[0.24em] text-white/40 whitespace-nowrap">{row.name}</span>
@@ -177,7 +185,7 @@ export default function MapCanvas({ layout, components, relationships, selectedN
               onFocus={() => setFocusId(c.id)}
               onMouseEnter={() => setHovered(c.id)}
               onMouseLeave={() => setHovered(null)}
-              className={`group absolute flex flex-col justify-center gap-1 border-2 px-3 text-left transition-[opacity,box-shadow,transform] duration-150 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent-lime ${
+              className={`group absolute flex flex-col justify-center gap-0.5 border-2 px-2 text-left transition-[opacity,box-shadow,transform] duration-150 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent-lime ${
                 outside ? 'border-dashed bg-ink-950/80' : 'bg-ink-900'
               } ${selected ? '-translate-x-0.5 -translate-y-0.5' : 'hover:-translate-y-0.5'} ${faded ? 'opacity-30' : 'opacity-100'}`}
               style={{
@@ -198,7 +206,7 @@ export default function MapCanvas({ layout, components, relationships, selectedN
                   {conf.glyph}
                 </span>
               </span>
-              <span className="line-clamp-2 font-display text-[14px] font-semibold leading-[1.15] text-white">{c.name}</span>
+              <span className="line-clamp-2 font-display text-[13px] font-semibold leading-[1.15] tracking-tight text-white [overflow-wrap:anywhere]">{c.name}</span>
             </button>
           );
         })}

@@ -4,11 +4,13 @@
 
 import type { ArchComponent, ArchRelationship, Architecture } from './types';
 
-export const NODE_W = 168;
-export const NODE_H = 66;
-const GAP_X = 20;
-const ROW_GAP = 64;
-const LABEL_H = 22;
+// Medidas pensadas para el reverso de la tarjeta de proyecto: compacto, pero
+// con nombres legibles a escala 1.
+export const NODE_W = 150;
+export const NODE_H = 54;
+const GAP_X = 14;
+const ROW_GAP = 44;
+const LABEL_H = 18;
 const PAD_X = 16;
 const PAD_Y = 12;
 

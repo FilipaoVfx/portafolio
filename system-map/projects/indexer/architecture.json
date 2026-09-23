@@ -1,0 +1,2756 @@
+{
+  "schemaVersion": "0.1",
+  "generatorVersion": "system-map/0.1.0",
+  "analysisVersion": "static-facts/1",
+  "generatedAt": "2026-09-23T18:07:13.709Z",
+  "project": {
+    "slug": "indexer",
+    "name": "Indexer",
+    "summary": "Captura bookmarks de X, enriquece los repos que mencionan y responde objetivos técnicos con rutas de implementación.",
+    "description": "Monorepo con extensión Chrome MV3, backend Node 20 sin framework sobre Supabase/Postgres, SPA Astro + React y jobs nocturnos de clasificación y RAG. Este mapa se generó del código del commit indicado: cada componente y relación enlaza a las líneas que lo demuestran.",
+    "technologies": [
+      "Node 20",
+      "Chrome MV3",
+      "Astro",
+      "React",
+      "PostgreSQL",
+      "Supabase",
+      "Pinecone",
+      "OpenAI",
+      "GitHub Actions",
+      "Docker"
+    ]
+  },
+  "source": {
+    "repository": "FilipaoVfx/indexer",
+    "url": "https://github.com/FilipaoVfx/indexer",
+    "branch": "main",
+    "commit": "612e3930d7965c9fd50e66ad73d9cff6e2e4b497",
+    "committedAt": "2026-07-18T12:32:56-05:00"
+  },
+  "analysis": {
+    "filesScanned": 159,
+    "excluded": {
+      "secret": 3,
+      "binary": 2,
+      "lockfile": 4,
+      "too-large": 0,
+      "ignored-dir": 1
+    },
+    "languages": {
+      "YAML": {
+        "files": 10,
+        "lines": 636
+      },
+      "Markdown": {
+        "files": 34,
+        "lines": 7460
+      },
+      "JSON": {
+        "files": 10,
+        "lines": 738
+      },
+      "JavaScript": {
+        "files": 38,
+        "lines": 17618
+      },
+      "SQL": {
+        "files": 16,
+        "lines": 4366
+      },
+      "HTML": {
+        "files": 2,
+        "lines": 275
+      },
+      "PowerShell": {
+        "files": 2,
+        "lines": 68
+      },
+      "TypeScript": {
+        "files": 14,
+        "lines": 7196
+      },
+      "Astro": {
+        "files": 7,
+        "lines": 168
+      },
+      "CSS": {
+        "files": 1,
+        "lines": 4
+      }
+    },
+    "factsByKind": {
+      "call": 22,
+      "compose-service": 7,
+      "dependency": 18,
+      "docker": 13,
+      "env": 66,
+      "extension-manifest": 1,
+      "heading": 598,
+      "host": 56,
+      "import": 148,
+      "package": 4,
+      "page": 4,
+      "route": 24,
+      "rpc": 8,
+      "script": 32,
+      "sql-object": 129,
+      "table": 95,
+      "workflow": 3,
+      "workflow-run": 7,
+      "workflow-uses": 6,
+      "workspaces": 1
+    },
+    "coverage": {
+      "codeFiles": 87,
+      "mappedFiles": 81,
+      "unmappedFiles": [
+        "backend/scripts/import-engagement-metrics.mjs",
+        "backend/scripts/test-import-contract.mjs",
+        "scripts/demo-video/compose.mjs",
+        "scripts/demo-video/narrate.mjs",
+        "scripts/demo-video/record.mjs",
+        "sonarqube/docker-compose.yml"
+      ]
+    },
+    "externalHosts": [
+      {
+        "host": "api.github.com",
+        "component": "github-api"
+      },
+      {
+        "host": "api.openai.com",
+        "component": "openai"
+      },
+      {
+        "host": "indexer-hzto.onrender.com",
+        "component": "api"
+      }
+    ],
+    "sharedModules": [
+      "backend/src/config.js",
+      "backend/src/http.js"
+    ]
+  },
+  "groups": [
+    {
+      "id": "sources",
+      "name": "Fuente"
+    },
+    {
+      "id": "clients",
+      "name": "Interfaces"
+    },
+    {
+      "id": "ops",
+      "name": "Operación"
+    },
+    {
+      "id": "backend",
+      "name": "API · Node 20"
+    },
+    {
+      "id": "core",
+      "name": "Núcleo del backend"
+    },
+    {
+      "id": "jobs",
+      "name": "Jobs"
+    },
+    {
+      "id": "data",
+      "name": "Datos"
+    },
+    {
+      "id": "external",
+      "name": "Servicios externos"
+    }
+  ],
+  "components": [
+    {
+      "id": "x",
+      "name": "X / Twitter",
+      "type": "external",
+      "group": "sources",
+      "summary": "Fuente de conocimiento: la página de bookmarks de x.com.",
+      "role": "Origen de los datos. No hay API: la extensión lee el DOM de la página de bookmarks del usuario.",
+      "technologies": [
+        "DOM"
+      ],
+      "paths": [],
+      "metrics": {
+        "files": 0,
+        "lines": 0
+      },
+      "confidence": "confirmed",
+      "evidence": [
+        {
+          "type": "config",
+          "path": "extension/manifest.json",
+          "lines": "20",
+          "excerpt": "\"matches\": [\"https://x.com/*\", \"https://twitter.com/*\"],",
+          "note": "content script inyectado solo en x.com / twitter.com",
+          "url": "https://github.com/FilipaoVfx/indexer/blob/612e3930d7965c9fd50e66ad73d9cff6e2e4b497/extension/manifest.json#L20"
+        }
+      ]
+    },
+    {
+      "id": "extension",
+      "name": "Extensión Chrome MV3",
+      "type": "client",
+      "group": "clients",
+      "summary": "Scraper de bookmarks con cola persistente y reintentos, sin dependencias de build.",
+      "role": "Captura: recorre el DOM de bookmarks, arma lotes, los persiste en chrome.storage.local y los envía al API con reintentos.",
+      "technologies": [
+        "Chrome MV3",
+        "JavaScript"
+      ],
+      "paths": [
+        "extension"
+      ],
+      "metrics": {
+        "files": 7,
+        "lines": 6133
+      },
+      "confidence": "confirmed",
+      "evidence": [
+        {
+          "type": "config",
+          "path": "extension/manifest.json",
+          "note": "service worker + content script + popup",
+          "url": "https://github.com/FilipaoVfx/indexer/blob/612e3930d7965c9fd50e66ad73d9cff6e2e4b497/extension/manifest.json"
+        },
+        {
+          "type": "source",
+          "path": "extension/background.js",
+          "lines": "8",
+          "excerpt": "const MAX_RETRIES = 3;",
+          "url": "https://github.com/FilipaoVfx/indexer/blob/612e3930d7965c9fd50e66ad73d9cff6e2e4b497/extension/background.js#L8"
+        },
+        {
+          "type": "source",
+          "path": "extension",
+          "dir": true,
+          "note": "7 archivos",
+          "url": "https://github.com/FilipaoVfx/indexer/tree/612e3930d7965c9fd50e66ad73d9cff6e2e4b497/extension"
+        }
+      ]
+    },
+    {
+      "id": "web",
+      "name": "SPA Astro + React",
+      "type": "client",
+      "group": "clients",
+      "summary": "Búsqueda, Goal Mode con vista de pipeline (React Flow), autores, repos y READMEs.",
+      "role": "Consumo: interfaz estática publicada en GitHub Pages que consulta el API público.",
+      "technologies": [
+        "Astro 5",
+        "React 19",
+        "React Flow",
+        "Tailwind 4"
+      ],
+      "paths": [
+        "web-astro"
+      ],
+      "metrics": {
+        "files": 28,
+        "lines": 7493
+      },
+      "confidence": "confirmed",
+      "evidence": [
+        {
+          "type": "dependency",
+          "path": "web-astro/package.json",
+          "lines": "14",
+          "excerpt": "\"@xyflow/react\": \"^12.10.2\",",
+          "url": "https://github.com/FilipaoVfx/indexer/blob/612e3930d7965c9fd50e66ad73d9cff6e2e4b497/web-astro/package.json#L14"
+        },
+        {
+          "type": "source",
+          "path": "web-astro/src/lib/api.ts",
+          "lines": "16",
+          "excerpt": "const DEFAULT_REMOTE_API_BASE = \"https://indexer-hzto.onrender.com\";",
+          "note": "API público por defecto",
+          "url": "https://github.com/FilipaoVfx/indexer/blob/612e3930d7965c9fd50e66ad73d9cff6e2e4b497/web-astro/src/lib/api.ts#L16"
+        },
+        {
+          "type": "source",
+          "path": "web-astro",
+          "dir": true,
+          "note": "28 archivos",
+          "url": "https://github.com/FilipaoVfx/indexer/tree/612e3930d7965c9fd50e66ad73d9cff6e2e4b497/web-astro"
+        }
+      ]
+    },
+    {
+      "id": "console",
+      "name": "Live Query Console",
+      "type": "client",
+      "group": "clients",
+      "summary": "Consola HTML autónoma para consultar el API real en vivo.",
+      "role": "Herramienta de inspección: health + búsqueda con polling, sin build.",
+      "technologies": [
+        "HTML",
+        "JavaScript"
+      ],
+      "paths": [
+        "tools/live-query-console"
+      ],
+      "metrics": {
+        "files": 1,
+        "lines": 132
+      },
+      "confidence": "confirmed",
+      "evidence": [
+        {
+          "type": "source",
+          "path": "tools/live-query-console",
+          "dir": true,
+          "note": "1 archivos",
+          "url": "https://github.com/FilipaoVfx/indexer/tree/612e3930d7965c9fd50e66ad73d9cff6e2e4b497/tools/live-query-console"
+        }
+      ]
+    },
+    {
+      "id": "telegram-bot",
+      "name": "Bot de Telegram",
+      "type": "service",
+      "group": "clients",
+      "summary": "Interfaz conversacional sobre el índice: búsqueda RAG, estado y trust scores.",
+      "role": "Proceso largo (npm run rag:telegram) que responde comandos usando el orquestador RAG.",
+      "technologies": [
+        "Telegraf"
+      ],
+      "paths": [
+        "backend/src/telegram-bot.js"
+      ],
+      "metrics": {
+        "files": 1,
+        "lines": 539
+      },
+      "confidence": "confirmed",
+      "evidence": [
+        {
+          "type": "dependency",
+          "path": "backend/package.json",
+          "lines": "25",
+          "excerpt": "\"telegraf\": \"^4.16.0\"",
+          "url": "https://github.com/FilipaoVfx/indexer/blob/612e3930d7965c9fd50e66ad73d9cff6e2e4b497/backend/package.json#L25"
+        },
+        {
+          "type": "dependency",
+          "path": "backend/package.json",
+          "lines": "18",
+          "excerpt": "\"rag:telegram\": \"node src/telegram-bot.js start\"",
+          "url": "https://github.com/FilipaoVfx/indexer/blob/612e3930d7965c9fd50e66ad73d9cff6e2e4b497/backend/package.json#L18"
+        },
+        {
+          "type": "source",
+          "path": "backend/src/telegram-bot.js",
+          "note": "539 líneas",
+          "url": "https://github.com/FilipaoVfx/indexer/blob/612e3930d7965c9fd50e66ad73d9cff6e2e4b497/backend/src/telegram-bot.js"
+        }
+      ]
+    },
+    {
+      "id": "api",
+      "name": "API HTTP",
+      "type": "service",
+      "group": "backend",
+      "summary": "Servidor node:http sin framework: ingesta, búsqueda, Goal Mode, grafo y métricas.",
+      "role": "Punto de entrada único. Enruta, valida, aplica API key y rate limit en escritura, instrumenta métricas Prometheus y delega datos a BookmarkStore. Servido en Render.",
+      "technologies": [
+        "Node 20",
+        "node:http",
+        "Prometheus client"
+      ],
+      "paths": [
+        "backend/src/server.js",
+        "backend/src/http.js",
+        "backend/src/auth.js",
+        "backend/src/config.js",
+        "backend/src/metrics.js",
+        "backend/Dockerfile"
+      ],
+      "metrics": {
+        "files": 6,
+        "lines": 1664,
+        "routes": 20
+      },
+      "confidence": "confirmed",
+      "evidence": [
+        {
+          "type": "import",
+          "path": "backend/src/server.js",
+          "lines": "1",
+          "excerpt": "import http from \"node:http\";",
+          "url": "https://github.com/FilipaoVfx/indexer/blob/612e3930d7965c9fd50e66ad73d9cff6e2e4b497/backend/src/server.js#L1"
+        },
+        {
+          "type": "route",
+          "path": "backend/src/server.js",
+          "lines": "726-777",
+          "excerpt": "if (req.method === \"POST\" && routePath === \"/search/goal\") {",
+          "url": "https://github.com/FilipaoVfx/indexer/blob/612e3930d7965c9fd50e66ad73d9cff6e2e4b497/backend/src/server.js#L726-L777"
+        },
+        {
+          "type": "api-call",
+          "path": ".github/workflows/keepalive.yml",
+          "lines": "26",
+          "excerpt": "code=$(curl -s -o /dev/null -w \"%{http_code}\" --max-time 60 https://indexer-hzto.onrender.com/health || echo \"000\")",
+          "note": "host público en Render",
+          "url": "https://github.com/FilipaoVfx/indexer/blob/612e3930d7965c9fd50e66ad73d9cff6e2e4b497/.github/workflows/keepalive.yml#L26"
+        },
+        {
+          "type": "source",
+          "path": "backend/src/http.js",
+          "note": "97 líneas",
+          "url": "https://github.com/FilipaoVfx/indexer/blob/612e3930d7965c9fd50e66ad73d9cff6e2e4b497/backend/src/http.js"
+        },
+        {
+          "type": "source",
+          "path": "backend/src/auth.js",
+          "note": "77 líneas",
+          "url": "https://github.com/FilipaoVfx/indexer/blob/612e3930d7965c9fd50e66ad73d9cff6e2e4b497/backend/src/auth.js"
+        }
+      ]
+    },
+    {
+      "id": "store",
+      "name": "BookmarkStore",
+      "type": "module",
+      "group": "core",
+      "summary": "Capa de datos: ingesta con dedupe, búsqueda híbrida, Goal search y corpus.",
+      "role": "Único módulo que habla con Supabase en el request path. Normaliza bookmarks, parsea queries, orquesta RPCs y degrada con gracia si faltan migraciones.",
+      "technologies": [
+        "supabase-js"
+      ],
+      "paths": [
+        "backend/src/store.js",
+        "backend/src/normalize.js",
+        "backend/src/search-query.js"
+      ],
+      "metrics": {
+        "files": 3,
+        "lines": 3513
+      },
+      "confidence": "confirmed",
+      "evidence": [
+        {
+          "type": "source",
+          "path": "backend/src/store.js",
+          "lines": "423",
+          "excerpt": "export class BookmarkStore {",
+          "url": "https://github.com/FilipaoVfx/indexer/blob/612e3930d7965c9fd50e66ad73d9cff6e2e4b497/backend/src/store.js#L423"
+        },
+        {
+          "type": "source",
+          "path": "backend/src/normalize.js",
+          "note": "134 líneas",
+          "url": "https://github.com/FilipaoVfx/indexer/blob/612e3930d7965c9fd50e66ad73d9cff6e2e4b497/backend/src/normalize.js"
+        },
+        {
+          "type": "source",
+          "path": "backend/src/search-query.js",
+          "note": "119 líneas",
+          "url": "https://github.com/FilipaoVfx/indexer/blob/612e3930d7965c9fd50e66ad73d9cff6e2e4b497/backend/src/search-query.js"
+        }
+      ]
+    },
+    {
+      "id": "knowledge",
+      "name": "Knowledge engine",
+      "type": "module",
+      "group": "core",
+      "summary": "Discover, clusters, trending, related y grafo calculados en memoria sobre el corpus.",
+      "role": "Funciones puras: reciben el corpus que el API obtiene de BookmarkStore y devuelven agregados. No accede a la base de datos.",
+      "technologies": [
+        "JavaScript"
+      ],
+      "paths": [
+        "backend/src/knowledge.js"
+      ],
+      "metrics": {
+        "files": 1,
+        "lines": 672
+      },
+      "confidence": "confirmed",
+      "evidence": [
+        {
+          "type": "source",
+          "path": "backend/src/knowledge.js",
+          "lines": "640",
+          "excerpt": "export function buildGraphResponse({ itemId, items, limit = 12 }) {",
+          "url": "https://github.com/FilipaoVfx/indexer/blob/612e3930d7965c9fd50e66ad73d9cff6e2e4b497/backend/src/knowledge.js#L640"
+        }
+      ]
+    },
+    {
+      "id": "classifier",
+      "name": "Clasificador de repos",
+      "type": "module",
+      "group": "core",
+      "summary": "v3 LLM con taxonomía cerrada; v1 por reglas como fallback.",
+      "role": "Asigna categoría, capacidades, stack y madurez a cada README con evidencia trazable.",
+      "technologies": [
+        "OpenAI (gpt-4o-mini)",
+        "Reglas"
+      ],
+      "paths": [
+        "backend/src/repo-classifier.js",
+        "backend/src/repo-classifier-llm.js"
+      ],
+      "metrics": {
+        "files": 2,
+        "lines": 1093
+      },
+      "confidence": "confirmed",
+      "evidence": [
+        {
+          "type": "source",
+          "path": "backend/src/repo-classifier-llm.js",
+          "lines": "14",
+          "excerpt": "export const REPO_CLASSIFIER_LLM_VERSION = \"repo_classifier_v3_llm\";",
+          "url": "https://github.com/FilipaoVfx/indexer/blob/612e3930d7965c9fd50e66ad73d9cff6e2e4b497/backend/src/repo-classifier-llm.js#L14"
+        },
+        {
+          "type": "source",
+          "path": "backend/src/repo-classifier.js",
+          "lines": "1",
+          "excerpt": "export const REPO_CLASSIFIER_VERSION = \"repo_classifier_v1\";",
+          "url": "https://github.com/FilipaoVfx/indexer/blob/612e3930d7965c9fd50e66ad73d9cff6e2e4b497/backend/src/repo-classifier.js#L1"
+        }
+      ]
+    },
+    {
+      "id": "readme-enricher",
+      "name": "Enriquecedor GitHub",
+      "type": "module",
+      "group": "core",
+      "summary": "Detecta owner/repo en bookmarks y descarga README y metadata vía GitHub API.",
+      "role": "Enriquecimiento con caché TTL; en el request path es perezoso (marca pending) para no bloquear la ingesta.",
+      "technologies": [
+        "GitHub REST API"
+      ],
+      "paths": [
+        "backend/src/github-readmes.js",
+        "backend/src/github-repos-metadata.js"
+      ],
+      "metrics": {
+        "files": 2,
+        "lines": 356
+      },
+      "confidence": "confirmed",
+      "evidence": [
+        {
+          "type": "source",
+          "path": "backend/src/github-readmes.js",
+          "lines": "129",
+          "excerpt": "export async function fetchGithubReadmeRow(repoSlug, options = {}) {",
+          "url": "https://github.com/FilipaoVfx/indexer/blob/612e3930d7965c9fd50e66ad73d9cff6e2e4b497/backend/src/github-readmes.js#L129"
+        },
+        {
+          "type": "source",
+          "path": "backend/src/github-repos-metadata.js",
+          "note": "104 líneas",
+          "url": "https://github.com/FilipaoVfx/indexer/blob/612e3930d7965c9fd50e66ad73d9cff6e2e4b497/backend/src/github-repos-metadata.js"
+        }
+      ]
+    },
+    {
+      "id": "url-resolver",
+      "name": "Resolver de shorteners",
+      "type": "module",
+      "group": "core",
+      "summary": "Expande t.co, bit.ly y similares siguiendo redirecciones, con caché.",
+      "role": "Reescribe los links acortados antes de persistir para que dominios y repos sean detectables.",
+      "technologies": [
+        "fetch"
+      ],
+      "paths": [
+        "backend/src/url-resolver.js"
+      ],
+      "metrics": {
+        "files": 1,
+        "lines": 229
+      },
+      "confidence": "confirmed",
+      "evidence": [
+        {
+          "type": "source",
+          "path": "backend/src/url-resolver.js",
+          "lines": "169",
+          "excerpt": "export async function resolveShortenerUrls(urls, options = {}) {",
+          "url": "https://github.com/FilipaoVfx/indexer/blob/612e3930d7965c9fd50e66ad73d9cff6e2e4b497/backend/src/url-resolver.js#L169"
+        }
+      ]
+    },
+    {
+      "id": "enrich-jobs",
+      "name": "CLIs de enriquecimiento",
+      "type": "job",
+      "group": "jobs",
+      "summary": "Clasificación, backfill de READMEs y metadata, importación y migración.",
+      "role": "Scripts batch fuera del request path; el workflow nocturno ejecuta dos de ellos.",
+      "technologies": [
+        "Node 20"
+      ],
+      "paths": [
+        "backend/src/classify-repo-readmes.js",
+        "backend/src/backfill-github-repositories.js",
+        "backend/src/backfill-github-readmes.js",
+        "backend/src/fetch-github-readmes.js",
+        "backend/src/import-readmes-from-disk.js",
+        "backend/src/migrate.js"
+      ],
+      "metrics": {
+        "files": 6,
+        "lines": 1112
+      },
+      "confidence": "confirmed",
+      "evidence": [
+        {
+          "type": "dependency",
+          "path": "backend/package.json",
+          "lines": "13",
+          "excerpt": "\"classify:repos\": \"node src/classify-repo-readmes.js\",",
+          "url": "https://github.com/FilipaoVfx/indexer/blob/612e3930d7965c9fd50e66ad73d9cff6e2e4b497/backend/package.json#L13"
+        },
+        {
+          "type": "dependency",
+          "path": "backend/package.json",
+          "lines": "12",
+          "excerpt": "\"repos:backfill\": \"node src/backfill-github-repositories.js\",",
+          "url": "https://github.com/FilipaoVfx/indexer/blob/612e3930d7965c9fd50e66ad73d9cff6e2e4b497/backend/package.json#L12"
+        },
+        {
+          "type": "source",
+          "path": "backend/src/classify-repo-readmes.js",
+          "note": "73 líneas",
+          "url": "https://github.com/FilipaoVfx/indexer/blob/612e3930d7965c9fd50e66ad73d9cff6e2e4b497/backend/src/classify-repo-readmes.js"
+        },
+        {
+          "type": "source",
+          "path": "backend/src/backfill-github-repositories.js",
+          "note": "185 líneas",
+          "url": "https://github.com/FilipaoVfx/indexer/blob/612e3930d7965c9fd50e66ad73d9cff6e2e4b497/backend/src/backfill-github-repositories.js"
+        },
+        {
+          "type": "source",
+          "path": "backend/src/backfill-github-readmes.js",
+          "note": "107 líneas",
+          "url": "https://github.com/FilipaoVfx/indexer/blob/612e3930d7965c9fd50e66ad73d9cff6e2e4b497/backend/src/backfill-github-readmes.js"
+        }
+      ]
+    },
+    {
+      "id": "rag",
+      "name": "Pipeline RAG",
+      "type": "job",
+      "group": "jobs",
+      "summary": "Chunking, embeddings OpenAI y vectores en Pinecone, incremental por content_hash.",
+      "role": "Ingesta de bookmarks y READMEs al índice vectorial y búsqueda semántica con trust scores.",
+      "technologies": [
+        "OpenAI embeddings",
+        "Pinecone"
+      ],
+      "paths": [
+        "backend/src/rag-chunking.js",
+        "backend/src/rag-ingest.js",
+        "backend/src/rag-openai.js",
+        "backend/src/rag-orchestrator.js",
+        "backend/src/rag-pinecone.js",
+        "backend/src/rag-cli.js"
+      ],
+      "metrics": {
+        "files": 6,
+        "lines": 1284
+      },
+      "confidence": "confirmed",
+      "evidence": [
+        {
+          "type": "dependency",
+          "path": "backend/package.json",
+          "lines": "14",
+          "excerpt": "\"rag:ingest\": \"node src/rag-ingest.js\",",
+          "url": "https://github.com/FilipaoVfx/indexer/blob/612e3930d7965c9fd50e66ad73d9cff6e2e4b497/backend/package.json#L14"
+        },
+        {
+          "type": "source",
+          "path": "backend/src/rag-chunking.js",
+          "note": "252 líneas",
+          "url": "https://github.com/FilipaoVfx/indexer/blob/612e3930d7965c9fd50e66ad73d9cff6e2e4b497/backend/src/rag-chunking.js"
+        },
+        {
+          "type": "source",
+          "path": "backend/src/rag-ingest.js",
+          "note": "334 líneas",
+          "url": "https://github.com/FilipaoVfx/indexer/blob/612e3930d7965c9fd50e66ad73d9cff6e2e4b497/backend/src/rag-ingest.js"
+        },
+        {
+          "type": "source",
+          "path": "backend/src/rag-openai.js",
+          "note": "66 líneas",
+          "url": "https://github.com/FilipaoVfx/indexer/blob/612e3930d7965c9fd50e66ad73d9cff6e2e4b497/backend/src/rag-openai.js"
+        }
+      ]
+    },
+    {
+      "id": "nightly",
+      "name": "Nightly enrich",
+      "type": "job",
+      "group": "jobs",
+      "summary": "Workflow programado 05:00 UTC: clasificar, backfill y sincronizar RAG.",
+      "role": "Scheduler del enriquecimiento. El paso RAG es continue-on-error para no perder la clasificación si Pinecone falla.",
+      "technologies": [
+        "GitHub Actions"
+      ],
+      "paths": [
+        ".github/workflows/nightly-enrich.yml"
+      ],
+      "metrics": {
+        "files": 1,
+        "lines": 58
+      },
+      "confidence": "confirmed",
+      "evidence": [
+        {
+          "type": "deployment",
+          "path": ".github/workflows/nightly-enrich.yml",
+          "lines": "18",
+          "excerpt": "- cron: \"0 5 * * *\"",
+          "url": "https://github.com/FilipaoVfx/indexer/blob/612e3930d7965c9fd50e66ad73d9cff6e2e4b497/.github/workflows/nightly-enrich.yml#L18"
+        }
+      ]
+    },
+    {
+      "id": "postgres",
+      "name": "Supabase · PostgreSQL",
+      "type": "database",
+      "group": "data",
+      "summary": "Bookmarks, READMEs, clasificaciones; FTS, pg_trgm y funciones RPC.",
+      "role": "Persistencia y motor de búsqueda. La lógica de ranking y Goal search vive en funciones SQL versionadas.",
+      "technologies": [
+        "PostgreSQL",
+        "tsvector",
+        "pg_trgm",
+        "Supabase"
+      ],
+      "paths": [
+        "backend/sql"
+      ],
+      "metrics": {
+        "files": 16,
+        "lines": 4366
+      },
+      "confidence": "confirmed",
+      "evidence": [
+        {
+          "type": "migration",
+          "path": "backend/sql",
+          "dir": true,
+          "note": "16 archivos .sql",
+          "url": "https://github.com/FilipaoVfx/indexer/tree/612e3930d7965c9fd50e66ad73d9cff6e2e4b497/backend/sql"
+        },
+        {
+          "type": "dependency",
+          "path": "backend/package.json",
+          "lines": "22",
+          "excerpt": "\"@supabase/supabase-js\": \"^2.103.0\",",
+          "url": "https://github.com/FilipaoVfx/indexer/blob/612e3930d7965c9fd50e66ad73d9cff6e2e4b497/backend/package.json#L22"
+        }
+      ]
+    },
+    {
+      "id": "pinecone",
+      "name": "Pinecone",
+      "type": "vector-store",
+      "group": "data",
+      "summary": "Índice vectorial de chunks de bookmarks y READMEs.",
+      "role": "Búsqueda semántica del pipeline RAG.",
+      "technologies": [
+        "Pinecone"
+      ],
+      "paths": [],
+      "metrics": {
+        "files": 0,
+        "lines": 0
+      },
+      "confidence": "confirmed",
+      "evidence": [
+        {
+          "type": "dependency",
+          "path": "backend/package.json",
+          "lines": "21",
+          "excerpt": "\"@pinecone-database/pinecone\": \"^4.0.0\",",
+          "url": "https://github.com/FilipaoVfx/indexer/blob/612e3930d7965c9fd50e66ad73d9cff6e2e4b497/backend/package.json#L21"
+        },
+        {
+          "type": "environment",
+          "path": ".github/workflows/nightly-enrich.yml",
+          "lines": "56",
+          "excerpt": "PINECONE_INDEX: ${{ secrets.PINECONE_INDEX }}",
+          "url": "https://github.com/FilipaoVfx/indexer/blob/612e3930d7965c9fd50e66ad73d9cff6e2e4b497/.github/workflows/nightly-enrich.yml#L56"
+        }
+      ]
+    },
+    {
+      "id": "github-api",
+      "name": "GitHub REST API",
+      "type": "external",
+      "group": "external",
+      "summary": "READMEs y metadata (stars, lenguaje, topics) de los repos mencionados.",
+      "role": "Fuente de enriquecimiento; token opcional para subir el rate limit.",
+      "technologies": [
+        "REST"
+      ],
+      "paths": [],
+      "metrics": {
+        "files": 0,
+        "lines": 0
+      },
+      "confidence": "confirmed",
+      "evidence": [
+        {
+          "type": "api-call",
+          "path": "backend/src/github-readmes.js",
+          "lines": "148",
+          "excerpt": "`https://api.github.com/repos/${encodeURIComponent(repoInfo.owner)}/${encodeURIComponent(repoInfo.repo)}/readme`,",
+          "url": "https://github.com/FilipaoVfx/indexer/blob/612e3930d7965c9fd50e66ad73d9cff6e2e4b497/backend/src/github-readmes.js#L148"
+        },
+        {
+          "type": "environment",
+          "path": "backend/src/config.js",
+          "lines": "53",
+          "excerpt": "githubToken: process.env.GITHUB_TOKEN || process.env.GH_TOKEN || \"\",",
+          "url": "https://github.com/FilipaoVfx/indexer/blob/612e3930d7965c9fd50e66ad73d9cff6e2e4b497/backend/src/config.js#L53"
+        }
+      ]
+    },
+    {
+      "id": "openai",
+      "name": "OpenAI API",
+      "type": "external",
+      "group": "external",
+      "summary": "Chat completions para el clasificador v3 y embeddings para RAG.",
+      "role": "Proveedor de modelos, solo en procesos batch: ninguna ruta del API lo llama.",
+      "technologies": [
+        "gpt-4o-mini",
+        "text-embedding-3-small"
+      ],
+      "paths": [],
+      "metrics": {
+        "files": 0,
+        "lines": 0
+      },
+      "confidence": "confirmed",
+      "evidence": [
+        {
+          "type": "api-call",
+          "path": "backend/src/repo-classifier-llm.js",
+          "lines": "79",
+          "excerpt": "const res = await fetch(\"https://api.openai.com/v1/chat/completions\", {",
+          "url": "https://github.com/FilipaoVfx/indexer/blob/612e3930d7965c9fd50e66ad73d9cff6e2e4b497/backend/src/repo-classifier-llm.js#L79"
+        },
+        {
+          "type": "dependency",
+          "path": "backend/package.json",
+          "lines": "24",
+          "excerpt": "\"openai\": \"^4.50.0\",",
+          "url": "https://github.com/FilipaoVfx/indexer/blob/612e3930d7965c9fd50e66ad73d9cff6e2e4b497/backend/package.json#L24"
+        }
+      ]
+    },
+    {
+      "id": "ci-cd",
+      "name": "GitHub Actions",
+      "type": "infrastructure",
+      "group": "ops",
+      "summary": "Build y deploy de la SPA a GitHub Pages; keepalive del API en Render.",
+      "role": "Entrega continua del frontend y mitigación del cold start del hosting gratuito.",
+      "technologies": [
+        "GitHub Actions",
+        "GitHub Pages"
+      ],
+      "paths": [
+        ".github/workflows/deploy-pages.yml",
+        ".github/workflows/keepalive.yml"
+      ],
+      "metrics": {
+        "files": 2,
+        "lines": 87
+      },
+      "confidence": "confirmed",
+      "evidence": [
+        {
+          "type": "source",
+          "path": ".github/workflows/deploy-pages.yml",
+          "note": "57 líneas",
+          "url": "https://github.com/FilipaoVfx/indexer/blob/612e3930d7965c9fd50e66ad73d9cff6e2e4b497/.github/workflows/deploy-pages.yml"
+        },
+        {
+          "type": "source",
+          "path": ".github/workflows/keepalive.yml",
+          "note": "30 líneas",
+          "url": "https://github.com/FilipaoVfx/indexer/blob/612e3930d7965c9fd50e66ad73d9cff6e2e4b497/.github/workflows/keepalive.yml"
+        }
+      ]
+    },
+    {
+      "id": "observability",
+      "name": "Stack de observabilidad",
+      "type": "infrastructure",
+      "group": "ops",
+      "summary": "Prometheus, Grafana, node-exporter y blackbox definidos con docker compose.",
+      "role": "Métricas del backend (/metrics con bearer token), probes del frontend y dashboards provisionados.",
+      "technologies": [
+        "Prometheus",
+        "Grafana",
+        "Docker Compose"
+      ],
+      "paths": [
+        "observability"
+      ],
+      "metrics": {
+        "files": 11,
+        "lines": 1083
+      },
+      "confidence": "confirmed",
+      "evidence": [
+        {
+          "type": "deployment",
+          "path": "observability/docker-compose.yml",
+          "lines": "21",
+          "excerpt": "image: prom/prometheus:v2.54.1",
+          "url": "https://github.com/FilipaoVfx/indexer/blob/612e3930d7965c9fd50e66ad73d9cff6e2e4b497/observability/docker-compose.yml#L21"
+        },
+        {
+          "type": "deployment",
+          "path": "observability/docker-compose.yml",
+          "lines": "39",
+          "excerpt": "image: grafana/grafana:11.2.0",
+          "url": "https://github.com/FilipaoVfx/indexer/blob/612e3930d7965c9fd50e66ad73d9cff6e2e4b497/observability/docker-compose.yml#L39"
+        },
+        {
+          "type": "source",
+          "path": "observability",
+          "dir": true,
+          "note": "11 archivos",
+          "url": "https://github.com/FilipaoVfx/indexer/tree/612e3930d7965c9fd50e66ad73d9cff6e2e4b497/observability"
+        }
+      ],
+      "caveat": "El stack está definido en el repo; no hay evidencia en el código de que esté desplegado."
+    }
+  ],
+  "relationships": [
+    {
+      "id": "x--extension",
+      "source": "x",
+      "target": "extension",
+      "type": "scrape",
+      "label": "Lectura del DOM de bookmarks",
+      "description": "El content script hace scroll sobre x.com/i/bookmarks y extrae cada tweet con sus links; también abre el detalle para leer los links del primer comentario.",
+      "detected": false,
+      "confidence": "confirmed",
+      "evidence": [
+        {
+          "type": "config",
+          "path": "extension/manifest.json",
+          "lines": "20",
+          "excerpt": "\"matches\": [\"https://x.com/*\", \"https://twitter.com/*\"],",
+          "url": "https://github.com/FilipaoVfx/indexer/blob/612e3930d7965c9fd50e66ad73d9cff6e2e4b497/extension/manifest.json#L20"
+        },
+        {
+          "type": "source",
+          "path": "extension/content.js",
+          "lines": "2068",
+          "excerpt": "window.scrollBy({",
+          "url": "https://github.com/FilipaoVfx/indexer/blob/612e3930d7965c9fd50e66ad73d9cff6e2e4b497/extension/content.js#L2068"
+        }
+      ]
+    },
+    {
+      "id": "extension--api",
+      "source": "extension",
+      "target": "api",
+      "type": "http",
+      "label": "Ingesta por lotes + dedupe",
+      "description": "El service worker envía lotes (import-batch insert-only o batch legacy con upsert), consulta IDs existentes para deduplicar localmente y relanza la búsqueda de links del primer comentario.",
+      "detected": true,
+      "confidence": "confirmed",
+      "evidence": [
+        {
+          "type": "api-call",
+          "path": "extension/background.js",
+          "lines": "875",
+          "excerpt": "const endpoint = buildBackendUrl(settings.apiBaseUrl, \"/api/bookmarks/search\", {",
+          "url": "https://github.com/FilipaoVfx/indexer/blob/612e3930d7965c9fd50e66ad73d9cff6e2e4b497/extension/background.js#L875"
+        },
+        {
+          "type": "route",
+          "path": "backend/src/server.js",
+          "lines": "603-643",
+          "excerpt": "if (req.method === \"GET\" && routePath === \"/api/bookmarks/search\") {",
+          "url": "https://github.com/FilipaoVfx/indexer/blob/612e3930d7965c9fd50e66ad73d9cff6e2e4b497/backend/src/server.js#L603-L643"
+        },
+        {
+          "type": "api-call",
+          "path": "extension/background.js",
+          "lines": "935",
+          "excerpt": "const endpoint = buildBackendUrl(settings.apiBaseUrl, \"/bookmarks/ids\", {",
+          "url": "https://github.com/FilipaoVfx/indexer/blob/612e3930d7965c9fd50e66ad73d9cff6e2e4b497/extension/background.js#L935"
+        },
+        {
+          "type": "route",
+          "path": "backend/src/server.js",
+          "lines": "94",
+          "excerpt": "return routePath === \"/bookmarks/ids\" || routePath === \"/api/bookmarks/ids\";",
+          "url": "https://github.com/FilipaoVfx/indexer/blob/612e3930d7965c9fd50e66ad73d9cff6e2e4b497/backend/src/server.js#L94"
+        },
+        {
+          "type": "api-call",
+          "path": "extension/background.js",
+          "lines": "1080",
+          "excerpt": "buildBackendUrl(settings.apiBaseUrl, \"/bookmarks/import-batch\"),",
+          "url": "https://github.com/FilipaoVfx/indexer/blob/612e3930d7965c9fd50e66ad73d9cff6e2e4b497/extension/background.js#L1080"
+        },
+        {
+          "type": "route",
+          "path": "backend/src/server.js",
+          "lines": "99",
+          "excerpt": "routePath === \"/bookmarks/import-batch\" ||",
+          "url": "https://github.com/FilipaoVfx/indexer/blob/612e3930d7965c9fd50e66ad73d9cff6e2e4b497/backend/src/server.js#L99"
+        },
+        {
+          "type": "api-call",
+          "path": "extension/background.js",
+          "lines": "1097",
+          "excerpt": "buildBackendUrl(settings.apiBaseUrl, \"/api/bookmarks/batch\"),",
+          "url": "https://github.com/FilipaoVfx/indexer/blob/612e3930d7965c9fd50e66ad73d9cff6e2e4b497/extension/background.js#L1097"
+        },
+        {
+          "type": "route",
+          "path": "backend/src/server.js",
+          "lines": "484-537",
+          "excerpt": "if (req.method === \"POST\" && routePath === \"/api/bookmarks/batch\") {",
+          "url": "https://github.com/FilipaoVfx/indexer/blob/612e3930d7965c9fd50e66ad73d9cff6e2e4b497/backend/src/server.js#L484-L537"
+        }
+      ],
+      "endpoints": [
+        "GET /api/bookmarks/search",
+        "/bookmarks/ids",
+        "/bookmarks/import-batch",
+        "POST /api/bookmarks/batch",
+        "GET /api/bookmarks/relookup-candidates",
+        "PATCH /api/bookmarks/first-comment-links"
+      ]
+    },
+    {
+      "id": "web--api",
+      "source": "web",
+      "target": "api",
+      "type": "http",
+      "label": "REST: búsqueda y Goal Mode",
+      "description": "La SPA consume búsqueda híbrida, Goal Mode, autores, repos y READMEs contra el API público.",
+      "detected": true,
+      "confidence": "confirmed",
+      "evidence": [
+        {
+          "type": "api-call",
+          "path": "web-astro/src/lib/api.ts",
+          "lines": "577",
+          "excerpt": "}>(`${API_BASE}/api/authors-summary?${query.toString()}`);",
+          "url": "https://github.com/FilipaoVfx/indexer/blob/612e3930d7965c9fd50e66ad73d9cff6e2e4b497/web-astro/src/lib/api.ts#L577"
+        },
+        {
+          "type": "route",
+          "path": "backend/src/server.js",
+          "lines": "335-344",
+          "excerpt": "if (req.method === \"GET\" && routePath === \"/api/authors-summary\") {",
+          "url": "https://github.com/FilipaoVfx/indexer/blob/612e3930d7965c9fd50e66ad73d9cff6e2e4b497/backend/src/server.js#L335-L344"
+        },
+        {
+          "type": "api-call",
+          "path": "web-astro/src/lib/api.ts",
+          "lines": "598",
+          "excerpt": "`${API_BASE}/api/stats?${query.toString()}`",
+          "url": "https://github.com/FilipaoVfx/indexer/blob/612e3930d7965c9fd50e66ad73d9cff6e2e4b497/web-astro/src/lib/api.ts#L598"
+        },
+        {
+          "type": "route",
+          "path": "backend/src/server.js",
+          "lines": "345-354",
+          "excerpt": "if (req.method === \"GET\" && routePath === \"/api/stats\") {",
+          "url": "https://github.com/FilipaoVfx/indexer/blob/612e3930d7965c9fd50e66ad73d9cff6e2e4b497/backend/src/server.js#L345-L354"
+        },
+        {
+          "type": "api-call",
+          "path": "web-astro/src/lib/api.ts",
+          "lines": "624",
+          "excerpt": "`${API_BASE}/api/bookmarks/search?${query.toString()}`",
+          "url": "https://github.com/FilipaoVfx/indexer/blob/612e3930d7965c9fd50e66ad73d9cff6e2e4b497/web-astro/src/lib/api.ts#L624"
+        },
+        {
+          "type": "route",
+          "path": "backend/src/server.js",
+          "lines": "603-643",
+          "excerpt": "if (req.method === \"GET\" && routePath === \"/api/bookmarks/search\") {",
+          "url": "https://github.com/FilipaoVfx/indexer/blob/612e3930d7965c9fd50e66ad73d9cff6e2e4b497/backend/src/server.js#L603-L643"
+        },
+        {
+          "type": "api-call",
+          "path": "web-astro/src/lib/api.ts",
+          "lines": "651",
+          "excerpt": "const res = await fetch(`${API_BASE}/api/bookmarks/search?${query.toString()}`, {",
+          "url": "https://github.com/FilipaoVfx/indexer/blob/612e3930d7965c9fd50e66ad73d9cff6e2e4b497/web-astro/src/lib/api.ts#L651"
+        },
+        {
+          "type": "api-call",
+          "path": "web-astro/src/lib/api.ts",
+          "lines": "668",
+          "excerpt": "const res = await fetch(`${API_BASE}/search/goal`, {",
+          "url": "https://github.com/FilipaoVfx/indexer/blob/612e3930d7965c9fd50e66ad73d9cff6e2e4b497/web-astro/src/lib/api.ts#L668"
+        }
+      ],
+      "endpoints": [
+        "GET /api/authors-summary",
+        "GET /api/stats",
+        "GET /api/bookmarks/search",
+        "POST /search/goal",
+        "GET /health",
+        "GET /users",
+        "GET /api/github/repos-summary",
+        "GET /api/github/repo-mentions",
+        "GET /api/github-readmes"
+      ]
+    },
+    {
+      "id": "console--api",
+      "source": "console",
+      "target": "api",
+      "type": "http",
+      "label": "Health + búsqueda en vivo",
+      "description": "Polling de /health y /api/bookmarks/search para inspeccionar el índice en tiempo real.",
+      "detected": true,
+      "confidence": "confirmed",
+      "evidence": [
+        {
+          "type": "api-call",
+          "path": "tools/live-query-console/index.html",
+          "lines": "119",
+          "excerpt": "async function health(reason=\"poll\"){if(S.hCtrl)S.hCtrl.abort();const c=new AbortController();S.hCtrl=c;try{const r=await fetch(api(\"/health\"),{cache:\"no-store…",
+          "url": "https://github.com/FilipaoVfx/indexer/blob/612e3930d7965c9fd50e66ad73d9cff6e2e4b497/tools/live-query-console/index.html#L119"
+        },
+        {
+          "type": "route",
+          "path": "backend/src/server.js",
+          "lines": "219-233",
+          "excerpt": "if (req.method === \"GET\" && routePath === \"/health\") {",
+          "url": "https://github.com/FilipaoVfx/indexer/blob/612e3930d7965c9fd50e66ad73d9cff6e2e4b497/backend/src/server.js#L219-L233"
+        },
+        {
+          "type": "api-call",
+          "path": "tools/live-query-console/index.html",
+          "lines": "120",
+          "excerpt": "async function search(reason=\"poll\"){if(S.sCtrl)S.sCtrl.abort();const f=filters();E.limit.value=String(f.limit);const c=new AbortController();S.sCtrl=c;const t…",
+          "url": "https://github.com/FilipaoVfx/indexer/blob/612e3930d7965c9fd50e66ad73d9cff6e2e4b497/tools/live-query-console/index.html#L120"
+        },
+        {
+          "type": "route",
+          "path": "backend/src/server.js",
+          "lines": "603-643",
+          "excerpt": "if (req.method === \"GET\" && routePath === \"/api/bookmarks/search\") {",
+          "url": "https://github.com/FilipaoVfx/indexer/blob/612e3930d7965c9fd50e66ad73d9cff6e2e4b497/backend/src/server.js#L603-L643"
+        },
+        {
+          "type": "api-call",
+          "path": "tools/live-query-console/index.html",
+          "lines": "59",
+          "excerpt": "<div class=\"f api\"><label for=\"api_base\">API base</label><input id=\"api_base\" name=\"api_base\" type=\"text\" value=\"https://indexer-hzto.onrender.com\" /></div>",
+          "note": "indexer-hzto.onrender.com",
+          "url": "https://github.com/FilipaoVfx/indexer/blob/612e3930d7965c9fd50e66ad73d9cff6e2e4b497/tools/live-query-console/index.html#L59"
+        }
+      ],
+      "endpoints": [
+        "GET /health",
+        "GET /api/bookmarks/search"
+      ]
+    },
+    {
+      "id": "ci-cd--api",
+      "source": "ci-cd",
+      "target": "api",
+      "type": "http",
+      "label": "Keepalive cada 4 min",
+      "description": "Un workflow cada 2 h mantiene un bucle de pings a /health para que Render free no duerma el servicio.",
+      "detected": true,
+      "confidence": "confirmed",
+      "evidence": [
+        {
+          "type": "api-call",
+          "path": ".github/workflows/keepalive.yml",
+          "lines": "26",
+          "excerpt": "code=$(curl -s -o /dev/null -w \"%{http_code}\" --max-time 60 https://indexer-hzto.onrender.com/health || echo \"000\")",
+          "note": "indexer-hzto.onrender.com",
+          "url": "https://github.com/FilipaoVfx/indexer/blob/612e3930d7965c9fd50e66ad73d9cff6e2e4b497/.github/workflows/keepalive.yml#L26"
+        }
+      ]
+    },
+    {
+      "id": "ci-cd--web",
+      "source": "ci-cd",
+      "target": "web",
+      "type": "deploy",
+      "label": "Build + deploy a GitHub Pages",
+      "description": "En cada push a main compila web-astro con el base path /indexer y publica dist en GitHub Pages.",
+      "detected": false,
+      "confidence": "confirmed",
+      "evidence": [
+        {
+          "type": "deployment",
+          "path": ".github/workflows/deploy-pages.yml",
+          "lines": "22",
+          "excerpt": "working-directory: ./web-astro",
+          "url": "https://github.com/FilipaoVfx/indexer/blob/612e3930d7965c9fd50e66ad73d9cff6e2e4b497/.github/workflows/deploy-pages.yml#L22"
+        },
+        {
+          "type": "deployment",
+          "path": ".github/workflows/deploy-pages.yml",
+          "lines": "56",
+          "excerpt": "uses: actions/deploy-pages@v4",
+          "url": "https://github.com/FilipaoVfx/indexer/blob/612e3930d7965c9fd50e66ad73d9cff6e2e4b497/.github/workflows/deploy-pages.yml#L56"
+        }
+      ]
+    },
+    {
+      "id": "api--store",
+      "source": "api",
+      "target": "store",
+      "type": "import",
+      "label": "Toda lectura y escritura",
+      "description": "El API no toca la base de datos directamente: cada handler delega en BookmarkStore.",
+      "detected": true,
+      "confidence": "confirmed",
+      "evidence": [
+        {
+          "type": "import",
+          "path": "backend/src/server.js",
+          "lines": "18",
+          "excerpt": "import { BookmarkStore } from \"./store.js\";",
+          "url": "https://github.com/FilipaoVfx/indexer/blob/612e3930d7965c9fd50e66ad73d9cff6e2e4b497/backend/src/server.js#L18"
+        }
+      ]
+    },
+    {
+      "id": "api--knowledge",
+      "source": "api",
+      "target": "knowledge",
+      "type": "import",
+      "label": "Agregados sobre el corpus",
+      "description": "Para discover, clusters, trending, related, graph y búsqueda semántica, el API pide el corpus a BookmarkStore y se lo pasa al knowledge engine.",
+      "detected": true,
+      "confidence": "confirmed",
+      "evidence": [
+        {
+          "type": "source",
+          "path": "backend/src/server.js",
+          "lines": "702",
+          "excerpt": "const corpus = await store.getCorpus({",
+          "url": "https://github.com/FilipaoVfx/indexer/blob/612e3930d7965c9fd50e66ad73d9cff6e2e4b497/backend/src/server.js#L702"
+        },
+        {
+          "type": "import",
+          "path": "backend/src/server.js",
+          "lines": "11",
+          "excerpt": "} from \"./knowledge.js\";",
+          "url": "https://github.com/FilipaoVfx/indexer/blob/612e3930d7965c9fd50e66ad73d9cff6e2e4b497/backend/src/server.js#L11"
+        }
+      ]
+    },
+    {
+      "id": "knowledge--store",
+      "source": "knowledge",
+      "target": "store",
+      "type": "import",
+      "label": "Reutiliza el parser de queries",
+      "description": "Única dependencia del knowledge engine: parseSearchQuery, para interpretar filtros igual que la búsqueda principal.",
+      "detected": true,
+      "confidence": "confirmed",
+      "evidence": [
+        {
+          "type": "import",
+          "path": "backend/src/knowledge.js",
+          "lines": "1",
+          "excerpt": "import { parseSearchQuery } from \"./search-query.js\";",
+          "url": "https://github.com/FilipaoVfx/indexer/blob/612e3930d7965c9fd50e66ad73d9cff6e2e4b497/backend/src/knowledge.js#L1"
+        }
+      ]
+    },
+    {
+      "id": "store--postgres",
+      "source": "store",
+      "target": "postgres",
+      "type": "sql",
+      "label": "Tablas + RPC de búsqueda",
+      "description": "Upserts de bookmarks, lecturas de READMEs y clasificaciones, y las RPC search_bookmarks, search_goal_v3 y su fallback v2.",
+      "detected": true,
+      "confidence": "confirmed",
+      "evidence": [
+        {
+          "type": "import",
+          "path": "backend/src/store.js",
+          "lines": "1",
+          "excerpt": "import { createClient } from \"@supabase/supabase-js\";",
+          "url": "https://github.com/FilipaoVfx/indexer/blob/612e3930d7965c9fd50e66ad73d9cff6e2e4b497/backend/src/store.js#L1"
+        },
+        {
+          "type": "source",
+          "path": "backend/src/store.js",
+          "lines": "527",
+          "excerpt": ".from(\"bookmark_context_links\")",
+          "url": "https://github.com/FilipaoVfx/indexer/blob/612e3930d7965c9fd50e66ad73d9cff6e2e4b497/backend/src/store.js#L527"
+        },
+        {
+          "type": "source",
+          "path": "backend/src/store.js",
+          "lines": "557",
+          "excerpt": ".from(\"bookmark_context_links\")",
+          "url": "https://github.com/FilipaoVfx/indexer/blob/612e3930d7965c9fd50e66ad73d9cff6e2e4b497/backend/src/store.js#L557"
+        },
+        {
+          "type": "source",
+          "path": "backend/src/store.js",
+          "lines": "589",
+          "excerpt": ".from(\"bookmarks\")",
+          "url": "https://github.com/FilipaoVfx/indexer/blob/612e3930d7965c9fd50e66ad73d9cff6e2e4b497/backend/src/store.js#L589"
+        }
+      ],
+      "endpoints": [
+        "bookmark_context_links",
+        "bookmarks",
+        "github_repo_readmes",
+        "github_repositories",
+        "bookmark_github_repos",
+        "repo_classifications",
+        "+7 más"
+      ]
+    },
+    {
+      "id": "store--url-resolver",
+      "source": "store",
+      "target": "url-resolver",
+      "type": "import",
+      "label": "Expande shorteners",
+      "description": "Antes de persistir, los links acortados se resuelven y se reescriben.",
+      "detected": true,
+      "confidence": "confirmed",
+      "evidence": [
+        {
+          "type": "import",
+          "path": "backend/src/store.js",
+          "lines": "8",
+          "excerpt": "} from \"./url-resolver.js\";",
+          "url": "https://github.com/FilipaoVfx/indexer/blob/612e3930d7965c9fd50e66ad73d9cff6e2e4b497/backend/src/store.js#L8"
+        }
+      ]
+    },
+    {
+      "id": "store--readme-enricher",
+      "source": "store",
+      "target": "readme-enricher",
+      "type": "import",
+      "label": "Detecta repos y README",
+      "description": "Extrae owner/repo de texto y links; el README se descarga en diferido (al verlo o por backfill).",
+      "detected": true,
+      "confidence": "confirmed",
+      "evidence": [
+        {
+          "type": "import",
+          "path": "backend/src/store.js",
+          "lines": "14",
+          "excerpt": "} from \"./github-readmes.js\";",
+          "url": "https://github.com/FilipaoVfx/indexer/blob/612e3930d7965c9fd50e66ad73d9cff6e2e4b497/backend/src/store.js#L14"
+        },
+        {
+          "type": "import",
+          "path": "backend/src/store.js",
+          "lines": "24",
+          "excerpt": "import { mapReadmeStatusToRepo } from \"./github-repos-metadata.js\";",
+          "url": "https://github.com/FilipaoVfx/indexer/blob/612e3930d7965c9fd50e66ad73d9cff6e2e4b497/backend/src/store.js#L24"
+        }
+      ]
+    },
+    {
+      "id": "store--classifier",
+      "source": "store",
+      "target": "classifier",
+      "type": "import",
+      "label": "Clasifica READMEs",
+      "description": "Re-clasifica solo si cambió el README o la versión del clasificador.",
+      "detected": true,
+      "confidence": "confirmed",
+      "evidence": [
+        {
+          "type": "import",
+          "path": "backend/src/store.js",
+          "lines": "18",
+          "excerpt": "} from \"./repo-classifier-llm.js\";",
+          "url": "https://github.com/FilipaoVfx/indexer/blob/612e3930d7965c9fd50e66ad73d9cff6e2e4b497/backend/src/store.js#L18"
+        },
+        {
+          "type": "import",
+          "path": "backend/src/store.js",
+          "lines": "23",
+          "excerpt": "} from \"./repo-classifier.js\";",
+          "url": "https://github.com/FilipaoVfx/indexer/blob/612e3930d7965c9fd50e66ad73d9cff6e2e4b497/backend/src/store.js#L23"
+        }
+      ]
+    },
+    {
+      "id": "readme-enricher--github-api",
+      "source": "readme-enricher",
+      "target": "github-api",
+      "type": "http",
+      "label": "README + metadata",
+      "description": "GET /repos/{owner}/{repo}/readme y /repos/{owner}/{repo}, con caché TTL y límites de tamaño.",
+      "detected": true,
+      "confidence": "confirmed",
+      "evidence": [
+        {
+          "type": "api-call",
+          "path": "backend/src/github-readmes.js",
+          "lines": "148",
+          "excerpt": "`https://api.github.com/repos/${encodeURIComponent(repoInfo.owner)}/${encodeURIComponent(repoInfo.repo)}/readme`,",
+          "note": "api.github.com",
+          "url": "https://github.com/FilipaoVfx/indexer/blob/612e3930d7965c9fd50e66ad73d9cff6e2e4b497/backend/src/github-readmes.js#L148"
+        },
+        {
+          "type": "api-call",
+          "path": "backend/src/github-repos-metadata.js",
+          "lines": "67",
+          "excerpt": "`https://api.github.com/repos/${encodeURIComponent(repoInfo.owner)}/${encodeURIComponent(repoInfo.repo)}`,",
+          "note": "api.github.com",
+          "url": "https://github.com/FilipaoVfx/indexer/blob/612e3930d7965c9fd50e66ad73d9cff6e2e4b497/backend/src/github-repos-metadata.js#L67"
+        }
+      ]
+    },
+    {
+      "id": "classifier--openai",
+      "source": "classifier",
+      "target": "openai",
+      "type": "http",
+      "label": "Clasificación LLM (v3)",
+      "description": "Chat completions con taxonomía cerrada y respuesta JSON validada; si falla o no hay key, cae a v1 por reglas.",
+      "detected": true,
+      "confidence": "confirmed",
+      "evidence": [
+        {
+          "type": "api-call",
+          "path": "backend/src/repo-classifier-llm.js",
+          "lines": "79",
+          "excerpt": "const res = await fetch(\"https://api.openai.com/v1/chat/completions\", {",
+          "note": "api.openai.com",
+          "url": "https://github.com/FilipaoVfx/indexer/blob/612e3930d7965c9fd50e66ad73d9cff6e2e4b497/backend/src/repo-classifier-llm.js#L79"
+        }
+      ]
+    },
+    {
+      "id": "nightly--enrich-jobs",
+      "source": "nightly",
+      "target": "enrich-jobs",
+      "type": "invokes",
+      "label": "Clasificar + backfill",
+      "description": "Ejecuta classify-repo-readmes y backfill-github-repositories --only-missing.",
+      "detected": true,
+      "confidence": "confirmed",
+      "evidence": [
+        {
+          "type": "deployment",
+          "path": ".github/workflows/nightly-enrich.yml",
+          "lines": "47",
+          "excerpt": "run: node backend/src/classify-repo-readmes.js",
+          "url": "https://github.com/FilipaoVfx/indexer/blob/612e3930d7965c9fd50e66ad73d9cff6e2e4b497/.github/workflows/nightly-enrich.yml#L47"
+        },
+        {
+          "type": "deployment",
+          "path": ".github/workflows/nightly-enrich.yml",
+          "lines": "50",
+          "excerpt": "run: node backend/src/backfill-github-repositories.js --only-missing",
+          "url": "https://github.com/FilipaoVfx/indexer/blob/612e3930d7965c9fd50e66ad73d9cff6e2e4b497/.github/workflows/nightly-enrich.yml#L50"
+        }
+      ]
+    },
+    {
+      "id": "nightly--rag",
+      "source": "nightly",
+      "target": "rag",
+      "type": "invokes",
+      "label": "Sincroniza RAG",
+      "description": "rag-ingest all con continue-on-error: si Pinecone falla, el job no queda en rojo permanente.",
+      "detected": true,
+      "confidence": "confirmed",
+      "evidence": [
+        {
+          "type": "deployment",
+          "path": ".github/workflows/nightly-enrich.yml",
+          "lines": "57",
+          "excerpt": "run: node backend/src/rag-ingest.js all",
+          "url": "https://github.com/FilipaoVfx/indexer/blob/612e3930d7965c9fd50e66ad73d9cff6e2e4b497/.github/workflows/nightly-enrich.yml#L57"
+        }
+      ]
+    },
+    {
+      "id": "rag--openai",
+      "source": "rag",
+      "target": "openai",
+      "type": "sdk",
+      "label": "Embeddings",
+      "description": "text-embedding-3-small en lotes, solo para contenido nuevo o modificado.",
+      "detected": true,
+      "confidence": "confirmed",
+      "evidence": [
+        {
+          "type": "import",
+          "path": "backend/src/rag-openai.js",
+          "lines": "15",
+          "excerpt": "return import(\"openai\").then(({ default: OpenAI }) => {",
+          "url": "https://github.com/FilipaoVfx/indexer/blob/612e3930d7965c9fd50e66ad73d9cff6e2e4b497/backend/src/rag-openai.js#L15"
+        }
+      ]
+    },
+    {
+      "id": "rag--pinecone",
+      "source": "rag",
+      "target": "pinecone",
+      "type": "sdk",
+      "label": "Upsert y query de vectores",
+      "description": "Vectores por chunk con metadata; la búsqueda semántica consulta el mismo índice.",
+      "detected": true,
+      "confidence": "confirmed",
+      "evidence": [
+        {
+          "type": "import",
+          "path": "backend/src/rag-pinecone.js",
+          "lines": "1",
+          "excerpt": "import { Pinecone } from \"@pinecone-database/pinecone\";",
+          "url": "https://github.com/FilipaoVfx/indexer/blob/612e3930d7965c9fd50e66ad73d9cff6e2e4b497/backend/src/rag-pinecone.js#L1"
+        }
+      ]
+    },
+    {
+      "id": "rag--postgres",
+      "source": "rag",
+      "target": "postgres",
+      "type": "sql",
+      "label": "Fuente + estado de sync",
+      "description": "Lee bookmarks y READMEs, guarda rag_sync_state (content_hash) y registra consultas.",
+      "detected": true,
+      "confidence": "confirmed",
+      "evidence": [
+        {
+          "type": "import",
+          "path": "backend/src/rag-cli.js",
+          "lines": "7",
+          "excerpt": "import { createClient } from \"@supabase/supabase-js\";",
+          "url": "https://github.com/FilipaoVfx/indexer/blob/612e3930d7965c9fd50e66ad73d9cff6e2e4b497/backend/src/rag-cli.js#L7"
+        },
+        {
+          "type": "import",
+          "path": "backend/src/rag-ingest.js",
+          "lines": "4",
+          "excerpt": "import { createClient } from \"@supabase/supabase-js\";",
+          "url": "https://github.com/FilipaoVfx/indexer/blob/612e3930d7965c9fd50e66ad73d9cff6e2e4b497/backend/src/rag-ingest.js#L4"
+        },
+        {
+          "type": "import",
+          "path": "backend/src/rag-orchestrator.js",
+          "lines": "4",
+          "excerpt": "import { createClient } from \"@supabase/supabase-js\";",
+          "url": "https://github.com/FilipaoVfx/indexer/blob/612e3930d7965c9fd50e66ad73d9cff6e2e4b497/backend/src/rag-orchestrator.js#L4"
+        },
+        {
+          "type": "source",
+          "path": "backend/src/rag-cli.js",
+          "lines": "93",
+          "excerpt": "db.from(\"bookmarks\").select(\"id\", { count: \"exact\", head: true }),",
+          "url": "https://github.com/FilipaoVfx/indexer/blob/612e3930d7965c9fd50e66ad73d9cff6e2e4b497/backend/src/rag-cli.js#L93"
+        },
+        {
+          "type": "source",
+          "path": "backend/src/rag-cli.js",
+          "lines": "94",
+          "excerpt": "db.from(\"github_repo_readmes\").select(\"id\", { count: \"exact\", head: true }).eq(\"status\", \"ok\"),",
+          "url": "https://github.com/FilipaoVfx/indexer/blob/612e3930d7965c9fd50e66ad73d9cff6e2e4b497/backend/src/rag-cli.js#L94"
+        },
+        {
+          "type": "source",
+          "path": "backend/src/rag-cli.js",
+          "lines": "95",
+          "excerpt": "db.from(\"rag_sync_state\").select(\"id\", { count: \"exact\", head: true }).eq(\"source_type\", \"bookmark\"),",
+          "url": "https://github.com/FilipaoVfx/indexer/blob/612e3930d7965c9fd50e66ad73d9cff6e2e4b497/backend/src/rag-cli.js#L95"
+        }
+      ],
+      "endpoints": [
+        "bookmarks",
+        "github_repo_readmes",
+        "rag_sync_state",
+        "repo_engagement_metrics",
+        "rag_queries_log"
+      ]
+    },
+    {
+      "id": "telegram-bot--rag",
+      "source": "telegram-bot",
+      "target": "rag",
+      "type": "import",
+      "label": "Búsqueda RAG",
+      "description": "Los comandos del bot delegan en ragSearch y en los trust scores del orquestador.",
+      "detected": true,
+      "confidence": "confirmed",
+      "evidence": [
+        {
+          "type": "import",
+          "path": "backend/src/telegram-bot.js",
+          "lines": "1",
+          "excerpt": "import { ragSearch, getTopTrustScores, getRepoTrustScores } from \"./rag-orchestrator.js\";",
+          "url": "https://github.com/FilipaoVfx/indexer/blob/612e3930d7965c9fd50e66ad73d9cff6e2e4b497/backend/src/telegram-bot.js#L1"
+        },
+        {
+          "type": "import",
+          "path": "backend/src/telegram-bot.js",
+          "lines": "2",
+          "excerpt": "import { getPineconeStats } from \"./rag-pinecone.js\";",
+          "url": "https://github.com/FilipaoVfx/indexer/blob/612e3930d7965c9fd50e66ad73d9cff6e2e4b497/backend/src/telegram-bot.js#L2"
+        }
+      ]
+    },
+    {
+      "id": "enrich-jobs--store",
+      "source": "enrich-jobs",
+      "target": "store",
+      "type": "import",
+      "label": "Reutiliza BookmarkStore",
+      "description": "Los CLIs de clasificación y backfill usan la misma capa de datos que el API, no consultas propias.",
+      "detected": true,
+      "confidence": "confirmed",
+      "evidence": [
+        {
+          "type": "import",
+          "path": "backend/src/backfill-github-readmes.js",
+          "lines": "2",
+          "excerpt": "import { BookmarkStore } from \"./store.js\";",
+          "url": "https://github.com/FilipaoVfx/indexer/blob/612e3930d7965c9fd50e66ad73d9cff6e2e4b497/backend/src/backfill-github-readmes.js#L2"
+        },
+        {
+          "type": "import",
+          "path": "backend/src/backfill-github-repositories.js",
+          "lines": "2",
+          "excerpt": "import { BookmarkStore } from \"./store.js\";",
+          "url": "https://github.com/FilipaoVfx/indexer/blob/612e3930d7965c9fd50e66ad73d9cff6e2e4b497/backend/src/backfill-github-repositories.js#L2"
+        },
+        {
+          "type": "import",
+          "path": "backend/src/classify-repo-readmes.js",
+          "lines": "2",
+          "excerpt": "import { BookmarkStore } from \"./store.js\";",
+          "url": "https://github.com/FilipaoVfx/indexer/blob/612e3930d7965c9fd50e66ad73d9cff6e2e4b497/backend/src/classify-repo-readmes.js#L2"
+        }
+      ]
+    },
+    {
+      "id": "enrich-jobs--readme-enricher",
+      "source": "enrich-jobs",
+      "target": "readme-enricher",
+      "type": "import",
+      "label": "Metadata y slugs de GitHub",
+      "description": "El backfill reutiliza fetchRepoMetadata y el parser de owner/repo del enriquecedor.",
+      "detected": true,
+      "confidence": "confirmed",
+      "evidence": [
+        {
+          "type": "import",
+          "path": "backend/src/backfill-github-repositories.js",
+          "lines": "7",
+          "excerpt": "} from \"./github-repos-metadata.js\";",
+          "url": "https://github.com/FilipaoVfx/indexer/blob/612e3930d7965c9fd50e66ad73d9cff6e2e4b497/backend/src/backfill-github-repositories.js#L7"
+        },
+        {
+          "type": "import",
+          "path": "backend/src/import-readmes-from-disk.js",
+          "lines": "33",
+          "excerpt": "import { splitGithubRepoSlug } from \"./github-readmes.js\";",
+          "url": "https://github.com/FilipaoVfx/indexer/blob/612e3930d7965c9fd50e66ad73d9cff6e2e4b497/backend/src/import-readmes-from-disk.js#L33"
+        }
+      ]
+    },
+    {
+      "id": "enrich-jobs--postgres",
+      "source": "enrich-jobs",
+      "target": "postgres",
+      "type": "sql",
+      "label": "Lecturas batch + refresh del índice",
+      "description": "Seleccionan READMEs pendientes, escriben github_repositories y refrescan el índice de Goal search.",
+      "detected": true,
+      "confidence": "confirmed",
+      "evidence": [
+        {
+          "type": "import",
+          "path": "backend/src/import-readmes-from-disk.js",
+          "lines": "32",
+          "excerpt": "import { createClient } from \"@supabase/supabase-js\";",
+          "url": "https://github.com/FilipaoVfx/indexer/blob/612e3930d7965c9fd50e66ad73d9cff6e2e4b497/backend/src/import-readmes-from-disk.js#L32"
+        },
+        {
+          "type": "import",
+          "path": "backend/src/migrate.js",
+          "lines": "1",
+          "excerpt": "import { createClient } from '@supabase/supabase-js';",
+          "url": "https://github.com/FilipaoVfx/indexer/blob/612e3930d7965c9fd50e66ad73d9cff6e2e4b497/backend/src/migrate.js#L1"
+        },
+        {
+          "type": "source",
+          "path": "backend/src/backfill-github-readmes.js",
+          "lines": "37",
+          "excerpt": ".from(\"bookmark_github_repos\")",
+          "url": "https://github.com/FilipaoVfx/indexer/blob/612e3930d7965c9fd50e66ad73d9cff6e2e4b497/backend/src/backfill-github-readmes.js#L37"
+        },
+        {
+          "type": "source",
+          "path": "backend/src/backfill-github-repositories.js",
+          "lines": "46",
+          "excerpt": ".from(\"github_repo_readmes\")",
+          "url": "https://github.com/FilipaoVfx/indexer/blob/612e3930d7965c9fd50e66ad73d9cff6e2e4b497/backend/src/backfill-github-repositories.js#L46"
+        },
+        {
+          "type": "source",
+          "path": "backend/src/backfill-github-repositories.js",
+          "lines": "60",
+          "excerpt": ".from(\"bookmark_github_repos\")",
+          "url": "https://github.com/FilipaoVfx/indexer/blob/612e3930d7965c9fd50e66ad73d9cff6e2e4b497/backend/src/backfill-github-repositories.js#L60"
+        }
+      ],
+      "endpoints": [
+        "bookmark_github_repos",
+        "github_repo_readmes",
+        "github_repositories",
+        "bookmarks",
+        "rpc refresh_goal_search_index"
+      ]
+    },
+    {
+      "id": "enrich-jobs--github-api",
+      "source": "enrich-jobs",
+      "target": "github-api",
+      "type": "http",
+      "label": "Descarga masiva de READMEs",
+      "description": "fetch-github-readmes llama a la API de GitHub directamente para backfills grandes.",
+      "detected": true,
+      "confidence": "confirmed",
+      "evidence": [
+        {
+          "type": "api-call",
+          "path": "backend/src/fetch-github-readmes.js",
+          "lines": "200",
+          "excerpt": "const response = await fetch(`https://api.github.com${apiPath}`, { headers });",
+          "note": "api.github.com",
+          "url": "https://github.com/FilipaoVfx/indexer/blob/612e3930d7965c9fd50e66ad73d9cff6e2e4b497/backend/src/fetch-github-readmes.js#L200"
+        }
+      ]
+    },
+    {
+      "id": "telegram-bot--postgres",
+      "source": "telegram-bot",
+      "target": "postgres",
+      "type": "sql",
+      "label": "Conteos para /status",
+      "description": "El bot consulta Supabase directamente para mostrar el estado del índice y de la sincronización RAG.",
+      "detected": true,
+      "confidence": "confirmed",
+      "evidence": [
+        {
+          "type": "import",
+          "path": "backend/src/telegram-bot.js",
+          "lines": "3",
+          "excerpt": "import { createClient } from \"@supabase/supabase-js\";",
+          "url": "https://github.com/FilipaoVfx/indexer/blob/612e3930d7965c9fd50e66ad73d9cff6e2e4b497/backend/src/telegram-bot.js#L3"
+        },
+        {
+          "type": "source",
+          "path": "backend/src/telegram-bot.js",
+          "lines": "107",
+          "excerpt": "db.from(\"bookmarks\").select(\"id\", { count: \"exact\", head: true }),",
+          "url": "https://github.com/FilipaoVfx/indexer/blob/612e3930d7965c9fd50e66ad73d9cff6e2e4b497/backend/src/telegram-bot.js#L107"
+        },
+        {
+          "type": "source",
+          "path": "backend/src/telegram-bot.js",
+          "lines": "108",
+          "excerpt": "db.from(\"github_repo_readmes\").select(\"id\", { count: \"exact\", head: true }).eq(\"status\", \"ok\"),",
+          "url": "https://github.com/FilipaoVfx/indexer/blob/612e3930d7965c9fd50e66ad73d9cff6e2e4b497/backend/src/telegram-bot.js#L108"
+        },
+        {
+          "type": "source",
+          "path": "backend/src/telegram-bot.js",
+          "lines": "109",
+          "excerpt": "db.from(\"rag_sync_state\").select(\"id\", { count: \"exact\", head: true }).eq(\"source_type\", \"bookmark\"),",
+          "url": "https://github.com/FilipaoVfx/indexer/blob/612e3930d7965c9fd50e66ad73d9cff6e2e4b497/backend/src/telegram-bot.js#L109"
+        }
+      ],
+      "endpoints": [
+        "bookmarks",
+        "github_repo_readmes",
+        "rag_sync_state"
+      ]
+    },
+    {
+      "id": "observability--api",
+      "source": "observability",
+      "target": "api",
+      "type": "scrape",
+      "label": "Scrape de /metrics",
+      "description": "Prometheus raspa /metrics por HTTPS con bearer token; el backend expone el endpoint cuando METRICS_ENABLED está activo.",
+      "detected": false,
+      "confidence": "supported",
+      "evidence": [
+        {
+          "type": "config",
+          "path": "observability/prometheus/prometheus.yml",
+          "lines": "49",
+          "excerpt": "metrics_path: /metrics",
+          "url": "https://github.com/FilipaoVfx/indexer/blob/612e3930d7965c9fd50e66ad73d9cff6e2e4b497/observability/prometheus/prometheus.yml#L49"
+        },
+        {
+          "type": "route",
+          "path": "backend/src/server.js",
+          "lines": "190",
+          "excerpt": "if (config.metricsEnabled && req.method === \"GET\" && routePath === config.metricsPath) {",
+          "url": "https://github.com/FilipaoVfx/indexer/blob/612e3930d7965c9fd50e66ad73d9cff6e2e4b497/backend/src/server.js#L190"
+        }
+      ],
+      "caveat": "El target de prometheus.yml es un placeholder (your-backend.example.com): la configuración existe, el despliegue no está demostrado."
+    }
+  ],
+  "flows": [
+    {
+      "id": "ingest",
+      "kind": "runtime",
+      "name": "Ingesta desde X",
+      "summary": "De un bookmark guardado en X a una fila persistida y deduplicada.",
+      "steps": [
+        {
+          "id": "ingest-1",
+          "label": "El usuario lanza el scanner",
+          "detail": "El popup envía el comando al content script activo en x.com.",
+          "confidence": "confirmed",
+          "evidence": [
+            {
+              "type": "source",
+              "path": "extension/content.js",
+              "lines": "2938",
+              "excerpt": "if (message.type === \"START_BOOKMARK_DOM_SCANNER\") {",
+              "url": "https://github.com/FilipaoVfx/indexer/blob/612e3930d7965c9fd50e66ad73d9cff6e2e4b497/extension/content.js#L2938"
+            }
+          ],
+          "component": "extension"
+        },
+        {
+          "id": "ingest-2",
+          "label": "Scroll + scrape del DOM",
+          "detail": "Recorre la página de bookmarks y extrae texto, autor y links de cada tweet.",
+          "confidence": "confirmed",
+          "evidence": [],
+          "relationship": "x--extension"
+        },
+        {
+          "id": "ingest-3",
+          "label": "Encola lotes",
+          "detail": "El content script envía INGEST_ENQUEUE al service worker.",
+          "confidence": "confirmed",
+          "evidence": [
+            {
+              "type": "source",
+              "path": "extension/content.js",
+              "lines": "2666",
+              "excerpt": "type: \"INGEST_ENQUEUE\",",
+              "url": "https://github.com/FilipaoVfx/indexer/blob/612e3930d7965c9fd50e66ad73d9cff6e2e4b497/extension/content.js#L2666"
+            }
+          ],
+          "component": "extension"
+        },
+        {
+          "id": "ingest-4",
+          "label": "Cola persistente con reintentos",
+          "detail": "La cola vive en chrome.storage.local y sobrevive al reinicio del service worker; hasta 3 reintentos por ejecución.",
+          "confidence": "confirmed",
+          "evidence": [
+            {
+              "type": "source",
+              "path": "extension/background.js",
+              "lines": "3",
+              "excerpt": "const QUEUE_STORAGE_KEY = \"ingest_queue_v1\";",
+              "url": "https://github.com/FilipaoVfx/indexer/blob/612e3930d7965c9fd50e66ad73d9cff6e2e4b497/extension/background.js#L3"
+            },
+            {
+              "type": "source",
+              "path": "extension/background.js",
+              "lines": "1650",
+              "excerpt": "while (!delivered && attemptsThisRun < MAX_RETRIES) {",
+              "url": "https://github.com/FilipaoVfx/indexer/blob/612e3930d7965c9fd50e66ad73d9cff6e2e4b497/extension/background.js#L1650"
+            }
+          ],
+          "component": "extension"
+        },
+        {
+          "id": "ingest-5",
+          "label": "POST del lote al API",
+          "detail": "import-batch (insert-only) con fallback al endpoint legacy de batch.",
+          "confidence": "confirmed",
+          "evidence": [],
+          "relationship": "extension--api"
+        },
+        {
+          "id": "ingest-6",
+          "label": "Dedupe + upsert",
+          "detail": "El handler valida tweet_id, filtra IDs existentes y delega en upsertBatch.",
+          "confidence": "confirmed",
+          "evidence": [
+            {
+              "type": "source",
+              "path": "backend/src/store.js",
+              "lines": "1983",
+              "excerpt": "async upsertBatch({ userId, syncId, bookmarks, receivedAt, insertOnly = false }) {",
+              "url": "https://github.com/FilipaoVfx/indexer/blob/612e3930d7965c9fd50e66ad73d9cff6e2e4b497/backend/src/store.js#L1983"
+            }
+          ],
+          "relationship": "api--store"
+        },
+        {
+          "id": "ingest-7",
+          "label": "Expande shorteners",
+          "detail": "t.co, bit.ly y similares se resuelven antes de guardar.",
+          "confidence": "confirmed",
+          "evidence": [
+            {
+              "type": "source",
+              "path": "backend/src/store.js",
+              "lines": "482",
+              "excerpt": "resolvedMap = await resolveShortenerUrls(shortUrls);",
+              "url": "https://github.com/FilipaoVfx/indexer/blob/612e3930d7965c9fd50e66ad73d9cff6e2e4b497/backend/src/store.js#L482"
+            }
+          ],
+          "relationship": "store--url-resolver"
+        },
+        {
+          "id": "ingest-8",
+          "label": "Persiste en Postgres",
+          "detail": "Fila en bookmarks + relación con los repos mencionados; el README queda pendiente.",
+          "confidence": "confirmed",
+          "evidence": [
+            {
+              "type": "source",
+              "path": "backend/src/store.js",
+              "lines": "928",
+              "excerpt": ".from(\"bookmark_github_repos\")",
+              "note": "9 ocurrencias",
+              "url": "https://github.com/FilipaoVfx/indexer/blob/612e3930d7965c9fd50e66ad73d9cff6e2e4b497/backend/src/store.js#L928"
+            }
+          ],
+          "relationship": "store--postgres"
+        },
+        {
+          "id": "ingest-9",
+          "label": "README en diferido",
+          "detail": "Por defecto no se descarga en el request path: se marca pending y se resuelve al verlo o por backfill.",
+          "confidence": "confirmed",
+          "evidence": [
+            {
+              "type": "source",
+              "path": "backend/src/config.js",
+              "lines": "52",
+              "excerpt": "githubReadmeEagerFetch: parseBool(process.env.GITHUB_README_EAGER_FETCH, false),",
+              "url": "https://github.com/FilipaoVfx/indexer/blob/612e3930d7965c9fd50e66ad73d9cff6e2e4b497/backend/src/config.js#L52"
+            }
+          ],
+          "relationship": "store--readme-enricher"
+        }
+      ]
+    },
+    {
+      "id": "goal",
+      "kind": "runtime",
+      "name": "Goal Mode",
+      "summary": "Un objetivo en lenguaje natural se convierte en una ruta de pasos con herramientas y alternativas.",
+      "steps": [
+        {
+          "id": "goal-1",
+          "label": "El usuario escribe un objetivo",
+          "detail": "La SPA envía el texto libre al API.",
+          "confidence": "confirmed",
+          "evidence": [
+            {
+              "type": "api-call",
+              "path": "web-astro/src/lib/api.ts",
+              "lines": "668",
+              "excerpt": "const res = await fetch(`${API_BASE}/search/goal`, {",
+              "url": "https://github.com/FilipaoVfx/indexer/blob/612e3930d7965c9fd50e66ad73d9cff6e2e4b497/web-astro/src/lib/api.ts#L668"
+            }
+          ],
+          "component": "web"
+        },
+        {
+          "id": "goal-2",
+          "label": "POST /search/goal",
+          "detail": "El handler valida el cuerpo y delega en BookmarkStore.goalSearch.",
+          "confidence": "confirmed",
+          "evidence": [
+            {
+              "type": "route",
+              "path": "backend/src/server.js",
+              "lines": "726-777",
+              "excerpt": "if (req.method === \"POST\" && routePath === \"/search/goal\") {",
+              "url": "https://github.com/FilipaoVfx/indexer/blob/612e3930d7965c9fd50e66ad73d9cff6e2e4b497/backend/src/server.js#L726-L777"
+            }
+          ],
+          "relationship": "web--api"
+        },
+        {
+          "id": "goal-3",
+          "label": "goalSearch",
+          "detail": "Parseo de intención y componentes del objetivo.",
+          "confidence": "confirmed",
+          "evidence": [
+            {
+              "type": "source",
+              "path": "backend/src/store.js",
+              "lines": "2481",
+              "excerpt": "async goalSearch({",
+              "url": "https://github.com/FilipaoVfx/indexer/blob/612e3930d7965c9fd50e66ad73d9cff6e2e4b497/backend/src/store.js#L2481"
+            }
+          ],
+          "relationship": "api--store"
+        },
+        {
+          "id": "goal-4",
+          "label": "RPC search_goal_v3",
+          "detail": "Parseo, búsqueda y ranking con README en una sola ida a la base de datos.",
+          "confidence": "confirmed",
+          "evidence": [
+            {
+              "type": "source",
+              "path": "backend/src/store.js",
+              "lines": "2508",
+              "excerpt": "\"search_goal_v3\",",
+              "url": "https://github.com/FilipaoVfx/indexer/blob/612e3930d7965c9fd50e66ad73d9cff6e2e4b497/backend/src/store.js#L2508"
+            },
+            {
+              "type": "migration",
+              "path": "backend/sql/008_goal_search_v3.sql",
+              "lines": "287",
+              "excerpt": "CREATE OR REPLACE FUNCTION public.search_goal_v3(",
+              "url": "https://github.com/FilipaoVfx/indexer/blob/612e3930d7965c9fd50e66ad73d9cff6e2e4b497/backend/sql/008_goal_search_v3.sql#L287"
+            }
+          ],
+          "relationship": "store--postgres"
+        },
+        {
+          "id": "goal-5",
+          "label": "Fallback v2 si falta la migración",
+          "detail": "Si search_goal_v3 no existe, usa parse_goal_query + search_goal_assets y avisa.",
+          "confidence": "confirmed",
+          "evidence": [
+            {
+              "type": "source",
+              "path": "backend/src/store.js",
+              "lines": "2568",
+              "excerpt": "\"parse_goal_query\",",
+              "url": "https://github.com/FilipaoVfx/indexer/blob/612e3930d7965c9fd50e66ad73d9cff6e2e4b497/backend/src/store.js#L2568"
+            },
+            {
+              "type": "source",
+              "path": "backend/src/store.js",
+              "lines": "2582",
+              "excerpt": "const { data, error } = await this.supabase.rpc(\"search_goal_assets\", {",
+              "url": "https://github.com/FilipaoVfx/indexer/blob/612e3930d7965c9fd50e66ad73d9cff6e2e4b497/backend/src/store.js#L2582"
+            }
+          ],
+          "component": "store"
+        },
+        {
+          "id": "goal-6",
+          "label": "Pasos + route_score + next_steps",
+          "detail": "La ruta ordenada se puntúa (cobertura + calidad) y se traduce a próximos pasos.",
+          "confidence": "confirmed",
+          "evidence": [
+            {
+              "type": "source",
+              "path": "backend/src/store.js",
+              "lines": "2550",
+              "excerpt": "route_score: routeScore,",
+              "url": "https://github.com/FilipaoVfx/indexer/blob/612e3930d7965c9fd50e66ad73d9cff6e2e4b497/backend/src/store.js#L2550"
+            }
+          ],
+          "component": "store"
+        },
+        {
+          "id": "goal-7",
+          "label": "Vista de pipeline",
+          "detail": "La respuesta se dibuja como un grafo de pasos con React Flow.",
+          "confidence": "confirmed",
+          "evidence": [
+            {
+              "type": "import",
+              "path": "web-astro/src/components/GoalPipelineView.tsx",
+              "lines": "32",
+              "excerpt": "} from \"@xyflow/react\";",
+              "note": "2 ocurrencias",
+              "url": "https://github.com/FilipaoVfx/indexer/blob/612e3930d7965c9fd50e66ad73d9cff6e2e4b497/web-astro/src/components/GoalPipelineView.tsx#L32"
+            }
+          ],
+          "component": "web"
+        }
+      ]
+    },
+    {
+      "id": "nightly-enrich",
+      "kind": "runtime",
+      "name": "Enriquecimiento nocturno",
+      "summary": "Clasificación, metadata y sincronización RAG fuera del request path.",
+      "steps": [
+        {
+          "id": "nightly-enrich-1",
+          "label": "Cron 05:00 UTC",
+          "detail": "También se puede disparar a mano desde Actions.",
+          "confidence": "confirmed",
+          "evidence": [],
+          "component": "nightly"
+        },
+        {
+          "id": "nightly-enrich-2",
+          "label": "Clasifica READMEs nuevos",
+          "detail": "Solo los nuevos o actualizados; LLM con fallback a reglas.",
+          "confidence": "confirmed",
+          "evidence": [
+            {
+              "type": "deployment",
+              "path": ".github/workflows/nightly-enrich.yml",
+              "lines": "47",
+              "excerpt": "run: node backend/src/classify-repo-readmes.js",
+              "url": "https://github.com/FilipaoVfx/indexer/blob/612e3930d7965c9fd50e66ad73d9cff6e2e4b497/.github/workflows/nightly-enrich.yml#L47"
+            }
+          ],
+          "relationship": "nightly--enrich-jobs"
+        },
+        {
+          "id": "nightly-enrich-3",
+          "label": "Fallback a reglas si el LLM falla",
+          "detail": "Cualquier error de la llamada devuelve la clasificación v1.",
+          "confidence": "confirmed",
+          "evidence": [
+            {
+              "type": "source",
+              "path": "backend/src/repo-classifier-llm.js",
+              "lines": "184",
+              "excerpt": "console.warn(`[classifier-llm] ${repoSlug}: ${err.message} — fallback v1`);",
+              "url": "https://github.com/FilipaoVfx/indexer/blob/612e3930d7965c9fd50e66ad73d9cff6e2e4b497/backend/src/repo-classifier-llm.js#L184"
+            }
+          ],
+          "component": "classifier"
+        },
+        {
+          "id": "nightly-enrich-4",
+          "label": "Backfill de metadata",
+          "detail": "Stars, lenguaje y topics solo para repos sin metadata.",
+          "confidence": "confirmed",
+          "evidence": [
+            {
+              "type": "deployment",
+              "path": ".github/workflows/nightly-enrich.yml",
+              "lines": "50",
+              "excerpt": "run: node backend/src/backfill-github-repositories.js --only-missing",
+              "url": "https://github.com/FilipaoVfx/indexer/blob/612e3930d7965c9fd50e66ad73d9cff6e2e4b497/.github/workflows/nightly-enrich.yml#L50"
+            }
+          ],
+          "relationship": "nightly--enrich-jobs"
+        },
+        {
+          "id": "nightly-enrich-5",
+          "label": "RAG incremental",
+          "detail": "Solo re-embebe chunks cuyo content_hash cambió.",
+          "confidence": "confirmed",
+          "evidence": [
+            {
+              "type": "source",
+              "path": "backend/src/rag-ingest.js",
+              "lines": "121",
+              "excerpt": "const hash = contentHash(content);",
+              "url": "https://github.com/FilipaoVfx/indexer/blob/612e3930d7965c9fd50e66ad73d9cff6e2e4b497/backend/src/rag-ingest.js#L121"
+            }
+          ],
+          "relationship": "nightly--rag"
+        },
+        {
+          "id": "nightly-enrich-6",
+          "label": "Embeddings",
+          "detail": "Lotes contra OpenAI.",
+          "confidence": "confirmed",
+          "evidence": [],
+          "relationship": "rag--openai"
+        },
+        {
+          "id": "nightly-enrich-7",
+          "label": "Upsert en Pinecone",
+          "detail": "Vectores por chunk con metadata del bookmark o README.",
+          "confidence": "confirmed",
+          "evidence": [],
+          "relationship": "rag--pinecone"
+        }
+      ]
+    },
+    {
+      "id": "bookmark-to-route",
+      "kind": "data",
+      "name": "De bookmark a ruta",
+      "summary": "Cómo cambia la forma del dato desde el DOM de X hasta una ruta de implementación.",
+      "steps": [
+        {
+          "id": "bookmark-to-route-1",
+          "label": "Bookmark en X",
+          "detail": "Tweet renderizado: texto, autor, links y, a veces, links en el primer comentario.",
+          "confidence": "confirmed",
+          "evidence": [],
+          "component": "x",
+          "artifact": "Nodo del DOM en x.com/i/bookmarks"
+        },
+        {
+          "id": "bookmark-to-route-2",
+          "label": "Bookmark crudo",
+          "detail": "Lote con syncId, batchIndex, traceId y los bookmarks extraídos.",
+          "confidence": "confirmed",
+          "evidence": [
+            {
+              "type": "source",
+              "path": "extension/content.js",
+              "lines": "2666",
+              "excerpt": "type: \"INGEST_ENQUEUE\",",
+              "url": "https://github.com/FilipaoVfx/indexer/blob/612e3930d7965c9fd50e66ad73d9cff6e2e4b497/extension/content.js#L2666"
+            }
+          ],
+          "component": "extension",
+          "artifact": "payload INGEST_ENQUEUE"
+        },
+        {
+          "id": "bookmark-to-route-3",
+          "label": "Ítem de cola",
+          "detail": "Persistido hasta que el backend confirma; los fallidos pasan a failed_queue_v1.",
+          "confidence": "confirmed",
+          "evidence": [
+            {
+              "type": "source",
+              "path": "extension/background.js",
+              "lines": "3",
+              "excerpt": "const QUEUE_STORAGE_KEY = \"ingest_queue_v1\";",
+              "url": "https://github.com/FilipaoVfx/indexer/blob/612e3930d7965c9fd50e66ad73d9cff6e2e4b497/extension/background.js#L3"
+            }
+          ],
+          "component": "extension",
+          "artifact": "ingest_queue_v1 · chrome.storage.local"
+        },
+        {
+          "id": "bookmark-to-route-4",
+          "label": "Bookmark normalizado",
+          "detail": "Campos validados, links limpios y shorteners expandidos.",
+          "confidence": "confirmed",
+          "evidence": [
+            {
+              "type": "source",
+              "path": "backend/src/normalize.js",
+              "lines": "78",
+              "excerpt": "export function normalizeBookmark(rawBookmark, context) {",
+              "url": "https://github.com/FilipaoVfx/indexer/blob/612e3930d7965c9fd50e66ad73d9cff6e2e4b497/backend/src/normalize.js#L78"
+            }
+          ],
+          "component": "store",
+          "artifact": "normalizeBookmark()"
+        },
+        {
+          "id": "bookmark-to-route-5",
+          "label": "Fila persistida",
+          "detail": "Con índice FTS en español sobre el texto.",
+          "confidence": "confirmed",
+          "evidence": [
+            {
+              "type": "migration",
+              "path": "backend/sql/001_bookmarks_schema.sql",
+              "lines": "5",
+              "excerpt": "CREATE TABLE IF NOT EXISTS bookmarks (",
+              "url": "https://github.com/FilipaoVfx/indexer/blob/612e3930d7965c9fd50e66ad73d9cff6e2e4b497/backend/sql/001_bookmarks_schema.sql#L5"
+            }
+          ],
+          "component": "postgres",
+          "artifact": "tabla bookmarks"
+        },
+        {
+          "id": "bookmark-to-route-6",
+          "label": "Repos mencionados",
+          "detail": "Relación bookmark ↔ owner/repo detectado en texto, links o comentarios.",
+          "confidence": "confirmed",
+          "evidence": [
+            {
+              "type": "migration",
+              "path": "backend/sql/007_github_repo_readmes.sql",
+              "lines": "26",
+              "excerpt": "CREATE TABLE IF NOT EXISTS public.bookmark_github_repos (",
+              "url": "https://github.com/FilipaoVfx/indexer/blob/612e3930d7965c9fd50e66ad73d9cff6e2e4b497/backend/sql/007_github_repo_readmes.sql#L26"
+            }
+          ],
+          "component": "postgres",
+          "artifact": "bookmark_github_repos"
+        },
+        {
+          "id": "bookmark-to-route-7",
+          "label": "README cacheado",
+          "detail": "Markdown del README con estado y fecha de descarga.",
+          "confidence": "confirmed",
+          "evidence": [
+            {
+              "type": "migration",
+              "path": "backend/sql/007_github_repo_readmes.sql",
+              "lines": "1",
+              "excerpt": "CREATE TABLE IF NOT EXISTS public.github_repo_readmes (",
+              "url": "https://github.com/FilipaoVfx/indexer/blob/612e3930d7965c9fd50e66ad73d9cff6e2e4b497/backend/sql/007_github_repo_readmes.sql#L1"
+            },
+            {
+              "type": "source",
+              "path": "backend/src/config.js",
+              "lines": "49",
+              "excerpt": "githubReadmeTtlHours: parseNumber(process.env.GITHUB_README_TTL_HOURS, 168),",
+              "url": "https://github.com/FilipaoVfx/indexer/blob/612e3930d7965c9fd50e66ad73d9cff6e2e4b497/backend/src/config.js#L49"
+            }
+          ],
+          "component": "readme-enricher",
+          "artifact": "github_repo_readmes · TTL 168 h"
+        },
+        {
+          "id": "bookmark-to-route-8",
+          "label": "Clasificación",
+          "detail": "Categoría, capacidades, inputs, outputs, stack, madurez y los fragmentos que lo justifican.",
+          "confidence": "confirmed",
+          "evidence": [
+            {
+              "type": "migration",
+              "path": "backend/sql/010_repo_classifier.sql",
+              "lines": "3",
+              "excerpt": "CREATE TABLE IF NOT EXISTS public.repo_classifications (",
+              "url": "https://github.com/FilipaoVfx/indexer/blob/612e3930d7965c9fd50e66ad73d9cff6e2e4b497/backend/sql/010_repo_classifier.sql#L3"
+            },
+            {
+              "type": "migration",
+              "path": "backend/sql/010_repo_classifier.sql",
+              "lines": "27",
+              "excerpt": "CREATE TABLE IF NOT EXISTS public.repo_classification_evidence (",
+              "url": "https://github.com/FilipaoVfx/indexer/blob/612e3930d7965c9fd50e66ad73d9cff6e2e4b497/backend/sql/010_repo_classifier.sql#L27"
+            }
+          ],
+          "component": "classifier",
+          "artifact": "repo_classifications + evidence"
+        },
+        {
+          "id": "bookmark-to-route-9",
+          "label": "Índice de búsqueda",
+          "detail": "Full-text y similitud por trigramas para ranking híbrido.",
+          "confidence": "confirmed",
+          "evidence": [
+            {
+              "type": "migration",
+              "path": "backend/sql/002_search_bookmarks.sql",
+              "lines": "1",
+              "excerpt": "CREATE EXTENSION IF NOT EXISTS pg_trgm;",
+              "url": "https://github.com/FilipaoVfx/indexer/blob/612e3930d7965c9fd50e66ad73d9cff6e2e4b497/backend/sql/002_search_bookmarks.sql#L1"
+            }
+          ],
+          "component": "postgres",
+          "artifact": "tsvector + pg_trgm"
+        },
+        {
+          "id": "bookmark-to-route-10",
+          "label": "Ruta de objetivo",
+          "detail": "La salida de Goal Mode: etapas con herramientas, alternativas y próximos pasos.",
+          "confidence": "confirmed",
+          "evidence": [
+            {
+              "type": "source",
+              "path": "backend/src/store.js",
+              "lines": "2551",
+              "excerpt": "next_steps: buildNextStepsFromPath(rawSteps),",
+              "url": "https://github.com/FilipaoVfx/indexer/blob/612e3930d7965c9fd50e66ad73d9cff6e2e4b497/backend/src/store.js#L2551"
+            }
+          ],
+          "component": "store",
+          "artifact": "steps[] · route_score · next_steps[]"
+        }
+      ]
+    }
+  ],
+  "decisions": [
+    {
+      "id": "no-framework",
+      "title": "Backend sobre node:http, sin framework",
+      "why": "El backend declara cinco dependencias de producción y ninguna es un framework HTTP: el enrutado es una cadena explícita de condiciones sobre método y ruta en server.js.",
+      "basis": "observed",
+      "components": [
+        "api"
+      ],
+      "confidence": "confirmed",
+      "evidence": [
+        {
+          "type": "import",
+          "path": "backend/src/server.js",
+          "lines": "1",
+          "excerpt": "import http from \"node:http\";",
+          "url": "https://github.com/FilipaoVfx/indexer/blob/612e3930d7965c9fd50e66ad73d9cff6e2e4b497/backend/src/server.js#L1"
+        },
+        {
+          "type": "dependency",
+          "path": "backend/package.json",
+          "note": "28 líneas",
+          "url": "https://github.com/FilipaoVfx/indexer/blob/612e3930d7965c9fd50e66ad73d9cff6e2e4b497/backend/package.json"
+        }
+      ]
+    },
+    {
+      "id": "postgres-search",
+      "title": "Buscar en Postgres en vez de un buscador externo",
+      "why": "La búsqueda principal (full-text con tsvector + similitud con pg_trgm) y el ranking viven en funciones SQL junto a los datos. Pinecone solo participa en el pipeline RAG, no en la búsqueda del request path.",
+      "basis": "observed",
+      "components": [
+        "postgres",
+        "store"
+      ],
+      "confidence": "confirmed",
+      "evidence": [
+        {
+          "type": "migration",
+          "path": "backend/sql/002_search_bookmarks.sql",
+          "lines": "1",
+          "excerpt": "CREATE EXTENSION IF NOT EXISTS pg_trgm;",
+          "url": "https://github.com/FilipaoVfx/indexer/blob/612e3930d7965c9fd50e66ad73d9cff6e2e4b497/backend/sql/002_search_bookmarks.sql#L1"
+        },
+        {
+          "type": "source",
+          "path": "backend/src/store.js",
+          "lines": "2088",
+          "excerpt": "const { data, error } = await this.supabase.rpc(\"search_bookmarks\", {",
+          "note": "2 ocurrencias",
+          "url": "https://github.com/FilipaoVfx/indexer/blob/612e3930d7965c9fd50e66ad73d9cff6e2e4b497/backend/src/store.js#L2088"
+        }
+      ]
+    },
+    {
+      "id": "goal-single-roundtrip",
+      "title": "Goal search en una ida a la base, con fallback",
+      "why": "search_goal_v3 hace parseo, búsqueda y ranking con README en una sola RPC; si la migración no está aplicada, el backend usa la ruta v2 y avisa en vez de fallar.",
+      "basis": "observed",
+      "components": [
+        "store",
+        "postgres"
+      ],
+      "confidence": "confirmed",
+      "evidence": [
+        {
+          "type": "migration",
+          "path": "backend/sql/008_goal_search_v3.sql",
+          "lines": "287",
+          "excerpt": "CREATE OR REPLACE FUNCTION public.search_goal_v3(",
+          "url": "https://github.com/FilipaoVfx/indexer/blob/612e3930d7965c9fd50e66ad73d9cff6e2e4b497/backend/sql/008_goal_search_v3.sql#L287"
+        },
+        {
+          "type": "source",
+          "path": "backend/src/store.js",
+          "lines": "2630",
+          "excerpt": "\"Using goal search v2 (fallback). Apply backend/sql/008_goal_search_v3.sql to enable README-aware ranking in a single DB round-trip.\"",
+          "url": "https://github.com/FilipaoVfx/indexer/blob/612e3930d7965c9fd50e66ad73d9cff6e2e4b497/backend/src/store.js#L2630"
+        }
+      ]
+    },
+    {
+      "id": "graceful-schema",
+      "title": "Degradar con gracia ante migraciones pendientes",
+      "why": "El código distingue errores de 'relación/función inexistente' y sigue respondiendo con la capacidad disponible; el job nocturno aplica la misma política.",
+      "basis": "observed",
+      "components": [
+        "store",
+        "nightly"
+      ],
+      "confidence": "confirmed",
+      "evidence": [
+        {
+          "type": "source",
+          "path": "backend/src/store.js",
+          "lines": "269-281",
+          "excerpt": "function isMissingGoalV3FeatureError(error) {",
+          "url": "https://github.com/FilipaoVfx/indexer/blob/612e3930d7965c9fd50e66ad73d9cff6e2e4b497/backend/src/store.js#L269-L281"
+        },
+        {
+          "type": "documentation",
+          "path": ".github/workflows/nightly-enrich.yml",
+          "lines": "8",
+          "excerpt": "# aplicada, degrada con un warning y no rompe el job.",
+          "url": "https://github.com/FilipaoVfx/indexer/blob/612e3930d7965c9fd50e66ad73d9cff6e2e4b497/.github/workflows/nightly-enrich.yml#L8"
+        }
+      ]
+    },
+    {
+      "id": "lazy-readme",
+      "title": "README fuera del request path",
+      "why": "Descargar READMEs dentro de la ingesta ataría la latencia de cada lote a la API de GitHub. Por defecto la ingesta marca los repos como pending y el README llega al verlo o por backfill; una variable de entorno restaura el modo síncrono.",
+      "basis": "documented",
+      "components": [
+        "readme-enricher",
+        "store"
+      ],
+      "confidence": "confirmed",
+      "evidence": [
+        {
+          "type": "documentation",
+          "path": "backend/src/config.js",
+          "lines": "50-52",
+          "excerpt": "// Lazy por defecto: la ingesta marca repos como 'pending' y el README se",
+          "url": "https://github.com/FilipaoVfx/indexer/blob/612e3930d7965c9fd50e66ad73d9cff6e2e4b497/backend/src/config.js#L50-L52"
+        },
+        {
+          "type": "source",
+          "path": "backend/src/config.js",
+          "lines": "52",
+          "excerpt": "githubReadmeEagerFetch: parseBool(process.env.GITHUB_README_EAGER_FETCH, false),",
+          "url": "https://github.com/FilipaoVfx/indexer/blob/612e3930d7965c9fd50e66ad73d9cff6e2e4b497/backend/src/config.js#L52"
+        }
+      ]
+    },
+    {
+      "id": "llm-classifier-fallback",
+      "title": "Clasificador LLM con taxonomía cerrada y fallback a reglas",
+      "why": "El matcher por keywords producía falsos positivos estructurales y confianza saturada. El LLM lee el README real y responde contra una taxonomía fija; las reglas quedan como red de seguridad.",
+      "basis": "documented",
+      "components": [
+        "classifier",
+        "openai"
+      ],
+      "confidence": "confirmed",
+      "evidence": [
+        {
+          "type": "documentation",
+          "path": "backend/src/repo-classifier-llm.js",
+          "lines": "3-6",
+          "excerpt": "// Reemplaza el keyword-matching de repo-classifier.js (v1), que producía",
+          "url": "https://github.com/FilipaoVfx/indexer/blob/612e3930d7965c9fd50e66ad73d9cff6e2e4b497/backend/src/repo-classifier-llm.js#L3-L6"
+        },
+        {
+          "type": "source",
+          "path": "backend/src/repo-classifier-llm.js",
+          "lines": "184",
+          "excerpt": "console.warn(`[classifier-llm] ${repoSlug}: ${err.message} — fallback v1`);",
+          "url": "https://github.com/FilipaoVfx/indexer/blob/612e3930d7965c9fd50e66ad73d9cff6e2e4b497/backend/src/repo-classifier-llm.js#L184"
+        }
+      ]
+    },
+    {
+      "id": "write-auth-read-open",
+      "title": "Escritura protegida, lectura abierta",
+      "why": "Los endpoints de escritura exigen API key y rate limit por IP. La lectura queda abierta por defecto porque un frontend estático no puede ocultar una key en su bundle.",
+      "basis": "documented",
+      "components": [
+        "api"
+      ],
+      "confidence": "confirmed",
+      "evidence": [
+        {
+          "type": "documentation",
+          "path": "backend/src/config.js",
+          "lines": "61-63",
+          "excerpt": "// true = exigir la key también en lectura. Por defecto false: el frontend",
+          "url": "https://github.com/FilipaoVfx/indexer/blob/612e3930d7965c9fd50e66ad73d9cff6e2e4b497/backend/src/config.js#L61-L63"
+        },
+        {
+          "type": "source",
+          "path": "backend/src/auth.js",
+          "lines": "41",
+          "excerpt": "export function createRateLimiter({ windowMs, max }) {",
+          "url": "https://github.com/FilipaoVfx/indexer/blob/612e3930d7965c9fd50e66ad73d9cff6e2e4b497/backend/src/auth.js#L41"
+        }
+      ]
+    },
+    {
+      "id": "persistent-queue",
+      "title": "Cola persistente en la extensión",
+      "why": "La cola vive en chrome.storage.local, no en la memoria del service worker, y los lotes que agotan sus reintentos pasan a una cola de fallidos acotada que se puede reintentar.",
+      "basis": "observed",
+      "components": [
+        "extension"
+      ],
+      "confidence": "confirmed",
+      "evidence": [
+        {
+          "type": "source",
+          "path": "extension/background.js",
+          "lines": "3",
+          "excerpt": "const QUEUE_STORAGE_KEY = \"ingest_queue_v1\";",
+          "url": "https://github.com/FilipaoVfx/indexer/blob/612e3930d7965c9fd50e66ad73d9cff6e2e4b497/extension/background.js#L3"
+        },
+        {
+          "type": "source",
+          "path": "extension/background.js",
+          "lines": "20",
+          "excerpt": "const FAILED_QUEUE_MAX = 50;",
+          "url": "https://github.com/FilipaoVfx/indexer/blob/612e3930d7965c9fd50e66ad73d9cff6e2e4b497/extension/background.js#L20"
+        },
+        {
+          "type": "source",
+          "path": "extension/background.js",
+          "lines": "1790",
+          "excerpt": "async function retryFailedQueueItems() {",
+          "url": "https://github.com/FilipaoVfx/indexer/blob/612e3930d7965c9fd50e66ad73d9cff6e2e4b497/extension/background.js#L1790"
+        }
+      ]
+    },
+    {
+      "id": "keepalive",
+      "title": "Keepalive contra el sleep de Render free",
+      "why": "Render free duerme tras ~15 min sin tráfico y el cron de GitHub se retrasa en la práctica; cada ejecución mantiene un bucle de pings cada 4 min durante casi 3 h.",
+      "basis": "documented",
+      "components": [
+        "ci-cd",
+        "api"
+      ],
+      "confidence": "confirmed",
+      "evidence": [
+        {
+          "type": "documentation",
+          "path": ".github/workflows/keepalive.yml",
+          "lines": "3-6",
+          "excerpt": "# Render free duerme tras ~15 min sin tráfico. El cron */10 de GitHub se",
+          "url": "https://github.com/FilipaoVfx/indexer/blob/612e3930d7965c9fd50e66ad73d9cff6e2e4b497/.github/workflows/keepalive.yml#L3-L6"
+        },
+        {
+          "type": "deployment",
+          "path": ".github/workflows/keepalive.yml",
+          "lines": "28",
+          "excerpt": "sleep 240",
+          "url": "https://github.com/FilipaoVfx/indexer/blob/612e3930d7965c9fd50e66ad73d9cff6e2e4b497/.github/workflows/keepalive.yml#L28"
+        }
+      ]
+    },
+    {
+      "id": "rag-incremental",
+      "title": "RAG incremental por content_hash",
+      "why": "Solo se pagan embeddings de lo nuevo o modificado; el estado de sincronización vive en Postgres, junto al contenido.",
+      "basis": "observed",
+      "components": [
+        "rag",
+        "postgres"
+      ],
+      "confidence": "confirmed",
+      "evidence": [
+        {
+          "type": "source",
+          "path": "backend/src/rag-ingest.js",
+          "lines": "121",
+          "excerpt": "const hash = contentHash(content);",
+          "url": "https://github.com/FilipaoVfx/indexer/blob/612e3930d7965c9fd50e66ad73d9cff6e2e4b497/backend/src/rag-ingest.js#L121"
+        },
+        {
+          "type": "migration",
+          "path": "backend/sql/015_rag_sync_state.sql",
+          "lines": "6",
+          "excerpt": "CREATE TABLE IF NOT EXISTS public.rag_sync_state (",
+          "url": "https://github.com/FilipaoVfx/indexer/blob/612e3930d7965c9fd50e66ad73d9cff6e2e4b497/backend/sql/015_rag_sync_state.sql#L6"
+        }
+      ]
+    },
+    {
+      "id": "in-memory-knowledge",
+      "title": "Grafo y clusters calculados en memoria",
+      "why": "El API carga un corpus acotado (hasta 2000 ítems) y calcula discover, clusters, related y graph en JavaScript. Inferencia del análisis: prioriza iterar rápido sobre la lógica de relaciones antes de llevarla a SQL; el repo no documenta el motivo.",
+      "basis": "inferred",
+      "components": [
+        "knowledge",
+        "api"
+      ],
+      "confidence": "inferred",
+      "evidence": [
+        {
+          "type": "source",
+          "path": "backend/src/server.js",
+          "lines": "700",
+          "excerpt": "const corpusLimit = clampNumber(requestUrl.searchParams.get(\"corpus_limit\"), 800, 50, 2000);",
+          "url": "https://github.com/FilipaoVfx/indexer/blob/612e3930d7965c9fd50e66ad73d9cff6e2e4b497/backend/src/server.js#L700"
+        }
+      ]
+    }
+  ],
+  "findings": [
+    {
+      "id": "knowledge-db-claim",
+      "severity": "warning",
+      "title": "El README dice que el knowledge engine consulta Supabase; el código no",
+      "detail": "knowledge.js solo importa el parser de queries y opera sobre el corpus que el API le pasa. El mapa muestra la dependencia real: API → BookmarkStore → Postgres.",
+      "evidence": [
+        {
+          "type": "documentation",
+          "path": "README.md",
+          "lines": "172",
+          "excerpt": "KNOW --> SUPA",
+          "url": "https://github.com/FilipaoVfx/indexer/blob/612e3930d7965c9fd50e66ad73d9cff6e2e4b497/README.md#L172"
+        },
+        {
+          "type": "import",
+          "path": "backend/src/knowledge.js",
+          "lines": "1",
+          "excerpt": "import { parseSearchQuery } from \"./search-query.js\";",
+          "url": "https://github.com/FilipaoVfx/indexer/blob/612e3930d7965c9fd50e66ad73d9cff6e2e4b497/backend/src/knowledge.js#L1"
+        }
+      ]
+    },
+    {
+      "id": "migration-count",
+      "severity": "info",
+      "title": "El README cuenta 13 migraciones; el commit tiene 16",
+      "detail": "Las migraciones 014–016 (github_repositories, rag_sync_state, engagement metrics) existen pero no están documentadas en el README.",
+      "evidence": [
+        {
+          "type": "documentation",
+          "path": "README.md",
+          "lines": "223",
+          "excerpt": "13 migraciones SQL versionadas en [`backend/sql/`](./backend/sql) (`001` → `013`). Núcleo relacional:",
+          "url": "https://github.com/FilipaoVfx/indexer/blob/612e3930d7965c9fd50e66ad73d9cff6e2e4b497/README.md#L223"
+        },
+        {
+          "type": "migration",
+          "path": "backend/sql",
+          "dir": true,
+          "note": "16 archivos .sql",
+          "url": "https://github.com/FilipaoVfx/indexer/tree/612e3930d7965c9fd50e66ad73d9cff6e2e4b497/backend/sql"
+        }
+      ]
+    },
+    {
+      "id": "gitlab-pipeline-absent",
+      "severity": "info",
+      "title": "El pipeline GitLab documentado no está en este commit",
+      "detail": "El README describe .gitlab-ci.yml, .ci-jobs.yml y .cd-jobs.yml; ninguno existe en el árbol analizado. Por eso el mapa no incluye ese pipeline.",
+      "evidence": [
+        {
+          "type": "documentation",
+          "path": "README.md",
+          "lines": "383",
+          "excerpt": "[`.gitlab-ci.yml`](./.gitlab-ci.yml) incluye [`.ci-jobs.yml`](./.ci-jobs.yml) (CI) y",
+          "url": "https://github.com/FilipaoVfx/indexer/blob/612e3930d7965c9fd50e66ad73d9cff6e2e4b497/README.md#L383"
+        }
+      ],
+      "absent": [
+        ".gitlab-ci.yml",
+        ".ci-jobs.yml",
+        ".cd-jobs.yml"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,13 @@
+{
+  "slug": "indexer",
+  "name": "Indexer",
+  "description": "Motor de conocimiento técnico: de bookmarks dispersos a rutas de implementación.",
+  "repository": "FilipaoVfx/indexer",
+  "branch": "main",
+  "systemMap": {
+    "enabled": true,
+    "artifact": "architecture.json",
+    "generatedAt": "2026-09-23T18:07:13.709Z",
+    "commit": "612e3930d7965c9fd50e66ad73d9cff6e2e4b497"
+  }
+}

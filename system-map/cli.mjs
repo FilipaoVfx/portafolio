@@ -64,7 +64,7 @@ async function prepareRepo(project, { repoDir, ref }) {
 }
 
 async function analyze(project, interpretation, repo) {
-  const { files, directories, excluded } = await scanRepository(repo.dir);
+  const { files, directories, excluded } = await scanRepository(repo.dir, { exclude: project.exclude });
   const { facts, languages } = extractFacts(files);
   const result = interpret({
     project,
@@ -130,7 +130,7 @@ async function validate(slug, flags) {
   if (project.systemMap.commit && project.systemMap.commit !== ir.source?.commit) errors.push('project.json y architecture.json apuntan a commits distintos');
   if (flags.deep && errors.length === 0) {
     const repo = await prepareRepo(project, { repoDir: flags['repo-dir'], ref: ir.source.commit });
-    const { files, directories } = await scanRepository(repo.dir);
+    const { files, directories } = await scanRepository(repo.dir, { exclude: project.exclude });
     errors.push(...validateAgainstRepository(ir, { commit: repo.commit, files, directories }));
   }
   if (errors.length) {
@@ -145,7 +145,7 @@ async function validate(slug, flags) {
 async function dumpFacts(slug, flags) {
   const { project } = await loadProject(slug);
   const repo = await prepareRepo(project, { repoDir: flags['repo-dir'], ref: project.branch });
-  const { files } = await scanRepository(repo.dir);
+  const { files } = await scanRepository(repo.dir, { exclude: project.exclude });
   const { facts } = extractFacts(files);
   for (const f of facts.filter((x) => !flags.kind || x.kind === flags.kind)) console.log(JSON.stringify(f));
   return true;

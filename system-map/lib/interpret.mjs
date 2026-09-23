@@ -31,6 +31,11 @@ function routeMatches(route, callPath) {
   return route.path.includes(':') && route.path.startsWith(`${callPath}/`);
 }
 
+function specificity(routePath) {
+  const segments = routePath.split('/').filter(Boolean);
+  return segments.filter((seg) => !seg.startsWith(':')).length * 10 - segments.filter((seg) => seg.startsWith(':')).length;
+}
+
 export function interpret({ project, interpretation, facts, files, directories, commit, committedAt, languages, excluded, generatedAt }) {
   const errors = [];
   const warnings = [];
@@ -204,10 +209,14 @@ export function interpret({ project, interpretation, facts, files, directories, 
     }
   }
 
-  const routes = (byKind.get('route') ?? []).filter((r) => ownerOf(r.file));
+  // Rutas por código (node:http, express…) y por archivo (endpoints de Astro/Next).
+  const routes = [...(byKind.get('route') ?? []), ...(byKind.get('page') ?? [])].filter((r) => ownerOf(r.file));
   for (const call of byKind.get('call') ?? []) {
     const from = ownerOf(call.file);
-    const route = routes.find((r) => routeMatches(r, call.path) && ownerOf(r.file) !== from);
+    // La ruta más específica gana: `/api/decode` no es `/:category/:slug`.
+    const route = routes
+      .filter((r) => routeMatches(r, call.path) && ownerOf(r.file) !== from)
+      .sort((a, b) => specificity(b.path) - specificity(a.path))[0];
     if (!route) continue;
     const e = edge(from, ownerOf(route.file), 'http');
     if (!e) continue;

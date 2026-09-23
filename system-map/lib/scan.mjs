@@ -25,6 +25,12 @@ const IGNORED_DIRS = new Set([
   '.venv',
   'venv',
   'vendor',
+  // Configuración de agentes de código (skills, prompts): no es el sistema.
+  '.agents',
+  '.claude',
+  '.trae',
+  '.cursor',
+  '.windsurf',
 ]);
 
 // Nunca se leen ni se citan como evidencia (PRD §25).
@@ -78,13 +84,16 @@ function classifyExclusion(relPath, size) {
 }
 
 /**
+ * @param {{ exclude?: string[] }} options  prefijos declarados en project.json
  * @returns {Promise<{ files: Map<string, string>, directories: Set<string>, excluded: Record<string, number> }>}
  *   files: ruta relativa (posix) → contenido de texto, solo archivos admitidos.
  */
-export async function scanRepository(root) {
+export async function scanRepository(root, { exclude = [] } = {}) {
+  const excludedPrefixes = exclude.map((p) => p.replace(/\/$/, ''));
+  const isExcluded = (rel) => excludedPrefixes.some((p) => rel === p || rel.startsWith(`${p}/`));
   const files = new Map();
   const directories = new Set();
-  const excluded = { secret: 0, binary: 0, lockfile: 0, 'too-large': 0, 'ignored-dir': 0 };
+  const excluded = { secret: 0, binary: 0, lockfile: 0, 'too-large': 0, 'ignored-dir': 0, 'project-exclude': 0 };
 
   async function walk(dir, rel) {
     const entries = await readdir(dir, { withFileTypes: true });
@@ -93,6 +102,10 @@ export async function scanRepository(root) {
       const relPath = rel ? `${rel}/${entry.name}` : entry.name;
       const abs = path.join(dir, entry.name);
       if (entry.isSymbolicLink()) continue;
+      if (isExcluded(relPath)) {
+        excluded['project-exclude'] += 1;
+        continue;
+      }
       if (entry.isDirectory()) {
         if (IGNORED_DIRS.has(entry.name)) {
           excluded['ignored-dir'] += 1;

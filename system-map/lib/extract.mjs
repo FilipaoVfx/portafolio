@@ -143,13 +143,21 @@ function extractRoutes(file, text) {
   return facts;
 }
 
-// Rutas por archivo en frameworks con file-based routing (Astro, Next).
-function extractPageRoute(file) {
+// Rutas por archivo en frameworks con file-based routing (Astro, Next). Los
+// endpoints (.ts/.js) se citan en la línea donde exportan cada método HTTP.
+function extractPageRoute(file, text) {
   const m = file.match(/(?:^|\/)(?:src\/)?pages\/(.+)\.(astro|tsx|jsx|ts|js|md|mdx)$/);
-  if (!m) return [];
+  // Astro y Next ignoran los archivos y carpetas que empiezan por "_".
+  if (!m || m[1].split('/').some((segment) => segment.startsWith('_'))) return [];
   let route = `/${m[1]}`.replace(/\/index$/, '/').replace(/\[([^\]]+)\]/g, ':$1');
   if (route === '') route = '/';
-  return [{ kind: 'page', file, line: 1, path: route, excerpt: '' }];
+  const lines = text.split('\n');
+  const handlers = [];
+  lines.forEach((raw, i) => {
+    const h = raw.match(new RegExp(`^\\s*export\\s+(?:const|async\\s+function|function)\\s+(${HTTP_METHODS})\\b`));
+    if (h) handlers.push({ kind: 'page', file, line: i + 1, method: h[1], path: route, excerpt: makeExcerpt(raw) });
+  });
+  return handlers.length ? handlers : [{ kind: 'page', file, line: 1, method: null, path: route, excerpt: makeExcerpt(lines[0] ?? '') }];
 }
 
 const CALL_CONTEXT = /fetch\(|axios|\bcurl\b|request\(|buildBackendUrl|\bapi\(|endpoint|new URL\(|_BASE|BASE_URL|baseUrl|apiBase/i;
@@ -384,7 +392,7 @@ export function extractFacts(files) {
         ...extractCalls(file, text),
         ...extractDataAccess(file, text),
         ...extractEnv(file, text),
-        ...extractPageRoute(file),
+        ...extractPageRoute(file, text),
       );
     }
     if (ext === '.json') facts.push(...extractManifest(file, text));

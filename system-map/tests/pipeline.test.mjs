@@ -255,6 +255,42 @@ describe('sanitize', () => {
   });
 });
 
+describe('rutas por archivo', () => {
+  test('un endpoint estático gana a una ruta dinámica que también encaja', () => {
+    const files = new Map([
+      ['src/pages/[category]/[slug].astro', '---\nconst x = 1;\n---'],
+      ['src/pages/api/decode.ts', "import type { APIRoute } from 'astro';\nexport const POST: APIRoute = async () => new Response('ok');"],
+      ['src/pages/_Home.tsx', 'export default () => null;'],
+      ['src/components/Analyzer.tsx', "export const run = () => fetch('/api/decode', { method: 'POST' });"],
+    ]);
+    const { facts } = extractFacts(files);
+    const pages = facts.filter((f) => f.kind === 'page');
+    assert.deepEqual(pages.map((p) => `${p.method ?? '-'} ${p.path}`).sort(), ['- /:category/:slug', 'POST /api/decode']);
+    const { ir } = interpret({
+      project: { slug: 'x', name: 'X', repository: 'acme/x', branch: 'main' },
+      interpretation: {
+        summary: 'x',
+        groups: [{ id: 'g', name: 'G' }],
+        components: [
+          { id: 'ui', name: 'UI', type: 'client', group: 'g', summary: 'ui', paths: ['src/components'] },
+          { id: 'pages', name: 'Pages', type: 'service', group: 'g', summary: 'p', paths: ['src/pages'] },
+          { id: 'api', name: 'API', type: 'service', group: 'g', summary: 'a', paths: ['src/pages/api'] },
+        ],
+      },
+      facts,
+      files,
+      directories: new Set(['src', 'src/pages', 'src/pages/api', 'src/components']),
+      excluded: {},
+      languages: {},
+      commit: COMMIT,
+      committedAt: '2026-01-01T00:00:00Z',
+      generatedAt: '2026-01-02T00:00:00Z',
+    });
+    assert.deepEqual(ir.relationships.map((r) => r.id), ['ui--api']);
+    assert.deepEqual(ir.relationships[0].endpoints, ['POST /api/decode']);
+  });
+});
+
 describe('artefactos publicados', () => {
   test('cada architecture.json del repo es válido', async () => {
     const dir = path.join(path.dirname(fileURLToPath(import.meta.url)), '..', 'projects');

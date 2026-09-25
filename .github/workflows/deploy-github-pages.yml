@@ -33,6 +33,11 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
+      # Regenera los System Maps desde los repositorios. Si el análisis falla,
+      # avisa y el build usa el último architecture.json válido del repo.
+      - name: Generate system maps
+        run: npm run system-map:generate
+
       - name: Build Astro site
         # Espejo: se sirve desde github.io, pero cada página declara como
         # canónica su gemela en el dominio principal.

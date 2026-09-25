@@ -10,7 +10,10 @@
     "build:github-pages": "cross-env DEPLOY_TARGET=github-pages astro build",
     "preview": "astro preview",
     "astro": "astro",
-    "build:cloudflare": "cross-env DEPLOY_TARGET=cloudflare astro build"
+    "build:cloudflare": "cross-env DEPLOY_TARGET=cloudflare astro build",
+    "system-map:generate": "node system-map/cli.mjs generate",
+    "system-map:validate": "node system-map/cli.mjs validate",
+    "system-map:test": "node --test system-map/tests/pipeline.test.mjs"
   },
   "engines": {
     "node": ">=20"

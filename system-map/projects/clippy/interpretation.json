@@ -1,0 +1,778 @@
+{
+  "summary": "Portapapeles compartido en tiempo real: dispositivos emparejados por código, un canal WebSocket y nada que sobreviva al TTL.",
+  "description": "PWA sin framework servida desde Cloudflare Pages. Un router en el edge envía cada conexión al Durable Object de su código de sesión, que coordina hasta 5 dispositivos, hiberna cuando no hay tráfico y limpia por alarma. Un servidor Node implementa el mismo protocolo para self-host y desarrollo.",
+  "technologies": [
+    "JavaScript",
+    "WebSockets",
+    "Cloudflare Pages",
+    "Durable Objects",
+    "PWA",
+    "Node",
+    "Vitest"
+  ],
+  "groups": [
+    {
+      "id": "device",
+      "name": "Dispositivo"
+    },
+    {
+      "id": "ops",
+      "name": "Operación"
+    },
+    {
+      "id": "edge",
+      "name": "Edge · Cloudflare"
+    },
+    {
+      "id": "selfhost",
+      "name": "Self-host"
+    }
+  ],
+  "sharedModules": [],
+  "components": [
+    {
+      "id": "pwa",
+      "name": "PWA",
+      "type": "client",
+      "group": "device",
+      "summary": "Una pantalla en JS vanilla: emparejar, copiar, recibir. QR propio, sin CDN.",
+      "role": "Elige el código de sesión, abre el WebSocket con reconexión y resume token, y envía texto, imágenes y transferencias grandes en chunks binarios.",
+      "technologies": [
+        "JavaScript",
+        "WebSocket",
+        "PWA"
+      ],
+      "paths": [
+        "public/index.html",
+        "public/js",
+        "public/css",
+        "public/manifest.webmanifest"
+      ],
+      "evidence": [
+        {
+          "pattern": {
+            "file": "public/js/ws.js",
+            "regex": "socket = new WebSocket\\(url\\)"
+          }
+        }
+      ]
+    },
+    {
+      "id": "sw",
+      "name": "Service worker",
+      "type": "client",
+      "group": "device",
+      "summary": "App shell offline; un deploy nuevo entra sin reinstalar la PWA.",
+      "role": "Precache + skipWaiting, navegación network-first y assets stale-while-revalidate.",
+      "technologies": [
+        "Service Worker"
+      ],
+      "paths": [
+        "public/sw.js"
+      ],
+      "evidence": [
+        {
+          "pattern": {
+            "file": "public/sw.js",
+            "regex": "precache the app shell"
+          }
+        }
+      ]
+    },
+    {
+      "id": "ci-cd",
+      "name": "GitHub Actions",
+      "type": "infrastructure",
+      "group": "ops",
+      "summary": "En cada push a main despliega el Worker realtime y la PWA.",
+      "role": "Verifica credenciales, crea el proyecto de Pages si falta y sella el service worker con el commit.",
+      "technologies": [
+        "GitHub Actions",
+        "Wrangler"
+      ],
+      "paths": [
+        ".github/workflows/deploy-pages.yml"
+      ]
+    },
+    {
+      "id": "edge-router",
+      "name": "Router edge",
+      "type": "service",
+      "group": "edge",
+      "summary": "Pages Function: /ws y /health al Durable Object del código; el resto, assets con caché controlada.",
+      "role": "Punto de entrada único en producción. Decide el shard por código y evita servir HTML o service worker cacheados.",
+      "technologies": [
+        "Cloudflare Pages",
+        "Pages Functions"
+      ],
+      "paths": [
+        "public/_worker.js",
+        "wrangler.toml"
+      ],
+      "evidence": [
+        {
+          "pattern": {
+            "file": "public/_worker.js",
+            "regex": "^function getCoordinator"
+          }
+        }
+      ]
+    },
+    {
+      "id": "coordinator",
+      "name": "ClippyCoordinator",
+      "type": "service",
+      "group": "edge",
+      "summary": "Durable Object por código de sesión: dispositivos, TTL, rate limit y reenvío de mensajes.",
+      "role": "Fuente de verdad de cada sesión. Usa la API de hibernación para no cobrar duración mientras está ociosa.",
+      "technologies": [
+        "Durable Objects",
+        "WebSocket Hibernation"
+      ],
+      "paths": [
+        "cloudflare/realtime"
+      ],
+      "evidence": [
+        {
+          "pattern": {
+            "file": "cloudflare/realtime/src/index.js",
+            "regex": "^export class ClippyCoordinator"
+          }
+        }
+      ]
+    },
+    {
+      "id": "do-storage",
+      "name": "Storage del Durable Object",
+      "type": "database",
+      "group": "edge",
+      "summary": "Metadatos de sesión (códigos, dispositivos, expiración). Nunca el contenido copiado.",
+      "role": "Permite hibernar y despertar sin perder la sesión; una alarma borra lo expirado.",
+      "technologies": [
+        "SQLite (DO)"
+      ],
+      "evidence": [
+        {
+          "pattern": {
+            "file": "cloudflare/realtime/wrangler.toml",
+            "regex": "^new_sqlite_classes",
+            "type": "config"
+          }
+        }
+      ]
+    },
+    {
+      "id": "node-server",
+      "name": "Servidor Node",
+      "type": "service",
+      "group": "selfhost",
+      "summary": "express + ws con el mismo protocolo, sesiones en memoria.",
+      "role": "Runtime alternativo para self-host y desarrollo local; limpieza cada 30 s y /health con estadísticas.",
+      "technologies": [
+        "Node",
+        "Express",
+        "ws"
+      ],
+      "paths": [
+        "server"
+      ],
+      "evidence": [
+        {
+          "dependency": {
+            "manifest": "package.json",
+            "name": "ws"
+          }
+        },
+        {
+          "pattern": {
+            "file": "server/index.js",
+            "regex": "new WebSocketServer\\(\\{ server, path: '/ws' \\}\\)"
+          }
+        }
+      ]
+    }
+  ],
+  "relationships": [
+    {
+      "source": "pwa",
+      "target": "sw",
+      "type": "message",
+      "label": "Registro y actualización",
+      "description": "La PWA registra el service worker y recarga una sola vez cuando un deploy nuevo toma el control.",
+      "evidence": [
+        {
+          "pattern": {
+            "file": "public/index.html",
+            "regex": "navigator\\.serviceWorker\\.register\\('/sw\\.js'\\)"
+          }
+        }
+      ]
+    },
+    {
+      "source": "pwa",
+      "target": "edge-router",
+      "type": "http",
+      "label": "WebSocket /ws?code=…",
+      "description": "La conexión lleva el código de sesión en la URL: es lo que decide a qué Durable Object llega.",
+      "evidence": [
+        {
+          "pattern": {
+            "file": "public/js/ws.js",
+            "regex": "/ws\\?code=\\$\\{",
+            "type": "api-call"
+          }
+        },
+        {
+          "pattern": {
+            "file": "public/_worker.js",
+            "regex": "if \\(url\\.pathname === WS_PATH\\)",
+            "type": "route"
+          }
+        }
+      ]
+    },
+    {
+      "source": "edge-router",
+      "target": "coordinator",
+      "type": "http",
+      "label": "Shard por código",
+      "description": "idFromName(código) sobre el binding del Durable Object del Worker clippy-realtime.",
+      "evidence": [
+        {
+          "pattern": {
+            "file": "public/_worker.js",
+            "regex": "const id = env\\.CLIPPY_COORDINATOR\\.idFromName"
+          }
+        },
+        {
+          "pattern": {
+            "file": "wrangler.toml",
+            "regex": "^script_name = \"clippy-realtime\"",
+            "type": "config"
+          }
+        }
+      ]
+    },
+    {
+      "source": "coordinator",
+      "target": "do-storage",
+      "type": "sdk",
+      "label": "Metadatos + alarma de TTL",
+      "description": "Persiste el estado de las sesiones para sobrevivir a la hibernación y programa la alarma de la próxima expiración.",
+      "evidence": [
+        {
+          "pattern": {
+            "file": "cloudflare/realtime/src/index.js",
+            "regex": "await this\\.ctx\\.storage\\.put\\(\"state\""
+          }
+        },
+        {
+          "pattern": {
+            "file": "cloudflare/realtime/src/index.js",
+            "regex": "await this\\.ctx\\.storage\\.setAlarm\\("
+          }
+        }
+      ]
+    },
+    {
+      "source": "pwa",
+      "target": "node-server",
+      "type": "http",
+      "label": "Mismo protocolo en self-host",
+      "description": "Sin cambios en el cliente: el servidor Node atiende el mismo /ws y los mismos mensajes.",
+      "evidence": [
+        {
+          "pattern": {
+            "file": "public/js/ws.js",
+            "regex": "/ws\\?code=\\$\\{",
+            "type": "api-call"
+          }
+        },
+        {
+          "pattern": {
+            "file": "server/index.js",
+            "regex": "new WebSocketServer\\(\\{ server, path: '/ws' \\}\\)",
+            "type": "route"
+          }
+        }
+      ]
+    },
+    {
+      "source": "ci-cd",
+      "target": "coordinator",
+      "type": "deploy",
+      "label": "Deploy del Worker realtime",
+      "description": "Se despliega antes que la PWA para que el protocolo nuevo esté disponible cuando llegue el cliente nuevo.",
+      "evidence": [
+        {
+          "pattern": {
+            "file": ".github/workflows/deploy-pages.yml",
+            "regex": "run: npm run cf:realtime:deploy",
+            "type": "deployment"
+          }
+        }
+      ]
+    },
+    {
+      "source": "ci-cd",
+      "target": "edge-router",
+      "type": "deploy",
+      "label": "Deploy a Pages",
+      "description": "Publica public/ (PWA + router) en el proyecto de Pages.",
+      "evidence": [
+        {
+          "pattern": {
+            "file": ".github/workflows/deploy-pages.yml",
+            "regex": "npx wrangler pages deploy \\./public",
+            "type": "deployment"
+          }
+        }
+      ]
+    },
+    {
+      "source": "ci-cd",
+      "target": "sw",
+      "type": "deploy",
+      "label": "Sella BUILD_ID con el commit",
+      "description": "Cada deploy cambia la versión del service worker, así el navegador detecta la actualización.",
+      "evidence": [
+        {
+          "pattern": {
+            "file": ".github/workflows/deploy-pages.yml",
+            "regex": "sed -i \"s/__BUILD_ID__/",
+            "type": "deployment"
+          }
+        },
+        {
+          "pattern": {
+            "file": "public/sw.js",
+            "regex": "^const BUILD_ID = '__BUILD_ID__'"
+          }
+        }
+      ]
+    }
+  ],
+  "flows": [
+    {
+      "id": "pair-and-sync",
+      "kind": "runtime",
+      "name": "Emparejar y sincronizar",
+      "summary": "De dos dispositivos sin relación a un canal compartido.",
+      "steps": [
+        {
+          "label": "A elige un código y conecta",
+          "detail": "El código se genera en el cliente y viaja en la URL del WebSocket.",
+          "relationship": "pwa->edge-router",
+          "evidence": [
+            {
+              "pattern": {
+                "file": "public/js/app.js",
+                "regex": "state\\.pendingIntent = \\{ type: 'create' \\}"
+              }
+            }
+          ]
+        },
+        {
+          "label": "Router: shard por código",
+          "detail": "La conexión llega al Durable Object de ese código.",
+          "relationship": "edge-router->coordinator"
+        },
+        {
+          "label": "create_session",
+          "detail": "Si el código ya existe, responde code_taken y el cliente reintenta con otro.",
+          "component": "coordinator",
+          "evidence": [
+            {
+              "pattern": {
+                "file": "cloudflare/realtime/src/index.js",
+                "regex": "type: \"code_taken\""
+              }
+            }
+          ]
+        },
+        {
+          "label": "QR para el segundo dispositivo",
+          "detail": "El enlace lleva el código; escanear es unirse.",
+          "component": "pwa",
+          "evidence": [
+            {
+              "pattern": {
+                "file": "public/js/app.js",
+                "regex": "UI\\.showPairingQR\\("
+              }
+            }
+          ]
+        },
+        {
+          "label": "B se une",
+          "detail": "Mismo código, mismo Durable Object; máximo 5 dispositivos.",
+          "component": "coordinator",
+          "evidence": [
+            {
+              "pattern": {
+                "file": "cloudflare/realtime/src/index.js",
+                "regex": "connectedDevices >= this\\.config\\.maxDevices"
+              }
+            }
+          ]
+        },
+        {
+          "label": "Copiar en A, aparece en B",
+          "detail": "send_clip se valida y se reenvía a los pares conectados.",
+          "component": "coordinator",
+          "evidence": [
+            {
+              "pattern": {
+                "file": "cloudflare/realtime/src/index.js",
+                "regex": "async handleSendClip\\("
+              }
+            }
+          ]
+        },
+        {
+          "label": "Expira por alarma",
+          "detail": "Al vencer el TTL, la alarma borra la sesión y cierra los sockets.",
+          "relationship": "coordinator->do-storage"
+        }
+      ]
+    },
+    {
+      "id": "deploy",
+      "kind": "runtime",
+      "name": "Deploy sin romper la PWA",
+      "summary": "Un push a main llega a los teléfonos que ya la tenían instalada.",
+      "steps": [
+        {
+          "label": "Worker realtime primero",
+          "detail": "El protocolo nuevo está disponible antes que el cliente nuevo.",
+          "relationship": "ci-cd->coordinator"
+        },
+        {
+          "label": "BUILD_ID = commit",
+          "detail": "El service worker cambia en cada deploy.",
+          "relationship": "ci-cd->sw"
+        },
+        {
+          "label": "Deploy de public/",
+          "detail": "PWA y router en Cloudflare Pages.",
+          "relationship": "ci-cd->edge-router"
+        },
+        {
+          "label": "HTML y SW sin caché",
+          "detail": "El router responde no-cache para HTML, sw.js y manifest.",
+          "component": "edge-router",
+          "evidence": [
+            {
+              "pattern": {
+                "file": "public/_worker.js",
+                "regex": "^function cacheControlFor"
+              }
+            }
+          ]
+        },
+        {
+          "label": "El SW nuevo toma el control",
+          "detail": "skipWaiting + una recarga única al detectar el cambio.",
+          "relationship": "pwa->sw"
+        }
+      ]
+    },
+    {
+      "id": "clip",
+      "kind": "data",
+      "name": "Un clip de ida y vuelta",
+      "summary": "Qué forma tiene el dato en cada salto, y dónde deja de existir.",
+      "steps": [
+        {
+          "label": "Texto copiado",
+          "artifact": "string",
+          "detail": "Lo que el usuario pega o escribe en el dispositivo A.",
+          "component": "pwa",
+          "evidence": [
+            {
+              "pattern": {
+                "file": "public/js/app.js",
+                "regex": "type: 'send_clip'"
+              }
+            }
+          ]
+        },
+        {
+          "label": "Mensaje JSON",
+          "artifact": "{ type: 'send_clip', content }",
+          "detail": "Viaja por el WebSocket de la sesión.",
+          "relationship": "pwa->edge-router"
+        },
+        {
+          "label": "Validado",
+          "artifact": "mensaje aceptado",
+          "detail": "Tamaño, tipo y rate limit por IP antes de tocar la sesión.",
+          "component": "coordinator",
+          "evidence": [
+            {
+              "pattern": {
+                "file": "cloudflare/realtime/src/index.js",
+                "regex": "^  rateLimitMax: 30"
+              }
+            }
+          ]
+        },
+        {
+          "label": "Reenviado a los pares",
+          "artifact": "receive_clip",
+          "detail": "Solo a los dispositivos conectados, excepto el emisor.",
+          "component": "coordinator",
+          "evidence": [
+            {
+              "pattern": {
+                "file": "cloudflare/realtime/src/index.js",
+                "regex": "^  broadcastToPeers\\("
+              }
+            }
+          ]
+        },
+        {
+          "label": "Archivos grandes",
+          "artifact": "frames binarios transfer_*",
+          "detail": "Imágenes y vídeo van en chunks binarios que el objeto reenvía sin parsear ni guardar.",
+          "component": "coordinator",
+          "evidence": [
+            {
+              "pattern": {
+                "file": "cloudflare/realtime/src/index.js",
+                "regex": "^  sendRawById\\("
+              }
+            }
+          ]
+        },
+        {
+          "label": "Recibido en B",
+          "artifact": "toast + portapapeles",
+          "detail": "El contenido existe en los dispositivos, no en el servidor.",
+          "component": "pwa",
+          "evidence": [
+            {
+              "pattern": {
+                "file": "public/js/app.js",
+                "regex": "WS\\.on\\('receive_clip'"
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "decisions": [
+    {
+      "id": "shard-by-code",
+      "title": "Un Durable Object por código de sesión",
+      "why": "Un coordinador compartido limitaría todo el servicio al throughput de un solo objeto. Con el código como clave, las sesiones concurrentes no compiten entre sí.",
+      "basis": "documented",
+      "components": [
+        "edge-router",
+        "coordinator"
+      ],
+      "evidence": [
+        {
+          "pattern": {
+            "file": "cloudflare/realtime/src/index.js",
+            "regex": "Route each session to its own Durable Object",
+            "type": "documentation",
+            "span": 6
+          }
+        },
+        {
+          "pattern": {
+            "file": "cloudflare/realtime/src/index.js",
+            "regex": "^export function coordinatorNameFor"
+          }
+        }
+      ]
+    },
+    {
+      "id": "client-picks-code",
+      "title": "El cliente elige el código",
+      "why": "El código tiene que conocerse antes de conectar, porque es lo que enruta al objeto. Generarlo en el servidor lo dejaría en un objeto distinto; las colisiones se resuelven con code_taken.",
+      "basis": "documented",
+      "components": [
+        "pwa",
+        "coordinator"
+      ],
+      "evidence": [
+        {
+          "pattern": {
+            "file": "cloudflare/realtime/src/index.js",
+            "regex": "The code is chosen by the client",
+            "type": "documentation",
+            "span": 3
+          }
+        },
+        {
+          "pattern": {
+            "file": "cloudflare/realtime/src/index.js",
+            "regex": "type: \"code_taken\""
+          }
+        }
+      ]
+    },
+    {
+      "id": "hibernation",
+      "title": "Hibernación para no pagar por sesiones ociosas",
+      "why": "El runtime mantiene los sockets abiertos mientras el objeto sale de memoria, y los pings de keepalive se responden sin despertarlo.",
+      "basis": "documented",
+      "components": [
+        "coordinator"
+      ],
+      "evidence": [
+        {
+          "pattern": {
+            "file": "cloudflare/realtime/src/index.js",
+            "regex": "Hibernation API: the runtime holds",
+            "type": "documentation",
+            "span": 3
+          }
+        },
+        {
+          "pattern": {
+            "file": "cloudflare/realtime/src/index.js",
+            "regex": "this\\.ctx\\.acceptWebSocket\\(server"
+          }
+        },
+        {
+          "pattern": {
+            "file": "cloudflare/realtime/src/index.js",
+            "regex": "Answer client keepalives in the runtime itself",
+            "type": "documentation",
+            "span": 3
+          }
+        }
+      ]
+    },
+    {
+      "id": "zero-content-storage",
+      "title": "El contenido nunca se guarda",
+      "why": "Solo se persisten metadatos de sesión; las transferencias en curso viven en memoria a propósito para mantener la garantía de cero almacenamiento del contenido.",
+      "basis": "documented",
+      "components": [
+        "coordinator",
+        "do-storage"
+      ],
+      "evidence": [
+        {
+          "pattern": {
+            "file": "cloudflare/realtime/src/index.js",
+            "regex": "Deliberately NOT in stateData",
+            "type": "documentation",
+            "span": 3
+          }
+        }
+      ]
+    },
+    {
+      "id": "deploy-safe-pwa",
+      "title": "Un deploy no rompe la PWA instalada",
+      "why": "Precache + skipWaiting, navegación network-first y BUILD_ID sellado con el commit: la versión nueva entra sola y el icono en la pantalla de inicio sigue funcionando.",
+      "basis": "documented",
+      "components": [
+        "sw",
+        "ci-cd",
+        "edge-router"
+      ],
+      "evidence": [
+        {
+          "pattern": {
+            "file": "public/sw.js",
+            "regex": "precache the app shell",
+            "type": "documentation",
+            "span": 5
+          }
+        },
+        {
+          "pattern": {
+            "file": ".github/workflows/deploy-pages.yml",
+            "regex": "sed -i \"s/__BUILD_ID__/",
+            "type": "deployment"
+          }
+        }
+      ]
+    },
+    {
+      "id": "vanilla",
+      "title": "Sin framework en el cliente",
+      "why": "Toda la UI es una pantalla: el package.json solo declara dependencias del servidor Node y el cliente son cuatro módulos ES servidos tal cual.",
+      "basis": "observed",
+      "components": [
+        "pwa"
+      ],
+      "evidence": [
+        {
+          "file": {
+            "path": "package.json",
+            "type": "dependency"
+          }
+        },
+        {
+          "dir": {
+            "path": "public/js",
+            "type": "source"
+          }
+        }
+      ]
+    },
+    {
+      "id": "two-runtimes",
+      "title": "Dos runtimes, un protocolo",
+      "why": "Node para self-host y desarrollo, Durable Objects en producción. El coste es mantener el protocolo sincronizado en dos sitios; los tests cubren ambos.",
+      "basis": "documented",
+      "components": [
+        "node-server",
+        "coordinator"
+      ],
+      "evidence": [
+        {
+          "pattern": {
+            "file": "README.md",
+            "regex": "\\*\\*Two runtimes\\*\\*",
+            "type": "documentation",
+            "span": 2
+          }
+        },
+        {
+          "dir": {
+            "path": "tests/cloudflare",
+            "type": "source"
+          }
+        },
+        {
+          "dir": {
+            "path": "tests/server",
+            "type": "source"
+          }
+        }
+      ]
+    }
+  ],
+  "findings": [
+    {
+      "id": "edge-state-persisted",
+      "severity": "info",
+      "title": "En el edge la sesión no vive solo en memoria",
+      "detail": "El diagrama del README muestra un mapa en memoria. En Cloudflare, los metadatos de sesión se escriben en el storage del Durable Object para sobrevivir a la hibernación y se borran por alarma. El contenido copiado sí se queda fuera.",
+      "evidence": [
+        {
+          "pattern": {
+            "file": "README.md",
+            "regex": "In-memory session map",
+            "type": "documentation"
+          }
+        },
+        {
+          "pattern": {
+            "file": "cloudflare/realtime/src/index.js",
+            "regex": "await this\\.ctx\\.storage\\.put\\(\"state\""
+          }
+        }
+      ]
+    }
+  ]
+}

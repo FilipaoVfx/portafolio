@@ -33,7 +33,7 @@ export const projects: Project[] = [
       'Astro 5 con output server sobre Cloudflare Workers',
       'Islas React 19 solo en las herramientas; el resto es HTML servido desde el edge',
       '3D Lab: SVG o texto → objeto 3D interactivo, con export a PNG/GLB',
-      'Motor 3D extraído a su propio paquete y repo (3dsvg), reutilizable fuera del sitio',
+      'Motor 3D extraído a su propio paquete y repo (@filipaovfx/svg3d), reutilizable fuera del sitio',
       'Supabase como Postgres de metadatos + Storage de las piezas',
       'LLM de visión vía OpenRouter para Visual Protocol',
       'AdSense y Clarity detrás del consentimiento',
@@ -80,8 +80,8 @@ export const projects: Project[] = [
     solution:
       'Sesiones efímeras identificadas por un código de emparejamiento y un canal WebSocket persistente. Copias en un dispositivo, aparece en el otro, y la sesión se destruye sola.',
     architecture: [
-      'Express + ws como servidor de sesiones, con endpoint /health',
-      'Durable Object ClippyCoordinator para coordinar sesiones en el edge',
+      'Un Durable Object por código de sesión (ClippyCoordinator), con hibernación',
+      'Express + ws como runtime alternativo para self-host, con el mismo protocolo',
       'Sesiones efímeras por código, con TTL configurable y limpieza periódica',
       'Hasta 5 dispositivos por sesión, con resume token para reconexión',
       'Rate limiting por IP con ventana deslizante y límites de tamaño (10 KB texto / 5 MB imagen)',
@@ -98,7 +98,7 @@ export const projects: Project[] = [
       },
       {
         title: 'Efímero por defecto',
-        body: 'Nada sobrevive al TTL de la sesión. Menos superficie de datos es menos superficie de riesgo: no hay base de datos que filtrar.',
+        body: 'El contenido copiado nunca se guarda y los metadatos de la sesión se borran al vencer el TTL. Menos superficie de datos es menos superficie de riesgo: no hay historial que filtrar.',
       },
     ],
     learnings: [
@@ -126,7 +126,7 @@ export const projects: Project[] = [
     architecture: [
       'Extensión Chrome MV3 con cola persistente y reintentos exponenciales',
       'Backend Node 20 sin framework para ingesta, deduplicación y enriquecimiento',
-      'Postgres con FTS tsvector, pg_trgm y funciones RPC · 13 migraciones versionadas',
+      'Postgres con FTS tsvector, pg_trgm y funciones RPC · 16 migraciones versionadas',
       'Búsqueda híbrida con ranking + Goal Mode: objetivo → pasos → herramientas → alternativas',
       'Docker multi-stage, CI/CD y backend desplegado en Render',
     ],

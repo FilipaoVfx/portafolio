@@ -1,4 +1,14 @@
+import { lazy, Suspense, useEffect, useRef, useState } from 'react';
 import type { Project } from '@/data/projects';
+import type { Architecture } from '@/lib/system-map/types';
+import { track } from './system-map/shared';
+
+// El mapa y su JSON solo se descargan cuando alguien gira la tarjeta.
+const loadBack = () => import('./system-map/ArchitectureBack');
+const ArchitectureBack = lazy(loadBack);
+
+const FLIP_MS = 700;
+type Phase = 'front' | 'to-back' | 'back' | 'to-front';
 
 const accentMap: Record<Project['accent'], { bg: string; text: string; shadow: string; hex: string }> = {
   lime: { bg: 'bg-accent-lime', text: 'text-accent-lime', shadow: 'hover:shadow-glow', hex: '#c6ff3d' },
@@ -41,17 +51,77 @@ function chipColor(s: string) {
   return stackColor[s] ?? '#ffffff';
 }
 
-export default function ProjectCard({ project, index }: { project: Project; index: number }) {
+export default function ProjectCard({ project, index, hasSystemMap = false }: { project: Project; index: number; hasSystemMap?: boolean }) {
   const a = accentMap[project.accent];
   const displayUrl = project.link?.replace(/^https?:\/\//, '') ?? '';
 
+  const [phase, setPhase] = useState<Phase>('front');
+  const [ir, setIr] = useState<Architecture | null>(null);
+  const [loadError, setLoadError] = useState(false);
+  const request = useRef<Promise<void> | null>(null);
+  const articleRef = useRef<HTMLElement>(null);
+  const frontRef = useRef<HTMLDivElement>(null);
+  const backRef = useRef<HTMLDivElement>(null);
+  const flipButton = useRef<HTMLButtonElement>(null);
+  const backHeading = useRef<HTMLHeadingElement>(null);
+  const backId = `${project.slug}-arquitectura`;
+  const showingBack = phase === 'to-back' || phase === 'back';
+
+  const load = () => {
+    if (!hasSystemMap || request.current) return;
+    setLoadError(false);
+    loadBack();
+    request.current = fetch(routePath(`/projects/${project.slug}/architecture.json`))
+      .then((res) => {
+        if (!res.ok) throw new Error(String(res.status));
+        return res.json();
+      })
+      .then(setIr)
+      .catch(() => {
+        request.current = null;
+        setLoadError(true);
+      });
+  };
+
+  const flip = (toBack: boolean) => {
+    if (toBack) {
+      load();
+      track('system_map_open', { project: project.slug });
+    }
+    const top = articleRef.current?.getBoundingClientRect().top ?? 0;
+    if (top < 0) articleRef.current?.scrollIntoView({ block: 'start', behavior: 'smooth' });
+    setPhase(toBack ? 'to-back' : 'to-front');
+  };
+
+  // Al terminar el giro se oculta la cara que no se ve: la tarjeta adopta la
+  // altura de la cara visible y el foco pasa a su encabezado.
+  useEffect(() => {
+    if (phase !== 'to-back' && phase !== 'to-front') return;
+    const timer = window.setTimeout(() => {
+      setPhase(phase === 'to-back' ? 'back' : 'front');
+      if (phase === 'to-back') backHeading.current?.focus({ preventScroll: true });
+      else flipButton.current?.focus({ preventScroll: true });
+    }, FLIP_MS + 40);
+    return () => window.clearTimeout(timer);
+  }, [phase]);
+
+  // La cara oculta no recibe foco ni lectores de pantalla.
+  useEffect(() => {
+    if (frontRef.current) frontRef.current.inert = showingBack;
+    if (backRef.current) backRef.current.inert = !showingBack;
+  }, [showingBack, phase]);
+
   return (
     <article
+      ref={articleRef}
       id={project.slug}
       className="scroll-mt-28 mb-24 md:mb-32 last:mb-0"
     >
+      <div className="flip3d-scene">
+      <div className={`flip3d ${showingBack ? 'is-flipped' : ''}`}>
+      <div ref={frontRef} className={`flip3d-face ${phase === 'back' ? 'hidden' : ''}`}>
       <div
-        className={`glass-strong border-2 border-white/15 shadow-brutal-lg ${a.shadow} transition-shadow rounded-lg overflow-hidden`}
+        className={`glass-strong h-full border-2 border-white/15 shadow-brutal-lg ${a.shadow} transition-shadow rounded-lg overflow-hidden`}
       >
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-0">
           <div className="lg:col-span-1 flex lg:flex-col items-center justify-between lg:justify-start lg:py-10 px-8 py-4 border-b lg:border-b-0 lg:border-r border-white/10 bg-black/20">
@@ -127,6 +197,20 @@ export default function ProjectCard({ project, index }: { project: Project; inde
                   Código ↗
                 </a>
               )}
+              {hasSystemMap && (
+                <button
+                  ref={flipButton}
+                  type="button"
+                  onClick={() => flip(true)}
+                  onPointerEnter={load}
+                  onFocus={load}
+                  aria-controls={backId}
+                  aria-expanded={showingBack}
+                  className="btn-ghost"
+                >
+                  Ver arquitectura <span aria-hidden="true">↻</span>
+                </button>
+              )}
             </div>
           </div>
 
@@ -201,6 +285,62 @@ export default function ProjectCard({ project, index }: { project: Project; inde
           )}
         </div>
       </div>
+      </div>
+
+      {hasSystemMap && phase !== 'front' && (
+        <div
+          ref={backRef}
+          id={backId}
+          className="flip3d-face flip3d-back"
+          onKeyDown={(e) => {
+            if (e.key === 'Escape') flip(false);
+          }}
+        >
+          <div className="h-full rounded-lg border-2 border-white/15 bg-ink-900 p-5 shadow-brutal-lg md:p-8">
+            <div className="flex flex-wrap items-start justify-between gap-4 border-b border-white/10 pb-4">
+              <div>
+                <div className="label-mono">// arquitectura</div>
+                <h3 ref={backHeading} tabIndex={-1} className={`heading-display mt-1 text-3xl md:text-4xl outline-none ${a.text}`}>
+                  {project.title}
+                </h3>
+              </div>
+              <button type="button" onClick={() => flip(false)} className="btn-ghost !px-4 !py-2 text-xs">
+                <span aria-hidden="true">↺</span> Volver al proyecto
+              </button>
+            </div>
+            <div className="mt-4">
+              {ir ? (
+                <Suspense fallback={<BackSkeleton />}>
+                  <ArchitectureBack ir={ir} />
+                </Suspense>
+              ) : loadError ? (
+                <div className="py-16 text-center">
+                  <p className="text-white/60">No se pudo cargar la arquitectura.</p>
+                  <button type="button" onClick={load} className="btn-ghost mt-4 !px-4 !py-2 text-xs">Reintentar</button>
+                </div>
+              ) : (
+                <BackSkeleton />
+              )}
+            </div>
+          </div>
+        </div>
+      )}
+      </div>
+      </div>
     </article>
+  );
+}
+
+function BackSkeleton() {
+  return (
+    <div className="grid gap-4 py-2" aria-label="Cargando arquitectura" role="status">
+      {[3, 4, 2].map((n, row) => (
+        <div key={row} className="flex justify-center gap-3">
+          {Array.from({ length: n }, (_, i) => (
+            <div key={i} className="h-12 w-32 animate-pulse border border-white/10 bg-white/[0.04]" />
+          ))}
+        </div>
+      ))}
+    </div>
   );
 }

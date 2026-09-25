@@ -1,0 +1,891 @@
+{
+  "summary": "Captura bookmarks de X, enriquece los repos que mencionan y responde objetivos técnicos con rutas de implementación.",
+  "description": "Monorepo con extensión Chrome MV3, backend Node 20 sin framework sobre Supabase/Postgres, SPA Astro + React y jobs nocturnos de clasificación y RAG. Este mapa se generó del código del commit indicado: cada componente y relación enlaza a las líneas que lo demuestran.",
+  "technologies": ["Node 20", "Chrome MV3", "Astro", "React", "PostgreSQL", "Supabase", "Pinecone", "OpenAI", "GitHub Actions", "Docker"],
+  "groups": [
+    { "id": "sources", "name": "Fuente" },
+    { "id": "clients", "name": "Interfaces" },
+    { "id": "ops", "name": "Operación" },
+    { "id": "backend", "name": "API · Node 20" },
+    { "id": "core", "name": "Núcleo del backend" },
+    { "id": "jobs", "name": "Jobs" },
+    { "id": "data", "name": "Datos" },
+    { "id": "external", "name": "Servicios externos" }
+  ],
+  "sharedModules": ["backend/src/config.js", "backend/src/http.js"],
+  "components": [
+    {
+      "id": "x",
+      "name": "X / Twitter",
+      "type": "external",
+      "group": "sources",
+      "summary": "Fuente de conocimiento: la página de bookmarks de x.com.",
+      "role": "Origen de los datos. No hay API: la extensión lee el DOM de la página de bookmarks del usuario.",
+      "technologies": ["DOM"],
+      "evidence": [
+        { "pattern": { "file": "extension/manifest.json", "regex": "\"matches\": \\[\"https://x.com", "type": "config" }, "note": "content script inyectado solo en x.com / twitter.com" }
+      ]
+    },
+    {
+      "id": "extension",
+      "name": "Extensión Chrome MV3",
+      "type": "client",
+      "group": "clients",
+      "summary": "Scraper de bookmarks con cola persistente y reintentos, sin dependencias de build.",
+      "role": "Captura: recorre el DOM de bookmarks, arma lotes, los persiste en chrome.storage.local y los envía al API con reintentos.",
+      "technologies": ["Chrome MV3", "JavaScript"],
+      "paths": ["extension"],
+      "evidence": [
+        { "file": { "path": "extension/manifest.json", "type": "config" }, "note": "service worker + content script + popup" },
+        { "pattern": { "file": "extension/background.js", "regex": "^const MAX_RETRIES", "type": "source" } }
+      ]
+    },
+    {
+      "id": "web",
+      "name": "SPA Astro + React",
+      "type": "client",
+      "group": "clients",
+      "summary": "Búsqueda, Goal Mode con vista de pipeline (React Flow), autores, repos y READMEs.",
+      "role": "Consumo: interfaz estática publicada en GitHub Pages que consulta el API público.",
+      "technologies": ["Astro 5", "React 19", "React Flow", "Tailwind 4"],
+      "paths": ["web-astro"],
+      "evidence": [
+        { "dependency": { "manifest": "web-astro/package.json", "name": "@xyflow/react" } },
+        { "pattern": { "file": "web-astro/src/lib/api.ts", "regex": "DEFAULT_REMOTE_API_BASE =", "type": "source" }, "note": "API público por defecto" }
+      ]
+    },
+    {
+      "id": "console",
+      "name": "Live Query Console",
+      "type": "client",
+      "group": "clients",
+      "summary": "Consola HTML autónoma para consultar el API real en vivo.",
+      "role": "Herramienta de inspección: health + búsqueda con polling, sin build.",
+      "technologies": ["HTML", "JavaScript"],
+      "paths": ["tools/live-query-console"]
+    },
+    {
+      "id": "telegram-bot",
+      "name": "Bot de Telegram",
+      "type": "service",
+      "group": "clients",
+      "summary": "Interfaz conversacional sobre el índice: búsqueda RAG, estado y trust scores.",
+      "role": "Proceso largo (npm run rag:telegram) que responde comandos usando el orquestador RAG.",
+      "technologies": ["Telegraf"],
+      "paths": ["backend/src/telegram-bot.js"],
+      "evidence": [
+        { "dependency": { "manifest": "backend/package.json", "name": "telegraf" } },
+        { "script": { "manifest": "backend/package.json", "name": "rag:telegram" } }
+      ]
+    },
+    {
+      "id": "api",
+      "name": "API HTTP",
+      "type": "service",
+      "group": "backend",
+      "summary": "Servidor node:http sin framework: ingesta, búsqueda, Goal Mode, grafo y métricas.",
+      "role": "Punto de entrada único. Enruta, valida, aplica API key y rate limit en escritura, instrumenta métricas Prometheus y delega datos a BookmarkStore. Servido en Render.",
+      "technologies": ["Node 20", "node:http", "Prometheus client"],
+      "paths": ["backend/src/server.js", "backend/src/http.js", "backend/src/auth.js", "backend/src/config.js", "backend/src/metrics.js", "backend/Dockerfile"],
+      "hosts": ["indexer-hzto.onrender.com"],
+      "evidence": [
+        { "import": { "file": "backend/src/server.js", "specifier": "node:http" } },
+        { "route": { "file": "backend/src/server.js", "method": "POST", "path": "/search/goal" } },
+        { "call": { "file": ".github/workflows/keepalive.yml", "host": "indexer-hzto.onrender.com" }, "note": "host público en Render" }
+      ]
+    },
+    {
+      "id": "store",
+      "name": "BookmarkStore",
+      "type": "module",
+      "group": "core",
+      "summary": "Capa de datos: ingesta con dedupe, búsqueda híbrida, Goal search y corpus.",
+      "role": "Único módulo que habla con Supabase en el request path. Normaliza bookmarks, parsea queries, orquesta RPCs y degrada con gracia si faltan migraciones.",
+      "technologies": ["supabase-js"],
+      "paths": ["backend/src/store.js", "backend/src/normalize.js", "backend/src/search-query.js"],
+      "evidence": [
+        { "pattern": { "file": "backend/src/store.js", "regex": "^export class BookmarkStore", "type": "source" } }
+      ]
+    },
+    {
+      "id": "knowledge",
+      "name": "Knowledge engine",
+      "type": "module",
+      "group": "core",
+      "summary": "Discover, clusters, trending, related y grafo calculados en memoria sobre el corpus.",
+      "role": "Funciones puras: reciben el corpus que el API obtiene de BookmarkStore y devuelven agregados. No accede a la base de datos.",
+      "technologies": ["JavaScript"],
+      "paths": ["backend/src/knowledge.js"],
+      "evidence": [
+        { "pattern": { "file": "backend/src/knowledge.js", "regex": "^export function buildGraphResponse", "type": "source" } }
+      ]
+    },
+    {
+      "id": "classifier",
+      "name": "Clasificador de repos",
+      "type": "module",
+      "group": "core",
+      "summary": "v3 LLM con taxonomía cerrada; v1 por reglas como fallback.",
+      "role": "Asigna categoría, capacidades, stack y madurez a cada README con evidencia trazable.",
+      "technologies": ["OpenAI (gpt-4o-mini)", "Reglas"],
+      "paths": ["backend/src/repo-classifier.js", "backend/src/repo-classifier-llm.js"],
+      "evidence": [
+        { "pattern": { "file": "backend/src/repo-classifier-llm.js", "regex": "^export const REPO_CLASSIFIER_LLM_VERSION", "type": "source" } },
+        { "pattern": { "file": "backend/src/repo-classifier.js", "regex": "^export const REPO_CLASSIFIER_VERSION", "type": "source" } }
+      ]
+    },
+    {
+      "id": "readme-enricher",
+      "name": "Enriquecedor GitHub",
+      "type": "module",
+      "group": "core",
+      "summary": "Detecta owner/repo en bookmarks y descarga README y metadata vía GitHub API.",
+      "role": "Enriquecimiento con caché TTL; en el request path es perezoso (marca pending) para no bloquear la ingesta.",
+      "technologies": ["GitHub REST API"],
+      "paths": ["backend/src/github-readmes.js", "backend/src/github-repos-metadata.js"],
+      "evidence": [
+        { "pattern": { "file": "backend/src/github-readmes.js", "regex": "^export async function fetchGithubReadmeRow", "type": "source" } }
+      ]
+    },
+    {
+      "id": "url-resolver",
+      "name": "Resolver de shorteners",
+      "type": "module",
+      "group": "core",
+      "summary": "Expande t.co, bit.ly y similares siguiendo redirecciones, con caché.",
+      "role": "Reescribe los links acortados antes de persistir para que dominios y repos sean detectables.",
+      "technologies": ["fetch"],
+      "paths": ["backend/src/url-resolver.js"],
+      "evidence": [
+        { "pattern": { "file": "backend/src/url-resolver.js", "regex": "^export async function resolveShortenerUrls", "type": "source" } }
+      ]
+    },
+    {
+      "id": "enrich-jobs",
+      "name": "CLIs de enriquecimiento",
+      "type": "job",
+      "group": "jobs",
+      "summary": "Clasificación, backfill de READMEs y metadata, importación y migración.",
+      "role": "Scripts batch fuera del request path; el workflow nocturno ejecuta dos de ellos.",
+      "technologies": ["Node 20"],
+      "paths": [
+        "backend/src/classify-repo-readmes.js",
+        "backend/src/backfill-github-repositories.js",
+        "backend/src/backfill-github-readmes.js",
+        "backend/src/fetch-github-readmes.js",
+        "backend/src/import-readmes-from-disk.js",
+        "backend/src/migrate.js"
+      ],
+      "evidence": [
+        { "script": { "manifest": "backend/package.json", "name": "classify:repos" } },
+        { "script": { "manifest": "backend/package.json", "name": "repos:backfill" } }
+      ]
+    },
+    {
+      "id": "rag",
+      "name": "Pipeline RAG",
+      "type": "job",
+      "group": "jobs",
+      "summary": "Chunking, embeddings OpenAI y vectores en Pinecone, incremental por content_hash.",
+      "role": "Ingesta de bookmarks y READMEs al índice vectorial y búsqueda semántica con trust scores.",
+      "technologies": ["OpenAI embeddings", "Pinecone"],
+      "paths": [
+        "backend/src/rag-chunking.js",
+        "backend/src/rag-ingest.js",
+        "backend/src/rag-openai.js",
+        "backend/src/rag-orchestrator.js",
+        "backend/src/rag-pinecone.js",
+        "backend/src/rag-cli.js"
+      ],
+      "evidence": [
+        { "script": { "manifest": "backend/package.json", "name": "rag:ingest" } }
+      ]
+    },
+    {
+      "id": "nightly",
+      "name": "Nightly enrich",
+      "type": "job",
+      "group": "jobs",
+      "summary": "Workflow programado 05:00 UTC: clasificar, backfill y sincronizar RAG.",
+      "role": "Scheduler del enriquecimiento. El paso RAG es continue-on-error para no perder la clasificación si Pinecone falla.",
+      "technologies": ["GitHub Actions"],
+      "paths": [".github/workflows/nightly-enrich.yml"],
+      "evidence": [
+        { "pattern": { "file": ".github/workflows/nightly-enrich.yml", "regex": "cron: \"0 5", "type": "deployment" } }
+      ]
+    },
+    {
+      "id": "postgres",
+      "name": "Supabase · PostgreSQL",
+      "type": "database",
+      "group": "data",
+      "summary": "Bookmarks, READMEs, clasificaciones; FTS, pg_trgm y funciones RPC.",
+      "role": "Persistencia y motor de búsqueda. La lógica de ranking y Goal search vive en funciones SQL versionadas.",
+      "technologies": ["PostgreSQL", "tsvector", "pg_trgm", "Supabase"],
+      "paths": ["backend/sql"],
+      "packages": ["@supabase/supabase-js"],
+      "evidence": [
+        { "dir": { "path": "backend/sql", "type": "migration", "ext": ".sql" } },
+        { "dependency": { "manifest": "backend/package.json", "name": "@supabase/supabase-js" } }
+      ]
+    },
+    {
+      "id": "pinecone",
+      "name": "Pinecone",
+      "type": "vector-store",
+      "group": "data",
+      "summary": "Índice vectorial de chunks de bookmarks y READMEs.",
+      "role": "Búsqueda semántica del pipeline RAG.",
+      "technologies": ["Pinecone"],
+      "packages": ["@pinecone-database/pinecone"],
+      "evidence": [
+        { "dependency": { "manifest": "backend/package.json", "name": "@pinecone-database/pinecone" } },
+        { "env": { "file": ".github/workflows/nightly-enrich.yml", "name": "PINECONE_INDEX" } }
+      ]
+    },
+    {
+      "id": "github-api",
+      "name": "GitHub REST API",
+      "type": "external",
+      "group": "external",
+      "summary": "READMEs y metadata (stars, lenguaje, topics) de los repos mencionados.",
+      "role": "Fuente de enriquecimiento; token opcional para subir el rate limit.",
+      "technologies": ["REST"],
+      "hosts": ["api.github.com"],
+      "evidence": [
+        { "call": { "file": "backend/src/github-readmes.js", "host": "api.github.com" } },
+        { "env": { "file": "backend/src/config.js", "name": "GITHUB_TOKEN" } }
+      ]
+    },
+    {
+      "id": "openai",
+      "name": "OpenAI API",
+      "type": "external",
+      "group": "external",
+      "summary": "Chat completions para el clasificador v3 y embeddings para RAG.",
+      "role": "Proveedor de modelos, solo en procesos batch: ninguna ruta del API lo llama.",
+      "technologies": ["gpt-4o-mini", "text-embedding-3-small"],
+      "hosts": ["api.openai.com"],
+      "packages": ["openai"],
+      "evidence": [
+        { "call": { "file": "backend/src/repo-classifier-llm.js", "host": "api.openai.com" } },
+        { "dependency": { "manifest": "backend/package.json", "name": "openai" } }
+      ]
+    },
+    {
+      "id": "ci-cd",
+      "name": "GitHub Actions",
+      "type": "infrastructure",
+      "group": "ops",
+      "summary": "Build y deploy de la SPA a GitHub Pages; keepalive del API en Render.",
+      "role": "Entrega continua del frontend y mitigación del cold start del hosting gratuito.",
+      "technologies": ["GitHub Actions", "GitHub Pages"],
+      "paths": [".github/workflows/deploy-pages.yml", ".github/workflows/keepalive.yml"]
+    },
+    {
+      "id": "observability",
+      "name": "Stack de observabilidad",
+      "type": "infrastructure",
+      "group": "ops",
+      "summary": "Prometheus, Grafana, node-exporter y blackbox definidos con docker compose.",
+      "role": "Métricas del backend (/metrics con bearer token), probes del frontend y dashboards provisionados.",
+      "technologies": ["Prometheus", "Grafana", "Docker Compose"],
+      "paths": ["observability"],
+      "evidence": [
+        { "pattern": { "file": "observability/docker-compose.yml", "regex": "image: prom/prometheus", "type": "deployment" } },
+        { "pattern": { "file": "observability/docker-compose.yml", "regex": "image: grafana/grafana", "type": "deployment" } }
+      ],
+      "caveat": "El stack está definido en el repo; no hay evidencia en el código de que esté desplegado."
+    }
+  ],
+  "relationships": [
+    {
+      "source": "x",
+      "target": "extension",
+      "type": "scrape",
+      "label": "Lectura del DOM de bookmarks",
+      "description": "El content script hace scroll sobre x.com/i/bookmarks y extrae cada tweet con sus links; también abre el detalle para leer los links del primer comentario.",
+      "evidence": [
+        { "pattern": { "file": "extension/manifest.json", "regex": "\"matches\": \\[\"https://x.com", "type": "config" } },
+        { "pattern": { "file": "extension/content.js", "regex": "window\\.scrollBy\\(", "type": "source" } }
+      ]
+    },
+    {
+      "source": "extension",
+      "target": "api",
+      "label": "Ingesta por lotes + dedupe",
+      "description": "El service worker envía lotes (import-batch insert-only o batch legacy con upsert), consulta IDs existentes para deduplicar localmente y relanza la búsqueda de links del primer comentario."
+    },
+    {
+      "source": "web",
+      "target": "api",
+      "label": "REST: búsqueda y Goal Mode",
+      "description": "La SPA consume búsqueda híbrida, Goal Mode, autores, repos y READMEs contra el API público."
+    },
+    {
+      "source": "console",
+      "target": "api",
+      "label": "Health + búsqueda en vivo",
+      "description": "Polling de /health y /api/bookmarks/search para inspeccionar el índice en tiempo real."
+    },
+    {
+      "source": "ci-cd",
+      "target": "api",
+      "label": "Keepalive cada 4 min",
+      "description": "Un workflow cada 2 h mantiene un bucle de pings a /health para que Render free no duerma el servicio."
+    },
+    {
+      "source": "ci-cd",
+      "target": "web",
+      "type": "deploy",
+      "label": "Build + deploy a GitHub Pages",
+      "description": "En cada push a main compila web-astro con el base path /indexer y publica dist en GitHub Pages.",
+      "evidence": [
+        { "pattern": { "file": ".github/workflows/deploy-pages.yml", "regex": "working-directory: \\./web-astro", "type": "deployment" } },
+        { "pattern": { "file": ".github/workflows/deploy-pages.yml", "regex": "uses: actions/deploy-pages", "type": "deployment" } }
+      ]
+    },
+    {
+      "source": "api",
+      "target": "store",
+      "label": "Toda lectura y escritura",
+      "description": "El API no toca la base de datos directamente: cada handler delega en BookmarkStore."
+    },
+    {
+      "source": "api",
+      "target": "knowledge",
+      "label": "Agregados sobre el corpus",
+      "description": "Para discover, clusters, trending, related, graph y búsqueda semántica, el API pide el corpus a BookmarkStore y se lo pasa al knowledge engine.",
+      "evidence": [
+        { "pattern": { "file": "backend/src/server.js", "regex": "const corpus = await store\\.getCorpus", "type": "source" } }
+      ]
+    },
+    {
+      "source": "knowledge",
+      "target": "store",
+      "label": "Reutiliza el parser de queries",
+      "description": "Única dependencia del knowledge engine: parseSearchQuery, para interpretar filtros igual que la búsqueda principal."
+    },
+    {
+      "source": "store",
+      "target": "postgres",
+      "label": "Tablas + RPC de búsqueda",
+      "description": "Upserts de bookmarks, lecturas de READMEs y clasificaciones, y las RPC search_bookmarks, search_goal_v3 y su fallback v2."
+    },
+    {
+      "source": "store",
+      "target": "url-resolver",
+      "label": "Expande shorteners",
+      "description": "Antes de persistir, los links acortados se resuelven y se reescriben."
+    },
+    {
+      "source": "store",
+      "target": "readme-enricher",
+      "label": "Detecta repos y README",
+      "description": "Extrae owner/repo de texto y links; el README se descarga en diferido (al verlo o por backfill)."
+    },
+    {
+      "source": "store",
+      "target": "classifier",
+      "label": "Clasifica READMEs",
+      "description": "Re-clasifica solo si cambió el README o la versión del clasificador."
+    },
+    {
+      "source": "readme-enricher",
+      "target": "github-api",
+      "label": "README + metadata",
+      "description": "GET /repos/{owner}/{repo}/readme y /repos/{owner}/{repo}, con caché TTL y límites de tamaño."
+    },
+    {
+      "source": "classifier",
+      "target": "openai",
+      "label": "Clasificación LLM (v3)",
+      "description": "Chat completions con taxonomía cerrada y respuesta JSON validada; si falla o no hay key, cae a v1 por reglas."
+    },
+    {
+      "source": "nightly",
+      "target": "enrich-jobs",
+      "label": "Clasificar + backfill",
+      "description": "Ejecuta classify-repo-readmes y backfill-github-repositories --only-missing."
+    },
+    {
+      "source": "nightly",
+      "target": "rag",
+      "label": "Sincroniza RAG",
+      "description": "rag-ingest all con continue-on-error: si Pinecone falla, el job no queda en rojo permanente."
+    },
+    {
+      "source": "rag",
+      "target": "openai",
+      "label": "Embeddings",
+      "description": "text-embedding-3-small en lotes, solo para contenido nuevo o modificado."
+    },
+    {
+      "source": "rag",
+      "target": "pinecone",
+      "label": "Upsert y query de vectores",
+      "description": "Vectores por chunk con metadata; la búsqueda semántica consulta el mismo índice."
+    },
+    {
+      "source": "rag",
+      "target": "postgres",
+      "label": "Fuente + estado de sync",
+      "description": "Lee bookmarks y READMEs, guarda rag_sync_state (content_hash) y registra consultas."
+    },
+    {
+      "source": "telegram-bot",
+      "target": "rag",
+      "label": "Búsqueda RAG",
+      "description": "Los comandos del bot delegan en ragSearch y en los trust scores del orquestador."
+    },
+    {
+      "source": "enrich-jobs",
+      "target": "store",
+      "label": "Reutiliza BookmarkStore",
+      "description": "Los CLIs de clasificación y backfill usan la misma capa de datos que el API, no consultas propias."
+    },
+    {
+      "source": "enrich-jobs",
+      "target": "readme-enricher",
+      "label": "Metadata y slugs de GitHub",
+      "description": "El backfill reutiliza fetchRepoMetadata y el parser de owner/repo del enriquecedor."
+    },
+    {
+      "source": "enrich-jobs",
+      "target": "postgres",
+      "label": "Lecturas batch + refresh del índice",
+      "description": "Seleccionan READMEs pendientes, escriben github_repositories y refrescan el índice de Goal search."
+    },
+    {
+      "source": "enrich-jobs",
+      "target": "github-api",
+      "label": "Descarga masiva de READMEs",
+      "description": "fetch-github-readmes llama a la API de GitHub directamente para backfills grandes."
+    },
+    {
+      "source": "telegram-bot",
+      "target": "postgres",
+      "label": "Conteos para /status",
+      "description": "El bot consulta Supabase directamente para mostrar el estado del índice y de la sincronización RAG."
+    },
+    {
+      "source": "observability",
+      "target": "api",
+      "type": "scrape",
+      "label": "Scrape de /metrics",
+      "description": "Prometheus raspa /metrics por HTTPS con bearer token; el backend expone el endpoint cuando METRICS_ENABLED está activo.",
+      "cap": "supported",
+      "caveat": "El target de prometheus.yml es un placeholder (your-backend.example.com): la configuración existe, el despliegue no está demostrado.",
+      "evidence": [
+        { "pattern": { "file": "observability/prometheus/prometheus.yml", "regex": "metrics_path: /metrics", "type": "config" } },
+        { "pattern": { "file": "backend/src/server.js", "regex": "routePath === config\\.metricsPath", "type": "route" } }
+      ]
+    }
+  ],
+  "flows": [
+    {
+      "id": "ingest",
+      "kind": "runtime",
+      "name": "Ingesta desde X",
+      "summary": "De un bookmark guardado en X a una fila persistida y deduplicada.",
+      "steps": [
+        {
+          "label": "El usuario lanza el scanner",
+          "detail": "El popup envía el comando al content script activo en x.com.",
+          "component": "extension",
+          "evidence": [{ "pattern": { "file": "extension/content.js", "regex": "message\\.type === \"START_BOOKMARK_DOM_SCANNER\"" } }]
+        },
+        {
+          "label": "Scroll + scrape del DOM",
+          "detail": "Recorre la página de bookmarks y extrae texto, autor y links de cada tweet.",
+          "relationship": "x->extension"
+        },
+        {
+          "label": "Encola lotes",
+          "detail": "El content script envía INGEST_ENQUEUE al service worker.",
+          "component": "extension",
+          "evidence": [{ "pattern": { "file": "extension/content.js", "regex": "type: \"INGEST_ENQUEUE\"" } }]
+        },
+        {
+          "label": "Cola persistente con reintentos",
+          "detail": "La cola vive en chrome.storage.local y sobrevive al reinicio del service worker; hasta 3 reintentos por ejecución.",
+          "component": "extension",
+          "evidence": [
+            { "pattern": { "file": "extension/background.js", "regex": "^const QUEUE_STORAGE_KEY" } },
+            { "pattern": { "file": "extension/background.js", "regex": "attemptsThisRun < MAX_RETRIES" } }
+          ]
+        },
+        {
+          "label": "POST del lote al API",
+          "detail": "import-batch (insert-only) con fallback al endpoint legacy de batch.",
+          "relationship": "extension->api"
+        },
+        {
+          "label": "Dedupe + upsert",
+          "detail": "El handler valida tweet_id, filtra IDs existentes y delega en upsertBatch.",
+          "relationship": "api->store",
+          "evidence": [{ "pattern": { "file": "backend/src/store.js", "regex": "async upsertBatch\\(" } }]
+        },
+        {
+          "label": "Expande shorteners",
+          "detail": "t.co, bit.ly y similares se resuelven antes de guardar.",
+          "relationship": "store->url-resolver",
+          "evidence": [{ "pattern": { "file": "backend/src/store.js", "regex": "await resolveShortenerUrls\\(" } }]
+        },
+        {
+          "label": "Persiste en Postgres",
+          "detail": "Fila en bookmarks + relación con los repos mencionados; el README queda pendiente.",
+          "relationship": "store->postgres",
+          "evidence": [{ "table": { "file": "backend/src/store.js", "name": "bookmark_github_repos" } }]
+        },
+        {
+          "label": "README en diferido",
+          "detail": "Por defecto no se descarga en el request path: se marca pending y se resuelve al verlo o por backfill.",
+          "relationship": "store->readme-enricher",
+          "evidence": [{ "pattern": { "file": "backend/src/config.js", "regex": "githubReadmeEagerFetch: parseBool" } }]
+        }
+      ]
+    },
+    {
+      "id": "goal",
+      "kind": "runtime",
+      "name": "Goal Mode",
+      "summary": "Un objetivo en lenguaje natural se convierte en una ruta de pasos con herramientas y alternativas.",
+      "steps": [
+        {
+          "label": "El usuario escribe un objetivo",
+          "detail": "La SPA envía el texto libre al API.",
+          "component": "web",
+          "evidence": [{ "call": { "file": "web-astro/src/lib/api.ts", "path": "/search/goal" } }]
+        },
+        {
+          "label": "POST /search/goal",
+          "detail": "El handler valida el cuerpo y delega en BookmarkStore.goalSearch.",
+          "relationship": "web->api",
+          "evidence": [{ "route": { "file": "backend/src/server.js", "method": "POST", "path": "/search/goal" } }]
+        },
+        {
+          "label": "goalSearch",
+          "detail": "Parseo de intención y componentes del objetivo.",
+          "relationship": "api->store",
+          "evidence": [{ "pattern": { "file": "backend/src/store.js", "regex": "async goalSearch\\(" } }]
+        },
+        {
+          "label": "RPC search_goal_v3",
+          "detail": "Parseo, búsqueda y ranking con README en una sola ida a la base de datos.",
+          "relationship": "store->postgres",
+          "evidence": [
+            { "rpc": { "file": "backend/src/store.js", "name": "search_goal_v3" } },
+            { "sql": { "file": "backend/sql/008_goal_search_v3.sql", "object": "search_goal_v3" } }
+          ]
+        },
+        {
+          "label": "Fallback v2 si falta la migración",
+          "detail": "Si search_goal_v3 no existe, usa parse_goal_query + search_goal_assets y avisa.",
+          "component": "store",
+          "evidence": [
+            { "rpc": { "file": "backend/src/store.js", "name": "parse_goal_query" } },
+            { "rpc": { "file": "backend/src/store.js", "name": "search_goal_assets" } }
+          ]
+        },
+        {
+          "label": "Pasos + route_score + next_steps",
+          "detail": "La ruta ordenada se puntúa (cobertura + calidad) y se traduce a próximos pasos.",
+          "component": "store",
+          "evidence": [{ "pattern": { "file": "backend/src/store.js", "regex": "route_score: routeScore" } }]
+        },
+        {
+          "label": "Vista de pipeline",
+          "detail": "La respuesta se dibuja como un grafo de pasos con React Flow.",
+          "component": "web",
+          "evidence": [{ "import": { "file": "web-astro/src/components/GoalPipelineView.tsx", "specifier": "@xyflow/react" } }]
+        }
+      ]
+    },
+    {
+      "id": "nightly-enrich",
+      "kind": "runtime",
+      "name": "Enriquecimiento nocturno",
+      "summary": "Clasificación, metadata y sincronización RAG fuera del request path.",
+      "steps": [
+        {
+          "label": "Cron 05:00 UTC",
+          "detail": "También se puede disparar a mano desde Actions.",
+          "component": "nightly"
+        },
+        {
+          "label": "Clasifica READMEs nuevos",
+          "detail": "Solo los nuevos o actualizados; LLM con fallback a reglas.",
+          "relationship": "nightly->enrich-jobs",
+          "evidence": [{ "pattern": { "file": ".github/workflows/nightly-enrich.yml", "regex": "run: node backend/src/classify-repo-readmes\\.js", "type": "deployment" } }]
+        },
+        {
+          "label": "Fallback a reglas si el LLM falla",
+          "detail": "Cualquier error de la llamada devuelve la clasificación v1.",
+          "component": "classifier",
+          "evidence": [{ "pattern": { "file": "backend/src/repo-classifier-llm.js", "regex": "fallback v1" } }]
+        },
+        {
+          "label": "Backfill de metadata",
+          "detail": "Stars, lenguaje y topics solo para repos sin metadata.",
+          "relationship": "nightly->enrich-jobs",
+          "evidence": [{ "pattern": { "file": ".github/workflows/nightly-enrich.yml", "regex": "backfill-github-repositories\\.js --only-missing", "type": "deployment" } }]
+        },
+        {
+          "label": "RAG incremental",
+          "detail": "Solo re-embebe chunks cuyo content_hash cambió.",
+          "relationship": "nightly->rag",
+          "evidence": [{ "pattern": { "file": "backend/src/rag-ingest.js", "regex": "const hash = contentHash\\(" } }]
+        },
+        {
+          "label": "Embeddings",
+          "detail": "Lotes contra OpenAI.",
+          "relationship": "rag->openai"
+        },
+        {
+          "label": "Upsert en Pinecone",
+          "detail": "Vectores por chunk con metadata del bookmark o README.",
+          "relationship": "rag->pinecone"
+        }
+      ]
+    },
+    {
+      "id": "bookmark-to-route",
+      "kind": "data",
+      "name": "De bookmark a ruta",
+      "summary": "Cómo cambia la forma del dato desde el DOM de X hasta una ruta de implementación.",
+      "steps": [
+        {
+          "label": "Bookmark en X",
+          "artifact": "Nodo del DOM en x.com/i/bookmarks",
+          "detail": "Tweet renderizado: texto, autor, links y, a veces, links en el primer comentario.",
+          "component": "x"
+        },
+        {
+          "label": "Bookmark crudo",
+          "artifact": "payload INGEST_ENQUEUE",
+          "detail": "Lote con syncId, batchIndex, traceId y los bookmarks extraídos.",
+          "component": "extension",
+          "evidence": [{ "pattern": { "file": "extension/content.js", "regex": "type: \"INGEST_ENQUEUE\"" } }]
+        },
+        {
+          "label": "Ítem de cola",
+          "artifact": "ingest_queue_v1 · chrome.storage.local",
+          "detail": "Persistido hasta que el backend confirma; los fallidos pasan a failed_queue_v1.",
+          "component": "extension",
+          "evidence": [{ "pattern": { "file": "extension/background.js", "regex": "^const QUEUE_STORAGE_KEY" } }]
+        },
+        {
+          "label": "Bookmark normalizado",
+          "artifact": "normalizeBookmark()",
+          "detail": "Campos validados, links limpios y shorteners expandidos.",
+          "component": "store",
+          "evidence": [{ "pattern": { "file": "backend/src/normalize.js", "regex": "^export function normalizeBookmark" } }]
+        },
+        {
+          "label": "Fila persistida",
+          "artifact": "tabla bookmarks",
+          "detail": "Con índice FTS en español sobre el texto.",
+          "component": "postgres",
+          "evidence": [{ "sql": { "file": "backend/sql/001_bookmarks_schema.sql", "object": "bookmarks" } }]
+        },
+        {
+          "label": "Repos mencionados",
+          "artifact": "bookmark_github_repos",
+          "detail": "Relación bookmark ↔ owner/repo detectado en texto, links o comentarios.",
+          "component": "postgres",
+          "evidence": [{ "sql": { "file": "backend/sql/007_github_repo_readmes.sql", "object": "bookmark_github_repos" } }]
+        },
+        {
+          "label": "README cacheado",
+          "artifact": "github_repo_readmes · TTL 168 h",
+          "detail": "Markdown del README con estado y fecha de descarga.",
+          "component": "readme-enricher",
+          "evidence": [
+            { "sql": { "file": "backend/sql/007_github_repo_readmes.sql", "object": "github_repo_readmes" } },
+            { "pattern": { "file": "backend/src/config.js", "regex": "githubReadmeTtlHours:" } }
+          ]
+        },
+        {
+          "label": "Clasificación",
+          "artifact": "repo_classifications + evidence",
+          "detail": "Categoría, capacidades, inputs, outputs, stack, madurez y los fragmentos que lo justifican.",
+          "component": "classifier",
+          "evidence": [
+            { "sql": { "file": "backend/sql/010_repo_classifier.sql", "object": "repo_classifications" } },
+            { "sql": { "file": "backend/sql/010_repo_classifier.sql", "object": "repo_classification_evidence" } }
+          ]
+        },
+        {
+          "label": "Índice de búsqueda",
+          "artifact": "tsvector + pg_trgm",
+          "detail": "Full-text y similitud por trigramas para ranking híbrido.",
+          "component": "postgres",
+          "evidence": [{ "sql": { "file": "backend/sql/002_search_bookmarks.sql", "object": "pg_trgm" } }]
+        },
+        {
+          "label": "Ruta de objetivo",
+          "artifact": "steps[] · route_score · next_steps[]",
+          "detail": "La salida de Goal Mode: etapas con herramientas, alternativas y próximos pasos.",
+          "component": "store",
+          "evidence": [{ "pattern": { "file": "backend/src/store.js", "regex": "next_steps: buildNextStepsFromPath" } }]
+        }
+      ]
+    }
+  ],
+  "decisions": [
+    {
+      "id": "no-framework",
+      "title": "Backend sobre node:http, sin framework",
+      "why": "El backend declara cinco dependencias de producción y ninguna es un framework HTTP: el enrutado es una cadena explícita de condiciones sobre método y ruta en server.js.",
+      "basis": "observed",
+      "components": ["api"],
+      "evidence": [
+        { "import": { "file": "backend/src/server.js", "specifier": "node:http" } },
+        { "file": { "path": "backend/package.json", "type": "dependency" } }
+      ]
+    },
+    {
+      "id": "postgres-search",
+      "title": "Buscar en Postgres en vez de un buscador externo",
+      "why": "La búsqueda principal (full-text con tsvector + similitud con pg_trgm) y el ranking viven en funciones SQL junto a los datos. Pinecone solo participa en el pipeline RAG, no en la búsqueda del request path.",
+      "basis": "observed",
+      "components": ["postgres", "store"],
+      "evidence": [
+        { "sql": { "file": "backend/sql/002_search_bookmarks.sql", "object": "pg_trgm" } },
+        { "rpc": { "file": "backend/src/store.js", "name": "search_bookmarks" } }
+      ]
+    },
+    {
+      "id": "goal-single-roundtrip",
+      "title": "Goal search en una ida a la base, con fallback",
+      "why": "search_goal_v3 hace parseo, búsqueda y ranking con README en una sola RPC; si la migración no está aplicada, el backend usa la ruta v2 y avisa en vez de fallar.",
+      "basis": "observed",
+      "components": ["store", "postgres"],
+      "evidence": [
+        { "sql": { "file": "backend/sql/008_goal_search_v3.sql", "object": "search_goal_v3" } },
+        { "pattern": { "file": "backend/src/store.js", "regex": "Using goal search v2 \\(fallback\\)" } }
+      ]
+    },
+    {
+      "id": "graceful-schema",
+      "title": "Degradar con gracia ante migraciones pendientes",
+      "why": "El código distingue errores de 'relación/función inexistente' y sigue respondiendo con la capacidad disponible; el job nocturno aplica la misma política.",
+      "basis": "observed",
+      "components": ["store", "nightly"],
+      "evidence": [
+        { "pattern": { "file": "backend/src/store.js", "regex": "^function isMissingGoalV3FeatureError", "span": 13 } },
+        { "pattern": { "file": ".github/workflows/nightly-enrich.yml", "regex": "degrada con un warning", "type": "documentation" } }
+      ]
+    },
+    {
+      "id": "lazy-readme",
+      "title": "README fuera del request path",
+      "why": "Descargar READMEs dentro de la ingesta ataría la latencia de cada lote a la API de GitHub. Por defecto la ingesta marca los repos como pending y el README llega al verlo o por backfill; una variable de entorno restaura el modo síncrono.",
+      "basis": "documented",
+      "components": ["readme-enricher", "store"],
+      "evidence": [
+        { "pattern": { "file": "backend/src/config.js", "regex": "Lazy por defecto", "type": "documentation", "span": 3 } },
+        { "pattern": { "file": "backend/src/config.js", "regex": "githubReadmeEagerFetch: parseBool" } }
+      ]
+    },
+    {
+      "id": "llm-classifier-fallback",
+      "title": "Clasificador LLM con taxonomía cerrada y fallback a reglas",
+      "why": "El matcher por keywords producía falsos positivos estructurales y confianza saturada. El LLM lee el README real y responde contra una taxonomía fija; las reglas quedan como red de seguridad.",
+      "basis": "documented",
+      "components": ["classifier", "openai"],
+      "evidence": [
+        { "pattern": { "file": "backend/src/repo-classifier-llm.js", "regex": "^// Reemplaza el keyword-matching", "type": "documentation", "span": 4 } },
+        { "pattern": { "file": "backend/src/repo-classifier-llm.js", "regex": "fallback v1" } }
+      ]
+    },
+    {
+      "id": "write-auth-read-open",
+      "title": "Escritura protegida, lectura abierta",
+      "why": "Los endpoints de escritura exigen API key y rate limit por IP. La lectura queda abierta por defecto porque un frontend estático no puede ocultar una key en su bundle.",
+      "basis": "documented",
+      "components": ["api"],
+      "evidence": [
+        { "pattern": { "file": "backend/src/config.js", "regex": "true = exigir la key también en lectura", "type": "documentation", "span": 3 } },
+        { "pattern": { "file": "backend/src/auth.js", "regex": "^export function createRateLimiter" } }
+      ]
+    },
+    {
+      "id": "persistent-queue",
+      "title": "Cola persistente en la extensión",
+      "why": "La cola vive en chrome.storage.local, no en la memoria del service worker, y los lotes que agotan sus reintentos pasan a una cola de fallidos acotada que se puede reintentar.",
+      "basis": "observed",
+      "components": ["extension"],
+      "evidence": [
+        { "pattern": { "file": "extension/background.js", "regex": "^const QUEUE_STORAGE_KEY" } },
+        { "pattern": { "file": "extension/background.js", "regex": "^const FAILED_QUEUE_MAX" } },
+        { "pattern": { "file": "extension/background.js", "regex": "^async function retryFailedQueueItems" } }
+      ]
+    },
+    {
+      "id": "keepalive",
+      "title": "Keepalive contra el sleep de Render free",
+      "why": "Render free duerme tras ~15 min sin tráfico y el cron de GitHub se retrasa en la práctica; cada ejecución mantiene un bucle de pings cada 4 min durante casi 3 h.",
+      "basis": "documented",
+      "components": ["ci-cd", "api"],
+      "evidence": [
+        { "pattern": { "file": ".github/workflows/keepalive.yml", "regex": "Render free duerme", "type": "documentation", "span": 4 } },
+        { "pattern": { "file": ".github/workflows/keepalive.yml", "regex": "sleep 240", "type": "deployment" } }
+      ]
+    },
+    {
+      "id": "rag-incremental",
+      "title": "RAG incremental por content_hash",
+      "why": "Solo se pagan embeddings de lo nuevo o modificado; el estado de sincronización vive en Postgres, junto al contenido.",
+      "basis": "observed",
+      "components": ["rag", "postgres"],
+      "evidence": [
+        { "pattern": { "file": "backend/src/rag-ingest.js", "regex": "const hash = contentHash\\(" } },
+        { "sql": { "file": "backend/sql/015_rag_sync_state.sql", "object": "rag_sync_state" } }
+      ]
+    },
+    {
+      "id": "in-memory-knowledge",
+      "title": "Grafo y clusters calculados en memoria",
+      "why": "El API carga un corpus acotado (hasta 2000 ítems) y calcula discover, clusters, related y graph en JavaScript. Inferencia del análisis: prioriza iterar rápido sobre la lógica de relaciones antes de llevarla a SQL; el repo no documenta el motivo.",
+      "basis": "inferred",
+      "components": ["knowledge", "api"],
+      "evidence": [
+        { "pattern": { "file": "backend/src/server.js", "regex": "const corpusLimit = clampNumber" } }
+      ]
+    }
+  ],
+  "findings": [
+    {
+      "id": "knowledge-db-claim",
+      "severity": "warning",
+      "title": "El README dice que el knowledge engine consulta Supabase; el código no",
+      "detail": "knowledge.js solo importa el parser de queries y opera sobre el corpus que el API le pasa. El mapa muestra la dependencia real: API → BookmarkStore → Postgres.",
+      "evidence": [
+        { "pattern": { "file": "README.md", "regex": "KNOW --> SUPA", "type": "documentation" } },
+        { "import": { "file": "backend/src/knowledge.js", "specifier": "./search-query.js" } }
+      ]
+    },
+    {
+      "id": "migration-count",
+      "severity": "info",
+      "title": "El README cuenta 13 migraciones; el commit tiene 16",
+      "detail": "Las migraciones 014–016 (github_repositories, rag_sync_state, engagement metrics) existen pero no están documentadas en el README.",
+      "evidence": [
+        { "pattern": { "file": "README.md", "regex": "^13 migraciones SQL versionadas", "type": "documentation" } },
+        { "dir": { "path": "backend/sql", "type": "migration", "ext": ".sql" } }
+      ]
+    },
+    {
+      "id": "gitlab-pipeline-absent",
+      "severity": "info",
+      "title": "El pipeline GitLab documentado no está en este commit",
+      "detail": "El README describe .gitlab-ci.yml, .ci-jobs.yml y .cd-jobs.yml; ninguno existe en el árbol analizado. Por eso el mapa no incluye ese pipeline.",
+      "absent": [".gitlab-ci.yml", ".ci-jobs.yml", ".cd-jobs.yml"],
+      "evidence": [
+        { "pattern": { "file": "README.md", "regex": "\\[`\\.gitlab-ci\\.yml`\\]", "type": "documentation" } }
+      ]
+    }
+  ]
+}

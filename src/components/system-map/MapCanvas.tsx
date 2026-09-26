@@ -1,5 +1,5 @@
-import { useEffect, useMemo, useRef, useState, type KeyboardEvent } from 'react';
-import { NODE_H, NODE_W, type Layout } from '@/lib/system-map/layout';
+import { useEffect, useMemo, useRef, useState, type KeyboardEvent, type ReactNode } from 'react';
+import { LABEL_W, NODE_H, NODE_W, ROW_GAP, type Layout, type RowBox } from '@/lib/system-map/layout';
 import type { ArchComponent, ArchRelationship, Confidence } from '@/lib/system-map/types';
 import { COMPONENT_TYPE, CONFIDENCE, EDGE_DASH } from './shared';
 
@@ -14,31 +14,83 @@ type Props = {
   flow?: { components: Set<string>; edges: Map<string, string> } | null;
   onSelectNode: (id: string, trigger: HTMLElement) => void;
   onSelectEdge: (id: string) => void;
+  // 'width': ocupa el ancho y crece en alto (tarjeta). 'contain': el mapa
+  // entero cabe en la caja del padre (panel expandido).
+  fit?: 'width' | 'contain';
+  // Capa que se pinta encima, en el mismo sistema de coordenadas (la intro).
+  // Mientras está activa, el mapa interactivo existe pero no se ve.
+  overlay?: ReactNode;
 };
 
-const ACTIVE = '#c6ff3d';
+export const ACTIVE = '#c6ff3d';
+export const EDGE_IDLE = 'rgba(255,255,255,0.28)';
+export const ARROW_IDLE = 'rgba(255,255,255,0.35)';
 
-export default function MapCanvas({ layout, components, relationships, selectedNode, selectedEdge, activeLevels, flow, onSelectNode, onSelectEdge }: Props) {
+/** Contenido visual de un nodo; lo comparten el mapa y la intro animada. */
+export function NodeFace({ c }: { c: ArchComponent }) {
+  const type = COMPONENT_TYPE[c.type];
+  const conf = CONFIDENCE[c.confidence];
+  return (
+    <>
+      <span className="flex items-center justify-between gap-2 font-mono text-[9px] uppercase tracking-[0.2em]">
+        <span className="flex items-center gap-1.5 text-white/50">
+          <span className="inline-block h-1.5 w-1.5" style={{ backgroundColor: type.color }} aria-hidden="true" />
+          {type.label}
+        </span>
+        <span className={conf.className} aria-hidden="true" title={conf.label}>
+          {conf.glyph}
+        </span>
+      </span>
+      <span className="line-clamp-2 font-display text-[13px] font-semibold leading-[1.15] tracking-tight text-white [overflow-wrap:anywhere]">{c.name}</span>
+    </>
+  );
+}
+
+/** Etiqueta de capa a la izquierda de su fila y separador con la anterior. */
+export function LayerLabel({ row, first, opacity = 1, reveal = 1 }: { row: RowBox; first: boolean; opacity?: number; reveal?: number }) {
+  return (
+    <>
+      {!first && (
+        <div
+          className="pointer-events-none absolute left-0 right-0 h-px origin-left bg-white/[0.06]"
+          style={{ top: row.y - ROW_GAP / 2, transform: `scaleX(${reveal})` }}
+        />
+      )}
+      <div className="pointer-events-none absolute left-0 flex items-center" style={{ top: row.y, height: NODE_H, width: LABEL_W - 14, opacity }}>
+        <span className="font-mono text-[10px] uppercase leading-snug tracking-[0.2em] text-white/40">{row.name}</span>
+      </div>
+    </>
+  );
+}
+
+export const nodeBaseClass = 'absolute flex flex-col justify-center gap-0.5 border-2 px-2 text-left';
+export const nodeSurface = (c: ArchComponent) => (c.type === 'external' ? 'border-dashed bg-ink-950/80' : 'bg-ink-900');
+export const nodeBorder = (c: ArchComponent) => (c.type === 'external' ? 'rgba(255,255,255,0.3)' : 'rgba(255,255,255,0.16)');
+
+export default function MapCanvas({ layout, components, relationships, selectedNode, selectedEdge, activeLevels, flow, onSelectNode, onSelectEdge, fit = 'width', overlay }: Props) {
   const wrapperRef = useRef<HTMLDivElement>(null);
   const nodeRefs = useRef(new Map<string, HTMLButtonElement>());
   const [scale, setScale] = useState(1);
-  const [available, setAvailable] = useState(0);
+  const [available, setAvailable] = useState({ w: 0, h: 0 });
   const [hovered, setHovered] = useState<string | null>(null);
   const [hoveredEdge, setHoveredEdge] = useState<string | null>(null);
   const [focusId, setFocusId] = useState<string>(layout.grid[0]?.[0] ?? '');
 
-  // Encaja el mapa en el ancho disponible; por debajo de 0.72 se prefiere
-  // desplazamiento horizontal a texto ilegible.
+  // Encaja el mapa en el espacio disponible. En la tarjeta, por debajo de
+  // 0.72 se prefiere desplazamiento horizontal a texto ilegible; en el panel
+  // expandido el sistema entero debe verse de un vistazo.
   useEffect(() => {
     const el = wrapperRef.current;
     if (!el || typeof ResizeObserver === 'undefined') return;
     const ro = new ResizeObserver(([entry]) => {
-      setAvailable(entry.contentRect.width);
-      setScale(Math.max(0.72, Math.min(1, entry.contentRect.width / layout.width)));
+      const { width: w, height: h } = entry.contentRect;
+      setAvailable({ w, h });
+      const byWidth = w / layout.width;
+      setScale(fit === 'contain' ? Math.max(0.5, Math.min(1, byWidth, h / layout.height)) : Math.max(0.72, Math.min(1, byWidth)));
     });
     ro.observe(el);
     return () => ro.disconnect();
-  }, [layout.width]);
+  }, [layout.width, layout.height, fit]);
 
   useEffect(() => {
     if (selectedNode) setFocusId(selectedNode);
@@ -93,23 +145,31 @@ export default function MapCanvas({ layout, components, relationships, selectedN
   };
 
   return (
-    <div ref={wrapperRef} className="relative w-full overflow-x-auto overscroll-x-contain" style={{ height: layout.height * scale + 4 }}>
-      {/* Un mapa más estrecho que su columna se centra. */}
+    <div
+      ref={wrapperRef}
+      className={fit === 'contain' ? 'relative h-full w-full overflow-auto' : 'relative w-full overflow-x-auto overscroll-x-contain'}
+      style={fit === 'contain' ? undefined : { height: layout.height * scale + 4 }}
+    >
+      {/* Un mapa más pequeño que su caja se centra. */}
       <div
         className="relative origin-top-left"
-        style={{ width: layout.width, height: layout.height, transform: `scale(${scale})`, marginLeft: Math.max(0, (available - layout.width * scale) / 2) }}
+        style={{
+          width: layout.width,
+          height: layout.height,
+          transform: `scale(${scale})`,
+          marginLeft: Math.max(0, (available.w - layout.width * scale) / 2),
+          marginTop: fit === 'contain' ? Math.max(0, (available.h - layout.height * scale) / 2) : 0,
+        }}
       >
-        {layout.rows.map((row) => (
-          <div key={row.id} className="pointer-events-none absolute left-0 right-0 flex items-center gap-3" style={{ top: row.y }}>
-            <span className="font-mono text-[10px] uppercase tracking-[0.24em] text-white/40 whitespace-nowrap">{row.name}</span>
-            <span className="h-px flex-1 bg-white/[0.07]" />
-          </div>
+        <div className={overlay ? 'invisible' : undefined}>
+        {layout.rows.map((row, i) => (
+          <LayerLabel key={row.id} row={row} first={i === 0} />
         ))}
 
         <svg className="absolute inset-0 overflow-visible" width={layout.width} height={layout.height} aria-hidden="true">
           <defs>
             {[
-              ['idle', 'rgba(255,255,255,0.35)'],
+              ['idle', ARROW_IDLE],
               ['dim', 'rgba(255,255,255,0.12)'],
               ['active', ACTIVE],
             ].map(([id, color]) => (
@@ -122,7 +182,7 @@ export default function MapCanvas({ layout, components, relationships, selectedN
             const path = layout.edges.get(r.id)!;
             const state = edgeState(r);
             if (state === 'hidden') return null;
-            const stroke = state === 'active' ? ACTIVE : state === 'dim' ? 'rgba(255,255,255,0.12)' : 'rgba(255,255,255,0.28)';
+            const stroke = state === 'active' ? ACTIVE : state === 'dim' ? 'rgba(255,255,255,0.12)' : EDGE_IDLE;
             return (
               <g key={r.id}>
                 <path
@@ -167,7 +227,6 @@ export default function MapCanvas({ layout, components, relationships, selectedN
           const selected = selectedNode === c.id;
           const inFlow = flow ? flow.components.has(c.id) : true;
           const faded = !visible(c) || !inFlow || (focusNode !== null && !neighbors.has(c.id) && focusNode !== c.id && !flow);
-          const outside = c.type === 'external';
           const conf = CONFIDENCE[c.confidence];
           return (
             <button
@@ -185,32 +244,39 @@ export default function MapCanvas({ layout, components, relationships, selectedN
               onFocus={() => setFocusId(c.id)}
               onMouseEnter={() => setHovered(c.id)}
               onMouseLeave={() => setHovered(null)}
-              className={`group absolute flex flex-col justify-center gap-0.5 border-2 px-2 text-left transition-[opacity,box-shadow,transform] duration-150 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent-lime ${
-                outside ? 'border-dashed bg-ink-950/80' : 'bg-ink-900'
-              } ${selected ? '-translate-x-0.5 -translate-y-0.5' : 'hover:-translate-y-0.5'} ${faded ? 'opacity-30' : 'opacity-100'}`}
+              className={`group ${nodeBaseClass} transition-[opacity,box-shadow,transform] duration-150 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent-lime ${nodeSurface(c)} ${
+                selected ? '-translate-x-0.5 -translate-y-0.5' : 'hover:-translate-y-0.5'
+              } ${faded ? 'opacity-30' : 'opacity-100'}`}
               style={{
                 left: box.x,
                 top: box.y,
                 width: NODE_W,
                 height: NODE_H,
-                borderColor: selected ? type.color : outside ? 'rgba(255,255,255,0.3)' : 'rgba(255,255,255,0.16)',
+                borderColor: selected ? type.color : nodeBorder(c),
                 boxShadow: selected ? `4px 4px 0 0 ${type.color}` : undefined,
               }}
             >
-              <span className="flex items-center justify-between gap-2 font-mono text-[9px] uppercase tracking-[0.2em]">
-                <span className="flex items-center gap-1.5 text-white/50">
-                  <span className="inline-block h-1.5 w-1.5" style={{ backgroundColor: type.color }} aria-hidden="true" />
-                  {type.label}
-                </span>
-                <span className={conf.className} aria-hidden="true" title={conf.label}>
-                  {conf.glyph}
-                </span>
-              </span>
-              <span className="line-clamp-2 font-display text-[13px] font-semibold leading-[1.15] tracking-tight text-white [overflow-wrap:anywhere]">{c.name}</span>
+              <NodeFace c={c} />
             </button>
           );
         })}
+        </div>
       </div>
+      {/* La capa superpuesta ocupa el rectángulo ya escalado del mapa: un
+          Player de Remotion mide su caja y escala su composición a ella. */}
+      {overlay && (
+        <div
+          className="absolute"
+          style={{
+            left: Math.max(0, (available.w - layout.width * scale) / 2),
+            top: fit === 'contain' ? Math.max(0, (available.h - layout.height * scale) / 2) : 0,
+            width: layout.width * scale,
+            height: layout.height * scale,
+          }}
+        >
+          {overlay}
+        </div>
+      )}
     </div>
   );
 }

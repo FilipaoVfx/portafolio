@@ -1,12 +1,23 @@
-import { useMemo, useRef, useState, type KeyboardEvent } from 'react';
+import { lazy, Suspense, useEffect, useMemo, useRef, useState, type KeyboardEvent } from 'react';
 import { computeLayout } from '@/lib/system-map/layout';
 import type { ArchComponent, Architecture, Confidence } from '@/lib/system-map/types';
 import { EdgeDetail, NodeDetail, StepDetail } from './DetailPanel';
 import MapCanvas from './MapCanvas';
 import { BASIS, COMPONENT_TYPE, CONFIDENCE, CONFIDENCE_ORDER, ConfidenceBadge, EvidenceList, track } from './shared';
 
-// Reverso de la tarjeta de proyecto: el mapa es el protagonista. Todo lo
+// Contenido del panel de arquitectura: el mapa es el protagonista. Todo lo
 // demás (detalle, evidencia, flujos, decisiones) aparece solo si se pide.
+
+// Remotion solo se descarga si la intro se va a reproducir.
+const ArchitectureAssembly = lazy(() => import('./ArchitectureAssembly'));
+const introPlayed = new Set<string>();
+
+function shouldPlayIntro(slug: string) {
+  if (typeof window === 'undefined' || introPlayed.has(slug)) return false;
+  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return false;
+  // En pantallas pequeñas el mapa es una lista: no hay grafo que montar.
+  return window.matchMedia('(min-width: 640px)').matches;
+}
 
 type View = 'map' | 'flows' | 'decisions';
 type Selection = { kind: 'node' | 'edge' | 'step'; id: string } | null;
@@ -21,6 +32,12 @@ const ALL_LEVELS = new Set<Confidence>(CONFIDENCE_ORDER);
 
 export default function ArchitectureBack({ ir }: { ir: Architecture }) {
   const layout = useMemo(() => computeLayout(ir), [ir]);
+  const [intro, setIntro] = useState(false);
+  useEffect(() => {
+    if (!shouldPlayIntro(ir.project.slug)) return;
+    introPlayed.add(ir.project.slug);
+    setIntro(true);
+  }, [ir.project.slug]);
   const components = useMemo(() => new Map(ir.components.map((c) => [c.id, c])), [ir]);
   const [view, setView] = useState<View>('map');
   const [flowId, setFlowId] = useState(ir.flows[0]?.id ?? '');
@@ -154,8 +171,8 @@ export default function ArchitectureBack({ ir }: { ir: Architecture }) {
   );
 
   return (
-    <div className="relative" onKeyDown={onKeyDown}>
-      <div role="tablist" aria-label={`Vistas de ${ir.project.name}`} className="flex gap-1">
+    <div className="relative flex h-full min-h-0 flex-col" onKeyDown={onKeyDown}>
+      <div role="tablist" aria-label={`Vistas de ${ir.project.name}`} className="flex shrink-0 gap-1">
         {VIEWS.map((v) => (
           <button
             key={v.id}
@@ -173,12 +190,22 @@ export default function ArchitectureBack({ ir }: { ir: Architecture }) {
       </div>
 
       {view === 'decisions' ? (
-        <Decisions ir={ir} components={components} />
+        <div className="min-h-0 flex-1 overflow-y-auto pr-1">
+          <Decisions ir={ir} components={components} />
+        </div>
       ) : (
-        <div className="mt-4 grid gap-5 lg:grid-cols-[minmax(0,1fr)_300px] lg:items-start">
-          <div className="min-w-0">
-            <div className="hidden sm:block">
+        <div className="mt-4 grid min-h-0 flex-1 gap-5 overflow-y-auto lg:grid-cols-[minmax(0,1fr)_320px] lg:grid-rows-[minmax(0,1fr)] lg:overflow-hidden">
+          <div className="min-w-0 sm:h-[min(68vh,620px)] lg:h-auto lg:min-h-0">
+            <div className="hidden h-full sm:block">
               <MapCanvas
+                fit="contain"
+                overlay={
+                  intro ? (
+                    <Suspense fallback={null}>
+                      <ArchitectureAssembly ir={ir} layout={layout} onDone={() => setIntro(false)} />
+                    </Suspense>
+                  ) : undefined
+                }
                 layout={layout}
                 components={components}
                 relationships={ir.relationships}
@@ -199,8 +226,8 @@ export default function ArchitectureBack({ ir }: { ir: Architecture }) {
             aria-label="Detalle"
             className={
               detail
-                ? 'absolute inset-x-0 bottom-0 top-10 z-10 overflow-y-auto border-t-2 border-white/70 bg-ink-950 p-4 lg:static lg:max-h-[640px] lg:border lg:border-white/10 lg:bg-black/30'
-                : 'border border-white/10 bg-black/20 p-4'
+                ? 'absolute inset-x-0 bottom-0 top-10 z-20 overflow-y-auto border-t-2 border-white/70 bg-ink-950 p-4 lg:static lg:min-h-0 lg:border lg:border-white/10 lg:bg-black/30'
+                : `min-h-0 overflow-y-auto border border-white/10 bg-black/20 p-4 ${view === 'flows' ? '' : 'hidden lg:block'}`
             }
           >
             {detail || (view === 'flows' ? steps : hint)}
@@ -208,7 +235,7 @@ export default function ArchitectureBack({ ir }: { ir: Architecture }) {
         </div>
       )}
 
-      <p className="mt-5 font-mono text-[10px] uppercase tracking-[0.18em] text-white/35">
+      <p className="mt-4 shrink-0 font-mono text-[10px] uppercase tracking-[0.18em] text-white/35">
         Generado del código de{' '}
         <a
           href={`${ir.source.url}/tree/${ir.source.commit}`}

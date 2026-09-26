@@ -4,15 +4,16 @@
 
 import type { ArchComponent, ArchRelationship, Architecture } from './types';
 
-// Medidas pensadas para el reverso de la tarjeta de proyecto: compacto, pero
-// con nombres legibles a escala 1.
+// Medidas pensadas para el panel de arquitectura: el sistema entero debe
+// caber de un vistazo con nombres legibles. Las etiquetas de capa van a la
+// izquierda de cada fila para no gastar altura.
 export const NODE_W = 150;
 export const NODE_H = 54;
+export const LABEL_W = 118;
 const GAP_X = 14;
-const ROW_GAP = 44;
-const LABEL_H = 18;
-const PAD_X = 16;
-const PAD_Y = 12;
+export const ROW_GAP = 34;
+const PAD_X = 12;
+const PAD_Y = 10;
 
 export type NodeBox = { id: string; x: number; y: number; row: number; col: number };
 export type RowBox = { id: string; name: string; y: number };
@@ -87,8 +88,8 @@ export function computeLayout(ir: Architecture): Layout {
   order(grid, ir.relationships);
 
   const widest = Math.max(...grid.map((r) => r.length));
-  const width = PAD_X * 2 + widest * NODE_W + (widest - 1) * GAP_X;
-  const rowPitch = LABEL_H + NODE_H + ROW_GAP;
+  const width = LABEL_W + PAD_X * 2 + widest * NODE_W + (widest - 1) * GAP_X;
+  const rowPitch = NODE_H + ROW_GAP;
   const height = PAD_Y + grid.length * rowPitch - ROW_GAP + PAD_Y;
 
   const nodes = new Map<string, NodeBox>();
@@ -97,8 +98,8 @@ export function computeLayout(ir: Architecture): Layout {
     const y = PAD_Y + ri * rowPitch;
     rows.push({ id: groups[ri].id, name: groups[ri].name, y });
     const rowWidth = row.length * NODE_W + (row.length - 1) * GAP_X;
-    const x0 = (width - rowWidth) / 2;
-    row.forEach((id, ci) => nodes.set(id, { id, x: x0 + ci * (NODE_W + GAP_X), y: y + LABEL_H, row: ri, col: ci }));
+    const x0 = LABEL_W + (width - LABEL_W - rowWidth) / 2;
+    row.forEach((id, ci) => nodes.set(id, { id, x: x0 + ci * (NODE_W + GAP_X), y, row: ri, col: ci }));
   });
 
   // Puertos: las aristas que salen por un mismo lado se reparten a lo ancho

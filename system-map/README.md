@@ -15,16 +15,27 @@ LLM, sin análisis y sin llamadas a GitHub en runtime.
 
 ## En el portfolio
 
-Cada tarjeta de proyecto de la home tiene un botón **Ver arquitectura**: la
-tarjeta entera gira y el reverso muestra el mapa. Pulsar un componente o una
-conexión abre su detalle con la evidencia (extracto + enlace a GitHub en el
-commit analizado); **Flujos** resalta un recorrido paso a paso y **Decisiones**
-lista el porqué, separando hecho observado, decisión documentada e inferencia.
-Escape cierra el detalle y, después, devuelve la tarjeta a su frente.
+Toda la tarjeta de cada proyecto (y su captura) abre la arquitectura; sus
+propios enlaces (demo, código, caso completo) conservan su destino.
 
-El mapa (`ArchitectureBack`) y el artefacto
-(`/projects/<slug>/architecture.json`) solo se descargan al girar la tarjeta:
-la home no carga ningún mapa por adelantado.
+- **Escritorio:** una copia de la tarjeta despega de la página y gira hasta
+  quedar de canto; a mitad de camino la releva el panel, que termina el giro
+  mientras crece hasta casi toda la pantalla. El resto de la página queda
+  detrás, difuminado.
+- **Móvil:** sin giro; el panel crece desde el rectángulo de la tarjeta hasta
+  ocupar la pantalla.
+- **Movimiento reducido:** fundido, sin intro.
+- **Intro (Remotion):** la primera vez que se abre cada proyecto, el sistema
+  se monta capa a capa, las conexiones se trazan y un paquete recorre el flujo
+  principal. El último fotograma es idéntico al mapa interactivo; un toque la
+  salta.
+
+El panel es un `<dialog>` modal: Escape cierra el detalle y después el panel,
+el botón Atrás del navegador también lo cierra y `/#<slug>/arquitectura`
+lo abre directamente. El mapa, el artefacto
+(`/projects/<slug>/architecture.json`) y la intro solo se descargan al
+acercarse a la tarjeta; la intro, además, solo en escritorio y sin
+movimiento reducido.
 
 ## Piezas
 

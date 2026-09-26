@@ -1,14 +1,15 @@
-import { lazy, Suspense, useEffect, useRef, useState } from 'react';
+import { lazy, Suspense, useEffect, useRef, useState, type CSSProperties, type MouseEvent, type ReactNode } from 'react';
 import type { Project } from '@/data/projects';
 import type { Architecture } from '@/lib/system-map/types';
+import ArchitectureDialog from './system-map/ArchitectureDialog';
 import { track } from './system-map/shared';
 
-// El mapa y su JSON solo se descargan cuando alguien gira la tarjeta.
+// El mapa y su JSON solo se descargan cuando alguien se acerca a la tarjeta.
 const loadBack = () => import('./system-map/ArchitectureBack');
 const ArchitectureBack = lazy(loadBack);
 
-const FLIP_MS = 700;
-type Phase = 'front' | 'to-back' | 'back' | 'to-front';
+// Controles propios de la tarjeta: conservan su comportamiento.
+const OWN_CONTROLS = 'a, button, input, select, textarea, summary, [role="button"]';
 
 const accentMap: Record<Project['accent'], { bg: string; text: string; shadow: string; hex: string }> = {
   lime: { bg: 'bg-accent-lime', text: 'text-accent-lime', shadow: 'hover:shadow-glow', hex: '#c6ff3d' },
@@ -55,22 +56,22 @@ export default function ProjectCard({ project, index, hasSystemMap = false }: { 
   const a = accentMap[project.accent];
   const displayUrl = project.link?.replace(/^https?:\/\//, '') ?? '';
 
-  const [phase, setPhase] = useState<Phase>('front');
+  const [open, setOpen] = useState<null | { deepLinked: boolean }>(null);
   const [ir, setIr] = useState<Architecture | null>(null);
   const [loadError, setLoadError] = useState(false);
   const request = useRef<Promise<void> | null>(null);
-  const articleRef = useRef<HTMLElement>(null);
-  const frontRef = useRef<HTMLDivElement>(null);
-  const backRef = useRef<HTMLDivElement>(null);
-  const flipButton = useRef<HTMLButtonElement>(null);
-  const backHeading = useRef<HTMLHeadingElement>(null);
-  const backId = `${project.slug}-arquitectura`;
-  const showingBack = phase === 'to-back' || phase === 'back';
+  const cardRef = useRef<HTMLDivElement>(null);
+  const openButton = useRef<HTMLButtonElement>(null);
 
   const load = () => {
     if (!hasSystemMap || request.current) return;
     setLoadError(false);
     loadBack();
+    // La intro animada (Remotion) solo existe en escritorio y sin movimiento
+    // reducido; si se va a ver, que ya esté descargada al terminar el giro.
+    if (window.matchMedia('(min-width: 640px) and (prefers-reduced-motion: no-preference)').matches) {
+      void import('./system-map/ArchitectureAssembly');
+    }
     request.current = fetch(routePath(`/projects/${project.slug}/architecture.json`))
       .then((res) => {
         if (!res.ok) throw new Error(String(res.status));
@@ -83,45 +84,42 @@ export default function ProjectCard({ project, index, hasSystemMap = false }: { 
       });
   };
 
-  const flip = (toBack: boolean) => {
-    if (toBack) {
-      load();
-      track('system_map_open', { project: project.slug });
-    }
-    const top = articleRef.current?.getBoundingClientRect().top ?? 0;
-    if (top < 0) articleRef.current?.scrollIntoView({ block: 'start', behavior: 'smooth' });
-    setPhase(toBack ? 'to-back' : 'to-front');
+  const openArchitecture = (deepLinked = false) => {
+    if (!hasSystemMap || open) return;
+    load();
+    track('system_map_open', { project: project.slug });
+    setOpen({ deepLinked });
   };
 
-  // Al terminar el giro se oculta la cara que no se ve: la tarjeta adopta la
-  // altura de la cara visible y el foco pasa a su encabezado.
-  useEffect(() => {
-    if (phase !== 'to-back' && phase !== 'to-front') return;
-    const timer = window.setTimeout(() => {
-      setPhase(phase === 'to-back' ? 'back' : 'front');
-      if (phase === 'to-back') backHeading.current?.focus({ preventScroll: true });
-      else flipButton.current?.focus({ preventScroll: true });
-    }, FLIP_MS + 40);
-    return () => window.clearTimeout(timer);
-  }, [phase]);
+  // Toda la tarjeta abre la arquitectura, salvo sus propios enlaces y botones
+  // y salvo que el clic sea el final de una selección de texto.
+  const onCardClick = (e: MouseEvent<HTMLDivElement>) => {
+    if (!hasSystemMap || (e.target as HTMLElement).closest(OWN_CONTROLS)) return;
+    if (window.getSelection()?.toString().trim()) return;
+    openArchitecture();
+  };
 
-  // La cara oculta no recibe foco ni lectores de pantalla.
+  // Enlace directo: /#indexer/arquitectura abre el panel al cargar.
   useEffect(() => {
-    if (frontRef.current) frontRef.current.inert = showingBack;
-    if (backRef.current) backRef.current.inert = !showingBack;
-  }, [showingBack, phase]);
+    if (!hasSystemMap || location.hash !== `#${project.slug}/arquitectura`) return;
+    cardRef.current?.scrollIntoView({ block: 'center' });
+    const t = window.setTimeout(() => openArchitecture(true), 250);
+    return () => window.clearTimeout(t);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   return (
     <article
-      ref={articleRef}
       id={project.slug}
       className="scroll-mt-28 mb-24 md:mb-32 last:mb-0"
     >
-      <div className="flip3d-scene">
-      <div className={`flip3d ${showingBack ? 'is-flipped' : ''}`}>
-      <div ref={frontRef} className={`flip3d-face ${phase === 'back' ? 'hidden' : ''}`}>
       <div
-        className={`glass-strong h-full border-2 border-white/15 shadow-brutal-lg ${a.shadow} transition-shadow rounded-lg overflow-hidden`}
+        ref={cardRef}
+        onClick={onCardClick}
+        onPointerEnter={load}
+        className={`group/card glass-strong border-2 border-white/15 shadow-brutal-lg ${a.shadow} rounded-lg overflow-hidden transition-[box-shadow,transform,border-color] duration-300 ${
+          hasSystemMap ? 'cursor-pointer hover:-translate-y-1 hover:border-white/30' : ''
+        }`}
       >
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-0">
           <div className="lg:col-span-1 flex lg:flex-col items-center justify-between lg:justify-start lg:py-10 px-8 py-4 border-b lg:border-b-0 lg:border-r border-white/10 bg-black/20">
@@ -199,13 +197,11 @@ export default function ProjectCard({ project, index, hasSystemMap = false }: { 
               )}
               {hasSystemMap && (
                 <button
-                  ref={flipButton}
+                  ref={openButton}
                   type="button"
-                  onClick={() => flip(true)}
-                  onPointerEnter={load}
+                  onClick={() => openArchitecture()}
                   onFocus={load}
-                  aria-controls={backId}
-                  aria-expanded={showingBack}
+                  aria-haspopup="dialog"
                   className="btn-ghost"
                 >
                   Ver arquitectura <span aria-hidden="true">↻</span>
@@ -217,12 +213,10 @@ export default function ProjectCard({ project, index, hasSystemMap = false }: { 
           {project.link && (
             <div className="lg:col-span-6 relative border-t lg:border-t-0 lg:border-l border-white/10 bg-black/25">
               <div className="relative h-full p-4 md:p-6 lg:p-8 xl:p-10 flex flex-col justify-center">
-                <a
-                  href={project.link}
-                  target="_blank"
-                  rel="noreferrer"
-                  aria-label={`Abrir demo de ${project.title}`}
-                  className="group/preview block w-[calc(100%-4px)] rounded-md border border-white/15 bg-ink-950/95 p-2.5 shadow-[0_18px_55px_rgba(0,0,0,0.34)] transition hover:border-white/35"
+                <PreviewFrame
+                  href={hasSystemMap ? undefined : project.link}
+                  label={`Abrir demo de ${project.title}`}
+                  className="group/preview block w-[calc(100%-4px)] rounded-md border border-white/15 bg-ink-950/95 p-2.5 shadow-[0_18px_55px_rgba(0,0,0,0.34)] transition group-hover/card:border-white/35 hover:border-white/35"
                   style={{ boxShadow: `4px 4px 0 0 ${a.hex}` }}
                 >
                   <div className="flex items-center justify-between px-1 pb-2 font-mono text-[10px] uppercase tracking-wider">
@@ -250,7 +244,7 @@ export default function ProjectCard({ project, index, hasSystemMap = false }: { 
                         loading={index === 0 ? 'eager' : 'lazy'}
                         decoding="async"
                         sizes="(min-width: 1280px) 520px, (min-width: 1024px) 48vw, 100vw"
-                        className="h-full w-full object-cover object-top transition duration-500 group-hover/preview:scale-[1.025]"
+                        className="h-full w-full object-cover object-top transition duration-500 group-hover/card:scale-[1.025] group-hover/preview:scale-[1.025]"
                       />
                     ) : (
                       <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.06)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.06)_1px,transparent_1px)] bg-[size:22px_22px] opacity-40" />
@@ -265,10 +259,16 @@ export default function ProjectCard({ project, index, hasSystemMap = false }: { 
                           {displayUrl}
                         </div>
                       </div>
-                      <span className="chip shrink-0">abrir ↗</span>
+                      {hasSystemMap ? (
+                        <span className="chip shrink-0 transition group-hover/card:border-transparent group-hover/card:bg-accent-lime group-hover/card:text-ink-950">
+                          arquitectura <span aria-hidden="true">↻</span>
+                        </span>
+                      ) : (
+                        <span className="chip shrink-0">abrir ↗</span>
+                      )}
                     </div>
                   </div>
-                </a>
+                </PreviewFrame>
 
                 <div className="mt-4 grid sm:grid-cols-2 lg:grid-cols-1 xl:grid-cols-2 gap-2 font-mono text-[10px] uppercase tracking-wider text-white/45">
                   <div className="glass px-3 py-2">
@@ -285,48 +285,32 @@ export default function ProjectCard({ project, index, hasSystemMap = false }: { 
           )}
         </div>
       </div>
-      </div>
 
-      {hasSystemMap && phase !== 'front' && (
-        <div
-          ref={backRef}
-          id={backId}
-          className="flip3d-face flip3d-back"
-          onKeyDown={(e) => {
-            if (e.key === 'Escape') flip(false);
-          }}
+      {open && (
+        <ArchitectureDialog
+          slug={project.slug}
+          title={project.title}
+          subtitle={ir ? ir.project.summary : project.tagline}
+          accentClass={a.text}
+          source={cardRef}
+          returnFocus={openButton}
+          deepLinked={open.deepLinked}
+          onClosed={() => setOpen(null)}
         >
-          <div className="h-full rounded-lg border-2 border-white/15 bg-ink-900 p-5 shadow-brutal-lg md:p-8">
-            <div className="flex flex-wrap items-start justify-between gap-4 border-b border-white/10 pb-4">
-              <div>
-                <div className="label-mono">// arquitectura</div>
-                <h3 ref={backHeading} tabIndex={-1} className={`heading-display mt-1 text-3xl md:text-4xl outline-none ${a.text}`}>
-                  {project.title}
-                </h3>
-              </div>
-              <button type="button" onClick={() => flip(false)} className="btn-ghost !px-4 !py-2 text-xs">
-                <span aria-hidden="true">↺</span> Volver al proyecto
-              </button>
+          {ir ? (
+            <Suspense fallback={<BackSkeleton />}>
+              <ArchitectureBack ir={ir} />
+            </Suspense>
+          ) : loadError ? (
+            <div className="py-16 text-center">
+              <p className="text-white/60">No se pudo cargar la arquitectura.</p>
+              <button type="button" onClick={load} className="btn-ghost mt-4 !px-4 !py-2 text-xs">Reintentar</button>
             </div>
-            <div className="mt-4">
-              {ir ? (
-                <Suspense fallback={<BackSkeleton />}>
-                  <ArchitectureBack ir={ir} />
-                </Suspense>
-              ) : loadError ? (
-                <div className="py-16 text-center">
-                  <p className="text-white/60">No se pudo cargar la arquitectura.</p>
-                  <button type="button" onClick={load} className="btn-ghost mt-4 !px-4 !py-2 text-xs">Reintentar</button>
-                </div>
-              ) : (
-                <BackSkeleton />
-              )}
-            </div>
-          </div>
-        </div>
+          ) : (
+            <BackSkeleton />
+          )}
+        </ArchitectureDialog>
       )}
-      </div>
-      </div>
     </article>
   );
 }
@@ -341,6 +325,23 @@ function BackSkeleton() {
           ))}
         </div>
       ))}
+    </div>
+  );
+}
+
+// La captura: enlace a la demo si no hay mapa; si lo hay, forma parte de la
+// superficie pulsable de la tarjeta (el control accesible es el botón).
+function PreviewFrame({ href, label, className, style, children }: { href?: string; label: string; className: string; style: CSSProperties; children: ReactNode }) {
+  if (href) {
+    return (
+      <a href={href} target="_blank" rel="noreferrer" aria-label={label} className={className} style={style}>
+        {children}
+      </a>
+    );
+  }
+  return (
+    <div className={className} style={style}>
+      {children}
     </div>
   );
 }

@@ -1,5 +1,7 @@
 ---
 import Base from '@/layouts/Base.astro';
+import PivotFlow from '@/components/pivot/PivotFlow.tsx';
+import BeforeAfter from '@/components/pivot/BeforeAfter.astro';
 import { projects } from '@/data/projects';
 
 export function getStaticPaths() {
@@ -47,6 +49,56 @@ const sectionPath = (id: string) => `${baseUrl}#${id}`;
           <div class="label-mono">// contexto</div>
           <p class="mt-3 text-white/80 leading-relaxed">{project.description}</p>
         </section>
+
+        {project.pivot && (
+          <section class="not-prose">
+            <div class="max-w-3xl">
+              <h2 class="heading-display text-3xl md:text-5xl leading-tight">
+                La decisión que no se ve en el código.
+              </h2>
+              <p class="mt-5 text-white/70 text-lg leading-relaxed">
+                Cualquiera aprende un stack. Lo caro de aprender es mirar algo
+                que funciona, que costó meses, y aceptar que la mitad sobra. Este
+                proyecto existe porque hice ese corte — y el video de abajo es
+                exactamente dónde lo hice.
+              </p>
+            </div>
+
+            <div class="mt-10">
+              <PivotFlow client:visible />
+            </div>
+
+            <div class="mt-10 grid gap-5 md:grid-cols-3">
+              <div class="border-l-2 border-white/15 pl-5">
+                <div class="font-mono text-[10px] uppercase tracking-[0.2em] text-white/55">lo que conservé</div>
+                <p class="mt-2.5 text-sm leading-relaxed text-white/75">
+                  La ingesta y el corpus: READMEs extraídos, limpiados y
+                  clasificados con evidencia trazable. Meses de trabajo que
+                  siguen corriendo hoy bajo otra fachada.
+                </p>
+              </div>
+              <div class="border-l-2 border-white/15 pl-5">
+                <div class="font-mono text-[10px] uppercase tracking-[0.2em] text-white/55">lo que corté</div>
+                <p class="mt-2.5 text-sm leading-relaxed text-white/75">
+                  El ranking por reglas y la interfaz web entera. Funcionaban.
+                  Ese era el problema: funcionar no es lo mismo que servir.
+                </p>
+              </div>
+              <div class="border-l-2 border-accent-lime/70 pl-5">
+                <div class="font-mono text-[10px] uppercase tracking-[0.2em] text-accent-lime">lo que aprendí</div>
+                <p class="mt-2.5 text-sm leading-relaxed text-white/75">
+                  Pivotar rápido no es cambiar de idea rápido: es tener el
+                  sistema suficientemente separado como para poder cortar por
+                  una junta y no por el medio.
+                </p>
+              </div>
+            </div>
+
+            <div class="mt-20 md:mt-24">
+              <BeforeAfter />
+            </div>
+          </section>
+        )}
 
         <section class="grid md:grid-cols-2 gap-5">
           <div class="brutal-dark p-6">

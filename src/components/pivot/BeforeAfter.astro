@@ -1,0 +1,153 @@
+---
+// El pivote, contado con los dos mapas de arquitectura reales.
+//
+// Los nombres y los conteos salen de los artefactos validados: si el código
+// cambia y el mapa se regenera, este bloque cambia con él. Lo único escrito a
+// mano es la correspondencia entre una pieza de antes y la de ahora, que
+// ningún análisis estático puede inferir.
+import { getSystemMap } from '@/lib/system-map';
+import MapCompare from './MapCompare.tsx';
+
+const before = getSystemMap('indexer')!;
+const after = getSystemMap('botrepos')!;
+
+const nameOf = (ir: typeof before, id: string) => ir.components.find((c) => c.id === id)?.name ?? id;
+
+// Lo que sobrevivió al corte: misma pieza, otro lugar en el sistema.
+const SURVIVED: { before: string; after: string; note: string }[] = [
+  { before: 'postgres', after: 'supabase', note: 'sigue siendo la fuente de verdad' },
+  { before: 'telegram-bot', after: 'telegram', note: 'era una pieza lateral; ahora es la interfaz' },
+  { before: 'pinecone', after: 'pinecone', note: 'pasó de experimento a centro del sistema' },
+  { before: 'openai', after: 'openai', note: 'el único nodo que se paga por ítem' },
+  { before: 'github-api', after: 'github', note: 'la fuente de los READMEs' },
+  { before: 'x', after: 'x', note: 'el origen de cada bookmark' },
+];
+
+// La pieza que se descompuso: el pipeline RAG era un job de apoyo y se
+// convirtió en el núcleo, repartido en cinco módulos.
+const EXPLODED = { before: 'rag', after: ['orchestrator', 'embeddings', 'vectors', 'chunking', 'ingest'] };
+
+const keptBefore = new Set([...SURVIVED.map((s) => s.before), EXPLODED.before]);
+const keptAfter = new Set([...SURVIVED.map((s) => s.after), ...EXPLODED.after]);
+
+const removed = before.components.filter((c) => !keptBefore.has(c.id));
+const added = after.components.filter((c) => !keptAfter.has(c.id));
+
+const metrics = [
+  { label: 'componentes', a: before.components.length, b: after.components.length },
+  { label: 'relaciones', a: before.relationships.length, b: after.relationships.length },
+  { label: 'flujos', a: before.flows.length, b: after.flows.length },
+];
+
+const opsAdded = added.filter((c) => ['infrastructure', 'job'].includes(c.type)).length;
+---
+
+<section class="not-prose">
+  <div class="max-w-3xl">
+    <h2 class="heading-display text-3xl md:text-5xl leading-tight">
+      Los dos mapas, uno al lado del otro.
+    </h2>
+    <p class="mt-5 text-white/70 text-lg leading-relaxed">
+      Ambas arquitecturas están generadas del código real y validadas contra su
+      commit: cada caja de estos mapas existe en un repositorio, no en un
+      diagrama. Puestas en fila, el pivote deja de ser una afirmación.
+    </p>
+  </div>
+
+  <!-- El titular: tres números que cuentan la operación completa. -->
+  <div class="mt-10 grid gap-px border border-white/10 bg-white/10 sm:grid-cols-3">
+    <div class="bg-ink-950 px-6 py-6">
+      <div class="heading-display text-5xl text-accent-lime tabular-nums leading-none">{SURVIVED.length + 1}</div>
+      <div class="mt-3 font-mono text-[10px] uppercase tracking-[0.18em] text-white/55">piezas que sobrevivieron</div>
+    </div>
+    <div class="bg-ink-950 px-6 py-6">
+      <div class="heading-display text-5xl text-white/40 tabular-nums leading-none">{removed.length}</div>
+      <div class="mt-3 font-mono text-[10px] uppercase tracking-[0.18em] text-white/55">piezas que corté</div>
+    </div>
+    <div class="bg-ink-950 px-6 py-6">
+      <div class="heading-display text-5xl text-accent-magenta tabular-nums leading-none">{added.length}</div>
+      <div class="mt-3 font-mono text-[10px] uppercase tracking-[0.18em] text-white/55">piezas nuevas</div>
+    </div>
+  </div>
+
+  <p class="mt-5 max-w-2xl text-white/65 leading-relaxed">
+    El sistema no creció: cambió de centro. Pasó de {before.components.length} a
+    {after.components.length} componentes, y {opsAdded} de los {added.length}
+    nuevos son operación —timers, salud, evaluación, publicación— que antes
+    sencillamente no existía.
+  </p>
+
+  <div class="mt-12 grid gap-10 lg:grid-cols-3">
+    <div>
+      <div class="flex items-baseline gap-3 border-b border-accent-lime/40 pb-3">
+        <span class="font-mono text-[11px] uppercase tracking-[0.18em] text-accent-lime">sobrevivió</span>
+      </div>
+      <ul class="mt-4 grid gap-4">
+        {SURVIVED.map((s) => (
+          <li>
+            <div class="font-mono text-xs text-white">
+              {nameOf(before, s.before)}
+              {nameOf(before, s.before) !== nameOf(after, s.after) && (
+                <span class="text-accent-lime"> → {nameOf(after, s.after)}</span>
+              )}
+            </div>
+            <div class="mt-1 text-sm leading-relaxed text-white/55">{s.note}</div>
+          </li>
+        ))}
+        <li>
+          <div class="font-mono text-xs text-white">
+            {nameOf(before, EXPLODED.before)}
+            <span class="text-accent-lime"> → {EXPLODED.after.length} módulos</span>
+          </div>
+          <div class="mt-1 text-sm leading-relaxed text-white/55">
+            era un job de apoyo; se convirtió en el núcleo y se repartió en
+            {' '}{EXPLODED.after.map((id) => nameOf(after, id)).join(', ').toLowerCase()}
+          </div>
+        </li>
+      </ul>
+    </div>
+
+    <div>
+      <div class="flex items-baseline gap-3 border-b border-white/15 pb-3">
+        <span class="font-mono text-[11px] uppercase tracking-[0.18em] text-white/55">corté</span>
+      </div>
+      <ul class="mt-4 grid gap-2.5">
+        {removed.map((c) => (
+          <li class="flex items-baseline gap-3">
+            <span class="font-mono text-[10px] uppercase tracking-[0.14em] text-white/35 w-[7.5rem] shrink-0 truncate">{c.type}</span>
+            <span class="font-mono text-xs text-white/60">{c.name}</span>
+          </li>
+        ))}
+      </ul>
+    </div>
+
+    <div>
+      <div class="flex items-baseline gap-3 border-b border-accent-magenta/40 pb-3">
+        <span class="font-mono text-[11px] uppercase tracking-[0.18em] text-accent-magenta">llegó</span>
+      </div>
+      <ul class="mt-4 grid gap-2.5">
+        {added.map((c) => (
+          <li class="flex items-baseline gap-3">
+            <span class="font-mono text-[10px] uppercase tracking-[0.14em] text-white/35 w-[7.5rem] shrink-0 truncate">{c.type}</span>
+            <span class="font-mono text-xs text-white/85">{c.name}</span>
+          </li>
+        ))}
+      </ul>
+    </div>
+  </div>
+
+  <div class="mt-12 grid gap-px border border-white/10 bg-white/10 sm:grid-cols-3">
+    {metrics.map((m) => (
+      <div class="flex items-baseline justify-between gap-4 bg-ink-950 px-5 py-4">
+        <span class="font-mono text-[10px] uppercase tracking-[0.18em] text-white/55">{m.label}</span>
+        <span class="font-mono text-sm tabular-nums text-white/45">
+          {m.a} <span class="text-white/30">→</span> <span class="text-white">{m.b}</span>
+        </span>
+      </div>
+    ))}
+  </div>
+
+  <div class="mt-10">
+    <MapCompare client:visible />
+  </div>
+</section>

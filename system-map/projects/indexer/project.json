@@ -1,0 +1,13 @@
+{
+  "slug": "indexer",
+  "name": "Indexer (antes del pivote)",
+  "description": "Arquitectura previa al pivote: motor de rutas con captura por extensión y búsqueda por reglas.",
+  "repository": "FilipaoVfx/indexer",
+  "branch": "main",
+  "systemMap": {
+    "enabled": true,
+    "artifact": "architecture.json",
+    "generatedAt": "2026-09-23T20:12:16.617Z",
+    "commit": "612e3930d7965c9fd50e66ad73d9cff6e2e4b497"
+  }
+}

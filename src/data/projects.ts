@@ -13,6 +13,8 @@ export type Project = {
   repo?: string;
   previewImage?: string;
   previewLabel?: string;
+  /** Marca el proyecto que tiene una historia de pivote animada en su página. */
+  pivot?: boolean;
   accent: 'lime' | 'electric' | 'magenta';
   status: 'live' | 'beta' | 'wip';
 };
@@ -113,51 +115,54 @@ export const projects: Project[] = [
     status: 'beta',
   },
   {
-    slug: 'indexer',
-    title: 'Indexer',
-    tagline: 'Motor de conocimiento técnico para convertir recursos dispersos en rutas accionables',
+    slug: 'botrepos',
+    title: 'botRepos',
+    tagline: 'Búsqueda semántica sobre mis propios repos, desde Telegram — y el pivote que la hizo existir',
     description:
-      'Indexer nace como respuesta a un problema común en equipos técnicos: la información útil queda dispersa entre bookmarks, repositorios, READMEs, hilos y herramientas compartidas por la comunidad. El objetivo no es guardar enlaces, sino transformar esos recursos en una base de conocimiento navegable capaz de responder qué piezas hacen falta para construir un sistema concreto y en qué orden usarlas.',
-    stack: ['Node', 'Astro', 'React', 'Postgres', 'Chrome MV3', 'Docker'],
+      'botRepos empezó siendo otra cosa. Se llamaba Indexer y era un motor de rutas: una extensión de navegador capturaba recursos, un backend los clasificaba y una interfaz web respondía «para construir esto necesitas estas piezas, en este orden». El motor funcionó. La interfaz no: nadie abre una página web para resolver una duda de diez segundos. Al revisar qué parte estaba generando valor de verdad, la respuesta no era la ruta sugerida sino el corpus que había debajo — READMEs extraídos, limpiados y clasificados con evidencia trazable. Así que corté la mitad que sobraba y le puse encima lo que faltaba: embeddings, un índice vectorial y la interfaz que ya está abierta en el teléfono de cualquiera. Hoy es un bot de Telegram en producción.',
+    stack: ['Node', 'Telegram', 'OpenAI', 'Pinecone', 'Supabase', 'systemd'],
     problem:
-      'La información técnica valiosa está fragmentada en bookmarks, repos y READMEs. El reto real no es encontrar enlaces, sino conectar recursos, capacidades y objetivos.',
+      'Tenía un motor de conocimiento que funcionaba y una interfaz que nadie usaba. El problema real no era técnico: era haberme enamorado de la forma del producto en vez del valor que ya estaba produciendo.',
     solution:
-      'Un sistema que captura recursos desde el navegador, extrae y enriquece metadatos, clasifica repos y los organiza como rutas por objetivo: de una necesidad técnica a una secuencia de herramientas compatibles.',
+      'Conservar el corpus y la ingesta —la parte que sí producía valor— y reemplazar todo lo que venía después: chunking, embeddings, índice vectorial y un bot de Telegram como interfaz. El mismo conocimiento, en el lugar donde la pregunta de verdad ocurre.',
     architecture: [
-      'Extensión Chrome MV3 con cola persistente y reintentos exponenciales',
-      'Backend Node 20 sin framework para ingesta, deduplicación y enriquecimiento',
-      'Postgres con FTS tsvector, pg_trgm y funciones RPC · 16 migraciones versionadas',
-      'Búsqueda híbrida con ranking + Goal Mode: objetivo → pasos → herramientas → alternativas',
-      'Docker multi-stage, CI/CD y backend desplegado en Render',
+      'Ingesta: Supabase → chunking → embeddings → Pinecone, en dos fuentes (bookmarks y READMEs de GitHub)',
+      'Embeddings OpenAI text-embedding-3-small, 1536 dimensiones',
+      'Pinecone como índice vectorial; Supabase sigue siendo la fuente de verdad y la capa de logs',
+      'Bot de Telegram y CLI comparten el mismo orquestador de búsqueda',
+      'Evaluación versionada: un set de consultas fijo con baseline contra v1 para medir si un cambio mejora o empeora',
+      'Operación con systemd: ingesta cada 6 h y un chequeo cada 5 min sobre PM2, Telegram, Supabase, Pinecone y RAM — que alerta en las transiciones, no en cada vuelta',
     ],
     decisions: [
       {
-        title: 'De buscador a motor de rutas',
-        body: 'La decisión central fue evitar una lista de resultados. Indexer responde: estas son las piezas que necesitas, este es el orden recomendado y estas son las alternativas por paso.',
+        title: 'Matar la interfaz, no el motor',
+        body: 'Lo difícil de un pivote no es cambiar de idea: es distinguir qué parte sirve. El corpus y la ingesta se quedaron intactos; la UI web y el ranking por reglas se fueron. Pivotar no fue empezar de cero, fue cortar por la junta correcta.',
       },
       {
-        title: 'README como contexto real',
-        body: 'Cuando detecta un repo, el sistema extrae su README vía API con caché TTL, lo limpia y lo indexa por secciones. Eso mejora la precisión frente a depender solo del nombre o las keywords.',
+        title: 'El LLM entró cuando la base lo aguantaba',
+        body: 'La primera versión evitó deliberadamente la IA generativa: primero reglas, full-text y scoring con evidencia. Esa disciplina es la que permitió montar el RAG encima sin construir sobre arena — los embeddings indexan un corpus que ya estaba limpio.',
       },
       {
-        title: 'Clasificación antes que IA generativa',
-        body: 'El primer enfoque prioriza reglas, taxonomías, búsqueda full-text, trigramas y scoring con evidencia trazable. La meta es una base confiable antes de depender de un LLM.',
+        title: 'La interfaz correcta ya estaba abierta',
+        body: 'Telegram no es una decisión estética. Es el único lugar donde la pregunta ocurre sin fricción: no hay que abrir nada, no hay que recordar una URL, y las alertas del propio sistema llegan por el mismo canal.',
       },
       {
-        title: 'Degradar con gracia',
-        body: 'El backend tolera esquemas desfasados: si una migración aún no se aplicó, avisa y sigue respondiendo en vez de caerse.',
+        title: 'Medir la búsqueda, no opinar sobre ella',
+        body: 'Un RAG siempre devuelve algo, y eso lo hace fácil de autoengañar. Hay un set de consultas fijo y un baseline guardado: cada cambio se compara contra él antes de quedarse.',
       },
     ],
     learnings: [
-      'El diferencial no está en guardar información, sino en modelar relaciones útiles para tomar decisiones técnicas',
-      'Un buen clasificador reduce ruido y permite rankear compatibilidad entre repos, herramientas y objetivos',
-      'La UX de discovery debe parecerse más a un pipeline o mapa de ruta que a una página de resultados',
+      'El valor de un sistema rara vez está donde uno lo diseñó: está donde la gente vuelve',
+      'Pivotar bien es una operación quirúrgica, no un borrón y cuenta nueva — el trabajo está en saber qué se conserva',
+      'Una interfaz que exige que el usuario cambie de contexto compite contra no usar el producto, y pierde',
     ],
-    link: 'https://filipaovfx.github.io/indexer/',
-    repo: 'https://github.com/FilipaoVfx/indexer',
+    link: 'https://t.me/Indexer_rag_bot',
+    repo: 'https://github.com/FilipaoVfx/botRepos',
     previewImage: '/previews/indexer.webp',
+    previewLabel: 'la interfaz que se jubiló',
     accent: 'magenta',
-    status: 'wip',
+    status: 'live',
+    pivot: true,
   },
 ];
 

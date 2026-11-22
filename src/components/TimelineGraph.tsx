@@ -1,3 +1,5 @@
+import { electoral } from '@/data/electoral';
+
 const baseUrl = import.meta.env.BASE_URL.replace(/\/?$/, '/');
 const assetPath = (path: string) => `${baseUrl}${path.replace(/^\/+/, '')}`;
 
@@ -17,14 +19,6 @@ const achievements = [
     alt: 'Juan Felipe González sosteniendo el premio del hackathon',
     className: 'lg:col-span-5 rotate-[1deg]',
     imageClassName: 'achievement-photo--repair max-h-[360px]',
-  },
-  {
-    title: 'Certificado oficial',
-    eyebrow: 'Ministerio TIC',
-    src: '/certificado.webp',
-    alt: 'Certificado de primer lugar en el reto de inteligencia artificial',
-    className: 'lg:col-span-7 rotate-[-0.35deg]',
-    imageClassName: 'max-h-[320px]',
   },
 ];
 
@@ -56,7 +50,7 @@ const sentimentCards = [
 
 export default function TimelineGraph() {
   return (
-    <section id="logros" className="relative py-24 md:py-28 scroll-mt-24 overflow-hidden">
+    <section id="logros" className="relative pt-8 md:pt-14 pb-0 scroll-mt-24 overflow-hidden">
       <div className="absolute inset-x-0 top-10 h-px bg-gradient-to-r from-transparent via-accent-electric/45 to-transparent" />
       <div className="mx-auto max-w-6xl px-6 sm:px-8 md:px-12 lg:px-14">
         <div className="mb-10 grid gap-6 lg:grid-cols-12 lg:items-end">
@@ -148,7 +142,7 @@ export default function TimelineGraph() {
                 </figcaption>
               </figure>
             ))}
-            <div className="lg:col-span-12 flex flex-col gap-4 border-l-2 border-accent-lime/70 bg-black/20 px-5 py-4 text-white/72 md:flex-row md:items-center md:justify-between">
+            <div className="lg:col-span-7 flex flex-col justify-center gap-4 border-l-2 border-accent-lime/70 bg-black/20 px-5 py-4 text-white/72 md:flex-row md:items-center md:justify-between">
               <p className="max-w-3xl leading-relaxed">
                 La competencia fue realizada el 21 de noviembre de 2025 en Armenia,
                 Quindío.
@@ -191,6 +185,13 @@ export default function TimelineGraph() {
                     en señales accionables de percepción pública, útil para medir
                     reputación, reacción a contenido y riesgos tempranos.
                   </p>
+                  <p className="mt-4 max-w-2xl text-white/60 leading-relaxed">
+                    Lo llevé hasta el caso más difícil que se me ocurrió: una
+                    elección que pasa de seis candidatos a dos. 505 comentarios
+                    públicos, un workflow de n8n y una pregunta —
+                    <span className="text-white/85">¿a dónde se va el voto que
+                    se quedó sin candidato?</span>
+                  </p>
 
                   <div className="mt-6 grid gap-3 md:grid-cols-3">
                     {sentimentCards.map((card) => (
@@ -219,14 +220,26 @@ export default function TimelineGraph() {
                     ))}
                   </div>
 
-                  <a
-                    href="https://github.com/FilipaoVfx/AnalisissentimientoYT"
-                    target="_blank"
-                    rel="noreferrer"
-                    className="mt-6 inline-flex border-2 border-black bg-accent-lime px-4 py-2 font-mono text-xs font-bold uppercase tracking-[0.18em] text-ink-950 shadow-[4px_4px_0_0_#000] transition-transform hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-[6px_6px_0_0_#000]"
-                  >
-                    Ver repositorio →
-                  </a>
+                  <div className="mt-7 flex flex-wrap items-center gap-x-6 gap-y-4">
+                    <a
+                      href={`${baseUrl}casos/transferencia-electoral/`}
+                      className="case-cta inline-flex items-center gap-3 border-2 border-black bg-accent-lime px-5 py-3 font-mono text-sm font-bold uppercase tracking-[0.18em] text-ink-950 shadow-[5px_5px_0_0_#000] outline-none transition-[transform,box-shadow] duration-200 hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-[8px_8px_0_0_#000] focus-visible:-translate-x-0.5 focus-visible:-translate-y-0.5"
+                    >
+                      Ver el caso completo
+                      <span className="case-cta__arrow" aria-hidden="true">→</span>
+                    </a>
+                    <a
+                      href="https://github.com/FilipaoVfx/AnalisissentimientoYT"
+                      target="_blank"
+                      rel="noreferrer"
+                      className="font-mono text-xs uppercase tracking-[0.18em] text-white/55 underline-offset-4 transition hover:text-white hover:underline"
+                    >
+                      Repositorio ↗
+                    </a>
+                    <span className="w-full font-mono text-[11px] uppercase tracking-[0.16em] text-white/55">
+                      {electoral.totals.captured} comentarios · 3 hallazgos · workflow de n8n
+                    </span>
+                  </div>
                 </div>
               </div>
             </article>

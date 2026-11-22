@@ -1,0 +1,198 @@
+---
+import Base from '@/layouts/Base.astro';
+import VoterFlow from '@/components/electoral/VoterFlow.tsx';
+import Findings from '@/components/electoral/Findings.astro';
+import WorkflowCanvas from '@/components/electoral/WorkflowCanvas.astro';
+import SchemaExplorer from '@/components/electoral/SchemaExplorer.tsx';
+import { electoral } from '@/data/electoral';
+
+const { totals, source, mobility, distributions } = electoral;
+const open = distributions.transfer.find((t) => t.value === 'indefinido')?.n ?? 0;
+
+const baseUrl = import.meta.env.BASE_URL.replace(/\/?$/, '/');
+const sectionPath = (id: string) => `${baseUrl}#${id}`;
+
+const limits = [
+  {
+    t: `${source.videos} videos, una sola campaña`,
+    d: 'El corpus son entrevistas a un candidato de centro. Sirve para probar el método, no para describir a un electorado.',
+  },
+  {
+    t: 'Quien comenta no es quien vota',
+    d: 'La caja de comentarios sobrerrepresenta al militante y al que tiene tiempo. El sesgo es de la fuente, no del modelo.',
+  },
+  {
+    t: 'La inferencia es una hipótesis',
+    d: `${source.model} etiqueta segmento, emoción y movilidad. Son juicios con nombre y fecha, no hechos: por eso cada fila guarda qué modelo la escribió y cuándo.`,
+  },
+  {
+    t: `${totals.intensityNormalized} filas con la escala cambiada`,
+    d: 'La intensidad volvió en 0–1 en unas corridas y en 0–100 en otras. Se detectó al validar el contrato y se normalizó en el agregado, no en el texto.',
+  },
+];
+---
+
+<Base
+  title="Le apliqué ciencia de datos a una campaña electoral — FilipaoVfx"
+  description="Caso de ciencia de datos aplicada a una campaña electoral: 505 comentarios públicos, un workflow de n8n y la pregunta de a dónde va el voto que se queda sin candidato cuando la elección se reduce a dos."
+>
+  <article class="relative pt-12 pb-28">
+    <div class="mx-auto max-w-6xl px-6 sm:px-8 md:px-12 lg:px-14">
+      <a href={sectionPath('logros')} class="font-mono text-xs uppercase tracking-[0.25em] text-white/55 hover:text-white transition">
+        ← volver
+      </a>
+
+      <header class="mt-10 grid gap-10 lg:grid-cols-12 lg:items-end">
+        <div class="lg:col-span-8">
+          <div class="flex flex-wrap items-center gap-2">
+            <span class="chip">n8n</span>
+            <span class="chip">youtube api</span>
+            <span class="chip">llm clasificador</span>
+            <span class="chip">postgres</span>
+          </div>
+          <h1 class="heading-display text-4xl md:text-5xl lg:text-6xl mt-7 leading-[1.05]">
+            Le apliqué ciencia de datos a una campaña electoral.
+            <span class="text-accent-lime">Esto es lo que pasó.</span>
+          </h1>
+        </div>
+        <p class="lg:col-span-4 text-white/65 text-lg leading-relaxed">
+          La pregunta: cuando la elección se reduce a dos candidatos, ¿a dónde
+          se va el voto que se quedó sin dueño? {totals.captured} comentarios
+          públicos de YouTube, un workflow de n8n y {source.fields} campos por
+          comentario para responderla.
+        </p>
+      </header>
+
+      <section class="mt-16 md:mt-24 grid gap-10 lg:grid-cols-12">
+        <div class="lg:col-span-4">
+          <h2 class="heading-display text-3xl md:text-4xl leading-tight">
+            El problema de la transferencia.
+          </h2>
+        </div>
+        <div class="lg:col-span-7 lg:col-start-6 grid gap-6 text-white/70 text-lg leading-relaxed">
+          <p>
+            <span class="text-white">Quedan dos. ¿Para dónde se va el resto?</span>
+            {' '}Las encuestas miden sobre los candidatos que existen hoy. Cuando
+            la lista se corta a dos, esa medición caduca.
+          </p>
+          <p>
+            El votante de centro es el caso extremo: el que más puede mudarse y
+            el peor medido, porque «¿por quién votaría?» no admite la respuesta
+            real, que suele ser «depende». Así que en vez de preguntar, escuché.
+          </p>
+        </div>
+      </section>
+
+      <section class="mt-16 md:mt-24">
+        <div class="mb-8 grid gap-6 lg:grid-cols-12 lg:items-end">
+          <h2 class="lg:col-span-6 heading-display text-3xl md:text-4xl leading-tight">
+            {totals.captured} comentarios, cinco actos.
+          </h2>
+          <p class="lg:col-span-5 lg:col-start-8 text-white/55 leading-relaxed">
+            El mismo corpus reorganizado por cada pregunta del pipeline: qué
+            entra, qué sobrevive al filtro, quién habla y hacia dónde se mueve.
+          </p>
+        </div>
+        <VoterFlow client:visible />
+      </section>
+
+      <section class="mt-16 md:mt-24">
+        <h2 class="heading-display text-3xl md:text-5xl leading-tight max-w-3xl">
+          Tres cosas que el dato sí dice.
+        </h2>
+        <p class="mt-6 max-w-xl text-white/60 text-lg leading-relaxed">
+          Ninguna es una predicción de resultado. Las tres son decisiones de
+          campaña: a quién hablarle y con qué tono.
+        </p>
+        <div class="mt-12 md:mt-16">
+          <Findings />
+        </div>
+      </section>
+
+      <section class="mt-16 md:mt-24">
+        <h2 class="mb-8 heading-display text-3xl md:text-5xl leading-tight">
+          Nueve nodos y una compuerta.
+        </h2>
+        <WorkflowCanvas />
+      </section>
+
+      <!-- El esquema, los límites y la nota de privacidad son la prueba del
+           caso, no su relato: viven plegados para quien quiera auditarlos. -->
+      <details class="group mt-16 md:mt-24 border-t border-white/10 pt-8">
+        <summary class="flex cursor-pointer list-none items-baseline justify-between gap-8 [&::-webkit-details-marker]:hidden">
+          <h2 class="heading-display text-2xl md:text-4xl leading-tight">
+            El esquema, el método y los límites.
+          </h2>
+          <span class="shrink-0 font-mono text-[11px] uppercase tracking-[0.2em] text-white/55 transition group-hover:text-white">
+            <span class="group-open:hidden">abrir +</span>
+            <span class="hidden group-open:inline">cerrar −</span>
+          </span>
+        </summary>
+
+        <div class="mt-12 grid gap-14 md:gap-16">
+          <div>
+            <p class="max-w-2xl text-lg text-white/65 leading-relaxed">
+              Un comentario entra como una cadena de texto y sale como
+              {' '}{source.fields} campos. La mitad se capta, la otra mitad se
+              infiere — y el esquema distingue cuál es cuál, porque no se
+              defiende igual un like que un juicio de un modelo.
+            </p>
+            <div class="mt-10">
+              <SchemaExplorer client:visible />
+            </div>
+            <p class="mt-6 font-mono text-[11px] uppercase tracking-[0.16em] text-white/55">
+              lote {source.batch} · comentarios publicados entre {source.from} y {source.to} · clasificados con {source.model}
+            </p>
+          </div>
+
+          <div class="grid gap-10 lg:grid-cols-12">
+            <div class="lg:col-span-4">
+              <h3 class="heading-display text-2xl md:text-3xl leading-tight">
+                Lo que este dato no puede decir.
+              </h3>
+              <p class="mt-5 text-white/60 leading-relaxed">
+                Un caso que solo muestra sus aciertos no es un caso, es un folleto.
+              </p>
+            </div>
+            <dl class="lg:col-span-7 lg:col-start-6 grid gap-8 sm:grid-cols-2">
+              {limits.map((l) => (
+                <div>
+                  <dt class="font-mono text-xs uppercase tracking-[0.16em] text-accent-amber">{l.t}</dt>
+                  <dd class="mt-3 text-sm leading-relaxed text-white/65">{l.d}</dd>
+                </div>
+              ))}
+            </dl>
+          </div>
+
+          <p class="max-w-3xl text-white/65 leading-relaxed">
+            <span class="text-white">Privacidad:</span> el CSV original trae
+            nombre de autor y texto literal de {totals.authors} personas
+            identificables, junto a una clasificación política inferida. Ese
+            archivo no entra al repositorio. Lo que se versiona y lo que ves aquí
+            es el agregado: conteos, cruces y un punto por comentario reducido a
+            seis enteros.
+          </p>
+        </div>
+      </details>
+
+      <section class="mt-16 md:mt-20 flex flex-wrap items-center justify-between gap-8 border-t border-white/10 pt-10">
+        <p class="max-w-lg text-white/60 leading-relaxed">
+          El mismo pipeline sirve para un lanzamiento, una crisis de marca o la
+          postventa. Cambia el vocabulario de las etiquetas; la compuerta, el
+          contrato y la tabla de hechos son los mismos.
+        </p>
+        <div class="flex flex-wrap gap-3">
+          <a
+            href="https://github.com/FilipaoVfx/AnalisissentimientoYT"
+            target="_blank"
+            rel="noreferrer"
+            class="btn-brutal text-xs"
+          >
+            Ver repositorio →
+          </a>
+          <a href={sectionPath('contact')} class="btn-ghost text-xs">Hablemos</a>
+        </div>
+      </section>
+    </div>
+  </article>
+</Base>

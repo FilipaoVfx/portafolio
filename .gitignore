@@ -13,3 +13,7 @@ dist
 
 # impeccable: binario de plataforma, se descarga solo en el primer uso
 .claude/skills/impeccable/scripts/bin/
+
+# datos crudos del caso electoral: traen autor y texto de personas
+# identificables. Solo se versiona el agregado (src/data/electoral.json).
+*.csv

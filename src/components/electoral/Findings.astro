@@ -1,0 +1,208 @@
+---
+// Tres hallazgos: quién no se mueve, cuánto margen hay de verdad y qué lo
+// mueve. Cada cifra sale del agregado; ninguna está escrita a mano.
+//
+// Sin tarjetas: los gráficos viven sobre el fondo de la página y el aire entre
+// bloques es lo que separa un hallazgo del siguiente. La columna de texto es
+// estrecha a propósito —el argumento se lee de un vistazo— y el gráfico se
+// queda con el ancho.
+//
+// Color: lima es el voto que ya tiene destino, magenta el destino contrario,
+// ámbar el margen y el blanco apagado lo que no se mueve. Dentro de cada rol
+// el tono codifica la intensidad, así una barra floja se ve floja.
+import { electoral, tr } from '@/data/electoral';
+
+const { mobility, distributions, totals, margin } = electoral;
+
+const AMBER = '255 177 61';
+const LIME = '198 255 61';
+const tone = (rgb: string, t: number) => `rgb(${rgb} / ${(0.32 + 0.68 * t).toFixed(2)})`;
+
+// 1 — movilidad por segmento, solo donde hay masa suficiente.
+const segBars = mobility.bySegment.filter((s) => s.n >= 8);
+const maxSeg = Math.max(...segBars.map((s) => s.mean));
+
+// 2 — el tamaño real del margen.
+const transfer = distributions.transfer;
+const open = transfer.find((t) => t.value === 'indefinido')?.n ?? 0;
+const toA = transfer.find((t) => t.value === 'hacia_a')?.n ?? 0;
+const toB = transfer.find((t) => t.value === 'hacia_b')?.n ?? 0;
+const maxBucket = Math.max(...mobility.buckets.map((b) => b.n));
+const stuckPct = Math.round((mobility.immobile / totals.analyzed) * 100);
+
+// 3 — el espejo: la misma emoción en los dos bandos, ordenada de la que manda
+// en el decidido a la que manda en el margen. La inversión se lee de arriba
+// abajo sin leer un número.
+const MIRROR = ['confianza', 'esperanza', 'indiferencia', 'frustracion', 'rabia'];
+const share = (list: { value: string; n: number }[], total: number, key: string) =>
+  Math.round(((list.find((x) => x.value === key)?.n ?? 0) / total) * 100);
+const mirror = MIRROR.map((key) => ({
+  key,
+  dec: share(margin.decided.emotion, margin.decided.n, key),
+  opn: share(margin.open.emotion, margin.open.n, key),
+}));
+const maxShare = Math.max(...mirror.flatMap((m) => [m.dec, m.opn]));
+const angryStuck = share(margin.immobile.emotion, margin.immobile.n, 'rabia');
+const frustratedMoving = share(margin.mobile.emotion, margin.mobile.n, 'frustracion');
+const marginIndeciso = margin.segments.find((x) => x.value === 'indeciso')?.n ?? 0;
+const marginDuro = margin.segments.find((x) => x.value === 'militante_duro')?.n ?? 0;
+
+const legend = [
+  { label: 'hacia A', cls: 'bg-accent-lime' },
+  { label: 'hacia B', cls: 'bg-accent-magenta' },
+  { label: 'el margen', cls: 'bg-accent-amber' },
+  { label: 'no se mueve', cls: 'bg-white/25' },
+];
+---
+
+<div class="grid gap-14 md:gap-20">
+  <!-- Una sola leyenda para los tres bloques. -->
+  <div class="flex flex-wrap items-center gap-x-7 gap-y-3">
+    {legend.map((l) => (
+      <span class="flex items-center gap-2 font-mono text-[10px] uppercase tracking-[0.18em] text-white/55">
+        <span class={`inline-block h-2.5 w-2.5 ${l.cls}`}></span>{l.label}
+      </span>
+    ))}
+    <span class="font-mono text-[10px] uppercase tracking-[0.18em] text-white/55">
+      el tono marca la intensidad
+    </span>
+  </div>
+
+  <article class="grid gap-10 lg:grid-cols-12 lg:items-start">
+    <div class="lg:col-span-4">
+      <h3 class="heading-display text-2xl md:text-4xl leading-[1.1]">
+        El voto duro no se mueve, y es el que más habla.
+      </h3>
+      <p class="mt-6 text-white/65 leading-relaxed">
+        El bloque más ruidoso del corpus es el más inútil de convencer.
+        Discutir con él se siente como hacer campaña; no lo es.
+      </p>
+    </div>
+
+    <ul class="lg:col-span-7 lg:col-start-6 grid gap-4">
+      {segBars.map((s) => (
+        <li class="grid grid-cols-[minmax(0,8.5rem)_1fr_auto] items-center gap-4">
+          <span class="font-mono text-[11px] uppercase tracking-[0.12em] text-white/55 truncate">{tr(s.value)}</span>
+          <span class="h-2 bg-white/[0.06]">
+            <span
+              class="block h-full"
+              style={`width: ${Math.max(1.5, (s.mean / maxSeg) * 100)}%; background-color: ${tone(AMBER, s.mean / maxSeg)}`}
+            ></span>
+          </span>
+          <span class="font-mono text-[11px] text-white/55 tabular-nums">{s.mean}</span>
+        </li>
+      ))}
+    </ul>
+  </article>
+
+  <article class="grid gap-10 lg:grid-cols-12 lg:items-start">
+    <div class="lg:col-span-4">
+      <h3 class="heading-display text-2xl md:text-4xl leading-[1.1]">
+        El margen cabe en una sala.
+      </h3>
+      <p class="mt-6 text-white/65 leading-relaxed">
+        El {stuckPct}% de los comentarios no mueve un voto. Lo que se disputa
+        son {open} señales sin destino, y es un público al que se le puede
+        hablar uno por uno.
+      </p>
+    </div>
+
+    <div class="lg:col-span-7 lg:col-start-6">
+      <div class="grid grid-cols-3 gap-8">
+        <div>
+          <div class="heading-display text-5xl md:text-6xl text-accent-lime tabular-nums leading-none">{toA}</div>
+          <div class="mt-3 font-mono text-[10px] uppercase tracking-[0.16em] text-white/55">hacia A</div>
+        </div>
+        <div>
+          <div class="heading-display text-5xl md:text-6xl text-accent-magenta tabular-nums leading-none">{toB}</div>
+          <div class="mt-3 font-mono text-[10px] uppercase tracking-[0.16em] text-white/55">hacia B</div>
+        </div>
+        <div>
+          <div class="heading-display text-5xl md:text-6xl text-accent-amber tabular-nums leading-none">{open}</div>
+          <div class="mt-3 font-mono text-[10px] uppercase tracking-[0.16em] text-white/55">en disputa</div>
+        </div>
+      </div>
+
+      <div class="mt-10 flex items-end gap-3">
+        {mobility.buckets.map((b, i) => (
+          <div class="flex-1">
+            <div class="flex h-32 items-end">
+              <div
+                class="w-full"
+                style={i === 0
+                  ? 'height: 100%; background-color: rgb(255 255 255 / 0.1)'
+                  : `height: ${Math.max(4, (b.n / maxBucket) * 100)}%; background-color: ${tone(AMBER, i / (mobility.buckets.length - 1))}`}
+              >
+              </div>
+            </div>
+            <div class="mt-3 text-center font-mono text-[10px] text-white/55 tabular-nums">{b.n}</div>
+            <div class="text-center font-mono text-[10px] text-white/55 tabular-nums">{b.label}</div>
+          </div>
+        ))}
+      </div>
+    </div>
+  </article>
+
+  <article class="grid gap-10 lg:grid-cols-12 lg:items-start">
+    <div class="lg:col-span-4">
+      <h3 class="heading-display text-2xl md:text-4xl leading-[1.1]">
+        La emoción dice a dónde va el voto. El sentimiento no.
+      </h3>
+      <p class="mt-6 text-white/65 leading-relaxed">
+        El que ya eligió habla con confianza y esperanza. El margen habla con
+        rabia y frustración: no es tibio, es el más negativo de todos. Y casi
+        nadie lo escucha — recibe {margin.open.likes} likes de media contra
+        {' '}{margin.decided.likes} del decidido.
+      </p>
+      <p class="mt-6 text-sm leading-relaxed text-white/55">
+        «Indeciso» es una señal, no una autodefinición: el modelo no encontró
+        destino en ese comentario. De los {margin.open.n}, solo {marginIndeciso}
+        {' '}se etiquetan como indecisos y hay {marginDuro} militantes duros.
+      </p>
+    </div>
+
+    <div class="lg:col-span-7 lg:col-start-6">
+      <div class="flex items-baseline justify-between gap-4 font-mono text-[10px] uppercase tracking-[0.18em]">
+        <span class="text-accent-lime">ya decidió · {margin.decided.n}</span>
+        <span class="text-accent-amber">el margen · {margin.open.n}</span>
+      </div>
+
+      <ul class="mt-5 grid gap-4">
+        {mirror.map((m) => (
+          <li class="grid grid-cols-[1fr_7rem_1fr] items-center gap-3">
+            <span class="flex items-center justify-end gap-2">
+              <span class="font-mono text-[10px] text-white/50 tabular-nums">{m.dec}%</span>
+              <span class="h-3" style={`width: ${(m.dec / maxShare) * 100}%; background-color: ${tone(LIME, m.dec / maxShare)}`}></span>
+            </span>
+            <span class="text-center font-mono text-[10px] uppercase tracking-[0.12em] text-white/55">
+              {tr(m.key)}
+            </span>
+            <span class="flex items-center gap-2">
+              <span class="h-3" style={`width: ${(m.opn / maxShare) * 100}%; background-color: ${tone(AMBER, m.opn / maxShare)}`}></span>
+              <span class="font-mono text-[10px] text-white/50 tabular-nums">{m.opn}%</span>
+            </span>
+          </li>
+        ))}
+      </ul>
+
+      <div class="mt-10 grid gap-8 sm:grid-cols-[auto_auto_1fr] sm:items-baseline">
+        <div>
+          <span class="heading-display text-5xl text-white/40 tabular-nums">{margin.immobile.n}</span>
+          <span class="ml-3 font-mono text-[10px] uppercase tracking-[0.16em] text-white/55">rabia · {angryStuck}%</span>
+        </div>
+        <div>
+          <span class="heading-display text-5xl text-accent-amber tabular-nums">{margin.mobile.n}</span>
+          <span class="ml-3 font-mono text-[10px] uppercase tracking-[0.16em] text-white/55">frustración · {frustratedMoving}%</span>
+        </div>
+      </div>
+      <p class="mt-4 text-white/65 leading-relaxed">
+        El margen partido por movilidad: la mitad que no se mueve está furiosa;
+        la que sí, frustrada.
+      </p>
+
+      <p class="mt-8 text-2xl md:text-3xl leading-snug text-white">
+        La rabia se parece a la indecisión, pero no se mueve.
+      </p>
+    </div>
+  </article>
+</div>

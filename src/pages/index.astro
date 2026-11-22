@@ -3,8 +3,8 @@ import Base from '@/layouts/Base.astro';
 import Hero from '@/components/Hero.tsx';
 import TimelineGraph from '@/components/TimelineGraph.tsx';
 import ProjectCard from '@/components/ProjectCard.tsx';
-import HowIThink from '@/components/HowIThink.astro';
-import DevOps from '@/components/DevOps.astro';
+import Certificados from '@/components/Certificados.astro';
+import Metodo from '@/components/Metodo.astro';
 import Contact from '@/components/Contact.astro';
 import { projects } from '@/data/projects';
 import { hasSystemMap } from '@/lib/system-map';
@@ -16,9 +16,9 @@ const assetPath = (path: string) => `${baseUrl}${path.replace(/^\/+/, '')}`;
 <Base>
   <Hero />
 
-  <section id="projects" class="relative py-28 md:py-36 scroll-mt-24">
+  <section id="projects" class="section-y relative scroll-mt-24">
     <div class="mx-auto max-w-6xl px-6 sm:px-8 md:px-12 lg:px-14">
-      <div class="mb-14 md:mb-20">
+      <div class="mb-10 md:mb-14">
         <h2 class="heading-display text-3xl md:text-5xl">Sistemas, no demos.</h2>
         <p class="mt-4 text-white/60 max-w-xl text-lg">
           Tres proyectos. Tres decisiones. Cada uno resuelve un problema real
@@ -34,9 +34,7 @@ const assetPath = (path: string) => `${baseUrl}${path.replace(/^\/+/, '')}`;
     </div>
   </section>
 
-  <HowIThink />
-
-  <section id="quien-soy" class="relative py-28 md:py-36 scroll-mt-24 overflow-hidden">
+  <section id="quien-soy" class="section-y relative scroll-mt-24 overflow-hidden">
     <div class="absolute inset-x-0 top-16 h-px bg-gradient-to-r from-transparent via-accent-lime/50 to-transparent"></div>
     <div class="mx-auto max-w-6xl px-6 sm:px-8 md:px-12 lg:px-14">
       <div class="grid gap-10 lg:grid-cols-12 lg:items-start">
@@ -65,7 +63,7 @@ const assetPath = (path: string) => `${baseUrl}${path.replace(/^\/+/, '')}`;
           <div class="border-2 border-white/80 bg-ink-950 p-5 md:p-6 shadow-[7px_7px_0_0_rgba(255,255,255,0.85)]">
             <div class="flex flex-wrap items-baseline gap-x-4 gap-y-1">
               <span class="heading-display text-3xl md:text-4xl leading-tight text-accent-lime">2019</span>
-              <span class="font-mono text-xs uppercase tracking-[0.22em] text-white/45">primer negocio · 15 años</span>
+              <span class="font-mono text-xs uppercase tracking-[0.22em] text-white/55">primer negocio · 15 años</span>
             </div>
             <p class="mt-4 text-sm md:text-base text-white/72 leading-relaxed">
               Monté un negocio de edición de video sin tener idea de lo que hacía.
@@ -77,7 +75,7 @@ const assetPath = (path: string) => `${baseUrl}${path.replace(/^\/+/, '')}`;
           <div class="border-2 border-white/80 bg-ink-950 p-5 md:p-6 shadow-[7px_7px_0_0_rgba(255,255,255,0.85)]">
             <div class="flex flex-wrap items-baseline gap-x-4 gap-y-1">
               <span class="heading-display text-3xl md:text-4xl leading-tight text-accent-electric">Fallé</span>
-              <span class="font-mono text-xs uppercase tracking-[0.22em] text-white/45">el intento que no aguantó</span>
+              <span class="font-mono text-xs uppercase tracking-[0.22em] text-white/55">el intento que no aguantó</span>
             </div>
             <p class="mt-4 text-sm md:text-base text-white/72 leading-relaxed">
               Quise convertirlo en algo más grande y no aguantó. Sabía algo de
@@ -90,7 +88,7 @@ const assetPath = (path: string) => `${baseUrl}${path.replace(/^\/+/, '')}`;
             <div class="grid gap-5 md:grid-cols-[minmax(0,0.85fr)_minmax(0,1.15fr)] md:items-start">
               <div class="flex flex-wrap items-baseline gap-x-4 gap-y-1">
                 <span class="heading-display text-4xl md:text-5xl leading-tight text-accent-magenta">Sistemas</span>
-                <span class="font-mono text-xs uppercase tracking-[0.22em] text-white/45">el giro</span>
+                <span class="font-mono text-xs uppercase tracking-[0.22em] text-white/55">el giro</span>
               </div>
               <p class="text-base md:text-lg text-white/76 leading-relaxed">
                 Ese fracaso me mostró el tamaño real del problema, y me expuso
@@ -103,7 +101,7 @@ const assetPath = (path: string) => `${baseUrl}${path.replace(/^\/+/, '')}`;
         </div>
       </div>
 
-      <div class="mt-10 border-2 border-black bg-ink-900 p-6 md:p-8 shadow-brutal-lg">
+      <div class="mt-8 border-2 border-black bg-ink-900 p-6 md:p-8 shadow-brutal-lg">
         <div class="grid gap-8 lg:grid-cols-12 lg:items-center">
           <div class="lg:col-span-5">
             <h3 class="heading-display text-2xl md:text-3xl text-white leading-tight">
@@ -123,7 +121,7 @@ const assetPath = (path: string) => `${baseUrl}${path.replace(/^\/+/, '')}`;
               ['salida', 'sistemas funcionales'],
             ].map(([label, value]) => (
               <div class="flex items-center justify-between gap-4 border border-white/10 bg-black/20 px-4 py-3">
-                <span class="font-mono text-[10px] uppercase tracking-[0.22em] text-white/45">
+                <span class="font-mono text-[10px] uppercase tracking-[0.22em] text-white/55">
                   {label}
                 </span>
                 <span class="font-mono text-xs text-accent-lime text-right">
@@ -139,7 +137,9 @@ const assetPath = (path: string) => `${baseUrl}${path.replace(/^\/+/, '')}`;
 
   <TimelineGraph />
 
-  <DevOps />
+  <Certificados />
+
+  <Metodo />
 
   <Contact />
 </Base>

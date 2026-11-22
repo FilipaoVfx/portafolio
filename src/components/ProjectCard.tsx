@@ -111,7 +111,7 @@ export default function ProjectCard({ project, index, hasSystemMap = false }: { 
   return (
     <article
       id={project.slug}
-      className="scroll-mt-28 mb-24 md:mb-32 last:mb-0"
+      className="scroll-mt-28 mb-10 md:mb-14 last:mb-0"
     >
       <div
         ref={cardRef}
@@ -122,16 +122,10 @@ export default function ProjectCard({ project, index, hasSystemMap = false }: { 
         }`}
       >
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-0">
-          <div className="lg:col-span-1 flex lg:flex-col items-center justify-between lg:justify-start lg:py-10 px-8 py-4 border-b lg:border-b-0 lg:border-r border-white/10 bg-black/20">
-            <div className={`font-mono text-2xl lg:text-3xl font-bold ${a.text}`}>
-              0{index + 1}
-            </div>
-            <div className="hidden lg:block flex-1 w-px bg-white/10 my-4" />
-            <div className={`w-3 h-3 ${a.bg} border-2 border-black`} />
-          </div>
-
-          <div className="lg:col-span-5 p-6 md:p-9 lg:p-10 xl:p-12 flex flex-col">
+          <div className={`p-6 md:p-8 flex flex-col justify-center lg:py-10 ${project.link ? 'lg:col-span-5' : 'lg:col-span-12'}`}>
             <div className="flex flex-wrap items-center gap-2 mb-5">
+              <span className={`font-mono text-sm font-bold ${a.text}`}>0{index + 1}</span>
+              <span className={`inline-block h-3 w-3 ${a.bg} border-2 border-black`} />
               <span className="chip uppercase">{statusLabel[project.status]}</span>
               {project.stack.map((s) => (
                 <span
@@ -157,62 +151,11 @@ export default function ProjectCard({ project, index, hasSystemMap = false }: { 
             <p className="mt-3 text-white/70 text-base md:text-lg leading-relaxed">
               {project.tagline}
             </p>
-
-            <div className="mt-8">
-              <div className="flex items-center justify-between gap-4 mb-3">
-                <div className="label-mono">// arquitectura</div>
-                <div
-                  className="hidden sm:block h-px flex-1"
-                  style={{ backgroundColor: `${a.hex}55` }}
-                />
-              </div>
-              <ul className="grid gap-2">
-                {project.architecture.map((step, i) => (
-                  <li
-                    key={i}
-                    className="flex items-start gap-3 px-3.5 py-2.5 glass border border-white/10 hover:border-white/30 transition"
-                  >
-                    <span className={`mt-1.5 inline-block w-1.5 h-1.5 ${a.bg}`} />
-                    <span className="font-mono text-xs text-white/80 leading-relaxed">
-                      {step}
-                    </span>
-                  </li>
-                ))}
-              </ul>
-            </div>
-
-            <div className="mt-8 flex flex-wrap gap-3 lg:mt-auto lg:pt-8">
-              <a href={routePath(`/projects/${project.slug}`)} className="btn-brutal">
-                Ver caso completo →
-              </a>
-              {project.link && (
-                <a href={project.link} className="btn-ghost" target="_blank" rel="noreferrer">
-                  Ver demo ↗
-                </a>
-              )}
-              {project.repo && (
-                <a href={project.repo} className="btn-ghost" target="_blank" rel="noreferrer">
-                  Código ↗
-                </a>
-              )}
-              {hasSystemMap && (
-                <button
-                  ref={openButton}
-                  type="button"
-                  onClick={() => openArchitecture()}
-                  onFocus={load}
-                  aria-haspopup="dialog"
-                  className="btn-ghost"
-                >
-                  Ver arquitectura <span aria-hidden="true">↻</span>
-                </button>
-              )}
-            </div>
           </div>
 
           {project.link && (
-            <div className="lg:col-span-6 relative border-t lg:border-t-0 lg:border-l border-white/10 bg-black/25">
-              <div className="relative h-full p-4 md:p-6 lg:p-8 xl:p-10 flex flex-col justify-center">
+            <div className="lg:col-span-7 relative border-t lg:border-t-0 lg:border-l border-white/10 bg-black/25">
+              <div className="relative h-full p-4 md:p-6 lg:p-8 flex flex-col justify-start">
                 <PreviewFrame
                   href={hasSystemMap ? undefined : project.link}
                   label={`Abrir demo de ${project.title}`}
@@ -269,20 +212,60 @@ export default function ProjectCard({ project, index, hasSystemMap = false }: { 
                     </div>
                   </div>
                 </PreviewFrame>
-
-                <div className="mt-4 grid sm:grid-cols-2 lg:grid-cols-1 xl:grid-cols-2 gap-2 font-mono text-[10px] uppercase tracking-wider text-white/45">
-                  <div className="glass px-3 py-2">
-                    <span className={a.text}>estado</span>
-                    <div className="mt-1 text-white/70">{statusLabel[project.status]}</div>
-                  </div>
-                  <div className="glass px-3 py-2">
-                    <span className={a.text}>stack</span>
-                    <div className="mt-1 text-white/70">{project.stack.slice(0, 2).join(' + ')}</div>
-                  </div>
-                </div>
               </div>
             </div>
           )}
+        </div>
+
+        <div className="border-t border-white/10 p-6 md:p-8">
+          <div className="flex items-center justify-between gap-4 mb-4">
+            <div className="label-mono">// arquitectura</div>
+            <div
+              className="hidden sm:block h-px flex-1"
+              style={{ backgroundColor: `${a.hex}55` }}
+            />
+          </div>
+          <ul className="grid gap-2 sm:grid-cols-2">
+            {project.architecture.map((step, i) => (
+              <li
+                key={i}
+                className="flex items-start gap-3 px-3.5 py-2.5 glass border border-white/10 hover:border-white/30 transition"
+              >
+                <span className={`mt-1.5 inline-block w-1.5 h-1.5 shrink-0 ${a.bg}`} />
+                <span className="font-mono text-xs text-white/80 leading-relaxed">
+                  {step}
+                </span>
+              </li>
+            ))}
+          </ul>
+
+          <div className="mt-7 flex flex-wrap gap-3">
+            <a href={routePath(`/projects/${project.slug}`)} className="btn-brutal">
+              Ver caso completo →
+            </a>
+            {project.link && (
+              <a href={project.link} className="btn-ghost" target="_blank" rel="noreferrer">
+                Ver demo ↗
+              </a>
+            )}
+            {project.repo && (
+              <a href={project.repo} className="btn-ghost" target="_blank" rel="noreferrer">
+                Código ↗
+              </a>
+            )}
+            {hasSystemMap && (
+              <button
+                ref={openButton}
+                type="button"
+                onClick={() => openArchitecture()}
+                onFocus={load}
+                aria-haspopup="dialog"
+                className="btn-ghost"
+              >
+                Ver arquitectura <span aria-hidden="true">↻</span>
+              </button>
+            )}
+          </div>
         </div>
       </div>
 

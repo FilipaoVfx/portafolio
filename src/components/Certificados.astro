@@ -1,0 +1,172 @@
+---
+// Carrusel de certificados: scroll-snap nativo. Las flechas son un extra —
+// sin JavaScript la tira se arrastra igual con el dedo o con la rueda.
+//
+// Cada pieza dice qué fue: un primer puesto, un diplomado y dos
+// participaciones. Mezclarlos sin etiqueta abarataría el único que es premio.
+const certificados = [
+  {
+    src: '/certificado.webp',
+    kind: '1er puesto',
+    issuer: 'Ministerio TIC · Talento Tech',
+    title: 'Reto de inteligencia artificial',
+    meta: 'Armenia, Quindío · noviembre 2025',
+    accent: 'lime',
+    alt: 'Certificado de primer lugar en el reto de inteligencia artificial de Talento Tech',
+  },
+  {
+    src: '/certificado-devops.webp',
+    kind: 'diplomado',
+    issuer: 'Universidad de La Sabana',
+    title: 'Fundamentos de DevOps',
+    meta: '96 horas · julio 2026',
+    accent: 'electric',
+    alt: 'Certificado del diplomado en fundamentos de DevOps de la Universidad de La Sabana',
+  },
+  {
+    src: '/certificado-colsubsidio-30x.webp',
+    kind: 'participación',
+    issuer: 'Colsubsidio × 30X',
+    title: 'Primera Hackathon Colsubsidio',
+    meta: '22 al 26 de julio de 2026',
+    accent: 'magenta',
+    alt: 'Certificado de participación en la primera hackathon Colsubsidio con 30X',
+  },
+  {
+    src: '/certificado-30x-2026.webp',
+    kind: 'participación',
+    issuer: '30X',
+    title: 'Hackathon 30X · segunda edición',
+    meta: '16 al 19 de octubre de 2026',
+    accent: 'amber',
+    alt: 'Certificado de participación en la segunda edición del Hackathon 30X',
+  },
+];
+
+const accentText = {
+  lime: 'text-accent-lime',
+  electric: 'text-accent-electric',
+  magenta: 'text-accent-magenta',
+  amber: 'text-accent-amber',
+};
+
+const baseUrl = import.meta.env.BASE_URL.replace(/\/?$/, '/');
+const assetPath = (path: string) => `${baseUrl}${path.replace(/^\/+/, '')}`;
+---
+
+<!-- Cierra la sección de logros: los papeles son la última fila de la
+     trayectoria, no un capítulo aparte. Conserva su id para enlaces directos. -->
+<div id="certificados" class="relative pt-10 md:pt-14 pb-8 md:pb-14 scroll-mt-24">
+  <div class="mx-auto max-w-6xl px-6 sm:px-8 md:px-12 lg:px-14">
+    <div class="mb-8 flex flex-wrap items-end justify-between gap-5">
+      <div>
+        <h3 class="heading-display text-2xl md:text-4xl leading-tight">Los papeles.</h3>
+        <p class="mt-4 max-w-xl text-white/60 leading-relaxed">
+          Cuatro, y lo que cada uno significa de verdad: un premio, un diplomado
+          y dos semanas de construir contra reloj.
+        </p>
+      </div>
+
+      <div class="flex items-center gap-2" data-cert-controls>
+        <span class="font-mono text-xs uppercase tracking-[0.2em] text-white/55 tabular-nums" data-cert-counter>
+          01 / {String(certificados.length).padStart(2, '0')}
+        </span>
+        <button
+          type="button"
+          data-cert-prev
+          aria-label="Certificado anterior"
+          class="flex h-10 w-10 items-center justify-center border-2 border-white/25 bg-white/5 text-white transition hover:border-white/60 hover:bg-white/10 disabled:opacity-30 disabled:hover:border-white/25 disabled:hover:bg-white/5"
+        >
+          ‹
+        </button>
+        <button
+          type="button"
+          data-cert-next
+          aria-label="Certificado siguiente"
+          class="flex h-10 w-10 items-center justify-center border-2 border-black bg-accent-lime text-ink-950 shadow-[3px_3px_0_0_#000] transition hover:-translate-x-0.5 hover:-translate-y-0.5 disabled:opacity-40 disabled:translate-x-0 disabled:translate-y-0"
+        >
+          ›
+        </button>
+      </div>
+    </div>
+
+    <ul
+      data-cert-track
+      tabindex="0"
+      aria-label="Carrusel de certificados"
+      class="cert-track flex snap-x snap-mandatory gap-5 overflow-x-auto pb-4 focus:outline-none focus-visible:ring-2 focus-visible:ring-accent-lime/60"
+    >
+      {certificados.map((c) => (
+        <li class="snap-start shrink-0 basis-[86%] sm:basis-[62%] lg:basis-[46%]" data-cert-slide>
+          <figure class="h-full border-2 border-white/75 bg-ink-950 p-2.5 shadow-[8px_8px_0_0_rgba(255,255,255,0.14)]">
+            <div class="border-2 border-black bg-ink-900">
+              <img
+                src={assetPath(c.src)}
+                alt={c.alt}
+                loading="lazy"
+                decoding="async"
+                class="block h-full w-full object-contain"
+              />
+            </div>
+            <figcaption class="flex flex-wrap items-baseline gap-x-3 gap-y-1 border-t-2 border-white/75 px-3 pt-3 pb-1">
+              <span class={`font-mono text-[10px] uppercase tracking-[0.22em] ${accentText[c.accent]}`}>
+                {c.kind}
+              </span>
+              <span class="font-mono text-[10px] uppercase tracking-[0.18em] text-white/55">{c.issuer}</span>
+              <span class="heading-display w-full text-lg leading-tight text-white/90">{c.title}</span>
+              <span class="font-mono text-[11px] text-white/55">{c.meta}</span>
+            </figcaption>
+          </figure>
+        </li>
+      ))}
+    </ul>
+  </div>
+</div>
+
+<style>
+  .cert-track {
+    scrollbar-width: thin;
+    scrollbar-color: rgba(255, 255, 255, 0.25) transparent;
+  }
+  .cert-track::-webkit-scrollbar {
+    height: 6px;
+  }
+  .cert-track::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.25);
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    .cert-track {
+      scroll-behavior: smooth;
+    }
+  }
+</style>
+
+<script>
+  // Las flechas mueven la tira una tarjeta; el contador y el estado de los
+  // botones los dicta el scroll real, así que arrastrar con el dedo los
+  // mantiene sincronizados.
+  const track = document.querySelector<HTMLElement>('[data-cert-track]');
+  const prev = document.querySelector<HTMLButtonElement>('[data-cert-prev]');
+  const next = document.querySelector<HTMLButtonElement>('[data-cert-next]');
+  const counter = document.querySelector<HTMLElement>('[data-cert-counter]');
+
+  if (track && prev && next && counter) {
+    const slides = [...track.querySelectorAll<HTMLElement>('[data-cert-slide]')];
+    const pad = (n: number) => String(n).padStart(2, '0');
+
+    const step = () => (slides[1]?.offsetLeft ?? 0) - (slides[0]?.offsetLeft ?? 0) || track.clientWidth;
+
+    const sync = () => {
+      const index = Math.round(track.scrollLeft / step());
+      counter.textContent = `${pad(Math.min(index + 1, slides.length))} / ${pad(slides.length)}`;
+      prev.disabled = track.scrollLeft <= 4;
+      next.disabled = track.scrollLeft >= track.scrollWidth - track.clientWidth - 4;
+    };
+
+    prev.addEventListener('click', () => track.scrollBy({ left: -step() }));
+    next.addEventListener('click', () => track.scrollBy({ left: step() }));
+    track.addEventListener('scroll', sync, { passive: true });
+    window.addEventListener('resize', sync);
+    sync();
+  }
+</script>

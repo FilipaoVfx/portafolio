@@ -1,0 +1,144 @@
+---
+// Método = criterio + práctica. Antes eran dos secciones —«Cómo pienso» y
+// «DevOps»— que contaban el mismo tema por mitades: los principios decían cómo
+// decido y el pipeline demostraba que sostengo lo que decido. Juntas se
+// respaldan.
+//
+// El diploma que vivía aquí salió: ahora está en el carrusel de certificados,
+// y repetirlo le quitaba fuerza al argumento de esta sección, que es
+// justamente que la evidencia pesa más que la credencial.
+
+const principles = [
+  {
+    n: '01',
+    title: 'Sistemas, no funcionalidades sueltas',
+    body: 'Una funcionalidad aislada es un parche. Un sistema bien diseñado absorbe nuevas piezas sin reescribirse.',
+    accent: 'lime',
+  },
+  {
+    n: '02',
+    title: 'Rendimiento es producto',
+    body: 'Cada 100ms de latencia es una decisión de experiencia. La velocidad no es optimización: es parte del producto.',
+    accent: 'electric',
+  },
+  {
+    n: '03',
+    title: 'Decisiones > demos',
+    body: 'Cualquiera clona un tutorial. Lo que importa es por qué elegiste este stack y descartaste otros.',
+    accent: 'magenta',
+  },
+  {
+    n: '04',
+    title: 'Pensar desde el edge',
+    body: 'Estático + edge supera a SSR continuo en la mayoría de casos. Optimiza para distribución, no para servidor.',
+    accent: 'amber',
+  },
+];
+
+// El número gigante lleva el acento del principio: el color sigue ahí, sin
+// necesidad de una etiqueta que repita lo que el número ya dice.
+const ghost = {
+  lime: 'text-accent-lime/[0.09] group-hover:text-accent-lime/20',
+  electric: 'text-accent-electric/[0.09] group-hover:text-accent-electric/20',
+  magenta: 'text-accent-magenta/[0.09] group-hover:text-accent-magenta/20',
+  amber: 'text-accent-amber/[0.09] group-hover:text-accent-amber/20',
+};
+
+// El pipeline real de este sitio, configurado en wrangler.toml.
+const pipeline = [
+  { step: 'push', detail: 'rama main' },
+  { step: 'clone', detail: 'Cloudflare Build · node 20' },
+  { step: 'install', detail: 'npm clean-install — lockfile exacto' },
+  { step: 'build', detail: 'npm run build:cloudflare' },
+  { step: 'host', detail: 'juangonzalezdev.xyz · dominio propio' },
+  { step: 'upload', detail: 'dist/ a la red de Cloudflare' },
+  { step: 'headers', detail: '_headers: cache immutable + nosniff' },
+];
+
+const applied = [
+  { label: 'JS al cliente', value: '0 KB' },
+  { label: 'Deploy manual', value: 'ninguno' },
+  { label: 'robots + sitemap', value: 'en build' },
+  { label: 'Cabeceras', value: 'nosniff' },
+  { label: 'Imágenes', value: 'WebP' },
+];
+---
+
+<section id="metodo" class="section-y relative scroll-mt-24 overflow-hidden">
+  <div class="absolute inset-x-0 top-10 h-px bg-gradient-to-r from-transparent via-accent-magenta/45 to-transparent"></div>
+
+  <div class="mx-auto max-w-6xl px-6 sm:px-8 md:px-12 lg:px-14">
+    <div class="mb-10 md:mb-14 grid gap-6 lg:grid-cols-12 lg:items-end">
+      <h2 class="lg:col-span-7 heading-display text-3xl md:text-5xl leading-tight">
+        Cómo decido, y cómo lo sostengo.
+      </h2>
+      <p class="lg:col-span-4 lg:col-start-9 text-white/62 leading-relaxed">
+        Cuatro principios y el pipeline que los hace verdad. Un certificado es
+        una afirmación; esto es la evidencia.
+      </p>
+    </div>
+
+    <div class="grid gap-5 md:grid-cols-2">
+      {principles.map((p) => (
+        <div class="group brutal-dark p-6 md:p-8 hover:border-white transition relative overflow-hidden">
+          <div aria-hidden="true" class={`absolute -right-4 -top-4 font-display text-[120px] leading-none font-bold transition select-none ${ghost[p.accent as keyof typeof ghost]}`}>
+            {p.n}
+          </div>
+          <h3 class="relative heading-display text-2xl pr-16">{p.title}</h3>
+          <p class="relative mt-3 text-white/70 leading-relaxed text-sm">
+            {p.body}
+          </p>
+        </div>
+      ))}
+    </div>
+
+    <!-- La práctica: el pipeline que publica esta misma página. -->
+    <div class="mt-14 md:mt-20 grid gap-10 lg:grid-cols-12 lg:items-start">
+      <div class="lg:col-span-4">
+        <h3 class="heading-display text-2xl md:text-4xl leading-[1.1]">
+          Este portfolio se despliega solo.
+        </h3>
+        <p class="mt-6 text-white/65 leading-relaxed">
+          Cada push a <span class="font-mono text-accent-lime">main</span>
+          {' '}dispara un build en Cloudflare que compila el sitio y lo publica en
+          el edge. Sin subir carpetas a mano, sin pasos que solo yo sé ejecutar.
+        </p>
+        <a
+          href="https://github.com/FilipaoVfx/portafolio/blob/main/astro.config.mjs"
+          target="_blank"
+          rel="noreferrer"
+          class="btn-ghost mt-8 text-xs"
+        >
+          Ver la configuración ↗
+        </a>
+      </div>
+
+      <ol class="lg:col-span-7 lg:col-start-6 grid gap-1.5">
+        {pipeline.map((p, i) => (
+          <li class="grid grid-cols-[1.6rem_7rem_1fr] items-baseline gap-4 border-b border-white/10 py-3">
+            <span class="font-mono text-[10px] text-accent-magenta tabular-nums">
+              {String(i + 1).padStart(2, '0')}
+            </span>
+            <span class="font-mono text-xs uppercase tracking-[0.16em] text-white">
+              {p.step}
+            </span>
+            <span class="font-mono text-[11px] text-white/55 leading-relaxed text-right">
+              {p.detail}
+            </span>
+          </li>
+        ))}
+      </ol>
+    </div>
+
+    <div class="mt-10 grid gap-px border border-white/10 bg-white/10 sm:grid-cols-3 lg:grid-cols-5">
+      {applied.map((a) => (
+        <div class="bg-ink-950 px-4 py-4">
+          <div class="font-mono text-sm text-accent-lime">{a.value}</div>
+          <div class="mt-1.5 font-mono text-[10px] uppercase tracking-[0.2em] text-white/55">
+            {a.label}
+          </div>
+        </div>
+      ))}
+    </div>
+  </div>
+</section>

@@ -10,13 +10,13 @@ const assetPath = (path: string) => `${baseUrl}${path.replace(/^\/+/, '')}`;
 
 export default function Hero() {
   return (
-    <section className="relative pt-20 md:pt-28 pb-16">
+    <section className="relative pt-20 md:pt-24 pb-10">
       <div className="mx-auto max-w-6xl px-4">
         <div className="grid lg:grid-cols-12 gap-10 lg:gap-14 items-start">
           {/* Left — copy */}
           <div className="lg:col-span-8">
             <div className="flex items-center gap-3 mb-6">
-              <span className="inline-block w-2 h-2 bg-accent-lime animate-pulse-glow" />
+              <span className="inline-block w-2 h-2 bg-accent-lime" />
               <span className="font-mono text-xs uppercase tracking-[0.3em] text-white/60">
                 Sistemas / Producto / Arquitectura
               </span>
@@ -53,7 +53,7 @@ export default function Hero() {
               <a href="#projects" className="btn-brutal">
                 Ver proyectos →
               </a>
-              <a href="#how-i-think" className="btn-ghost">
+              <a href="#metodo" className="btn-ghost">
                 Cómo pienso
               </a>
             </div>
@@ -103,7 +103,7 @@ export default function Hero() {
                       filipao_vfx.exe
                     </span>
                     <span className="flex items-center gap-1.5 px-1.5 py-0.5 bg-ink-950/70 border border-accent-lime/40 text-accent-lime">
-                      <span className="w-1.5 h-1.5 bg-accent-lime rounded-full animate-pulse-glow" />
+                      <span className="w-1.5 h-1.5 bg-accent-lime rounded-full" />
                       en vivo
                     </span>
                   </div>

@@ -31,6 +31,13 @@
 }
 
 @layer components {
+  /* Ritmo vertical del sitio, en un solo lugar. Corte de sección 64px en
+     móvil y 112px en escritorio; dentro de una sección se usa la mitad para
+     subsecciones y un cuarto para grupos. Antes cada sección traía su propio
+     py- y los cortes llegaban a 330px de nada. */
+  .section-y {
+    @apply py-8 md:py-14;
+  }
   .glass {
     @apply bg-white/[0.04] backdrop-blur-xl border border-white/10;
   }
@@ -204,6 +211,43 @@
     .sm-scrim {
       -webkit-backdrop-filter: blur(8px);
       backdrop-filter: blur(8px);
+    }
+  }
+}
+
+@layer components {
+  /* El CTA del caso se pinta a medida que entra en pantalla: el barrido lo
+     conduce la posición de scroll, así que llama la atención justo cuando el
+     ojo llega y después se queda quieto. Sin JavaScript —ese bloque se
+     renderiza estático— y sin bucle. Donde no hay soporte, el botón
+     simplemente está ahí. */
+  @keyframes case-cta-wipe {
+    from {
+      clip-path: inset(0 100% 0 0);
+    }
+    to {
+      clip-path: inset(0 0 0 0);
+    }
+  }
+  @supports (animation-timeline: view()) {
+    @media (prefers-reduced-motion: no-preference) {
+      .case-cta {
+        animation: case-cta-wipe linear both;
+        animation-timeline: view();
+        animation-range: entry 12% entry 70%;
+      }
+    }
+  }
+  .case-cta__arrow {
+    transition: transform 240ms cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  .case-cta:hover .case-cta__arrow,
+  .case-cta:focus-visible .case-cta__arrow {
+    transform: translateX(5px);
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .case-cta__arrow {
+      transition: none;
     }
   }
 }

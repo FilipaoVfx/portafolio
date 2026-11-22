@@ -92,7 +92,7 @@ export const projects: Project[] = [
     decisions: [
       {
         title: 'UX invisible es la UX',
-        body: 'Una herramienta que necesita interfaz para usarse, fracasó. Clippy gana cuando el usuario la olvida.',
+        body: 'Una herramienta que necesita interfaz para usarse, fracasó. Pastty gana cuando el usuario la olvida.',
       },
       {
         title: 'Tiempo real > consulta periódica',

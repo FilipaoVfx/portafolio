@@ -97,7 +97,7 @@ export function PivotScene({
       {/* La franja de operación aparece en el último acto. */}
       <g opacity={opsOpacity} transform="translate(140, 600)">
         <text fontFamily="'JetBrains Mono', ui-monospace, monospace" fontSize="13" letterSpacing="2" fill="rgba(255,255,255,0.6)">
-          SYSTEMD · INGESTA 6 H · SALUD 5 MIN · ALERTAS AL MISMO TELEGRAM
+          CORRE SOLO · SE ALIMENTA CADA SEIS HORAS · AVISA SI ALGO SE ROMPE
         </text>
       </g>
 

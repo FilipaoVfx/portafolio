@@ -52,13 +52,13 @@ export type Act = { chip: string; title: string; sub: string };
 // Cadena nueva: corpus → embeddings → índice → Telegram.
 const NODES = [
   { id: 'ext', kind: 'chrome mv3', title: 'Extensión', row: 'old', i: 0, fate: 'keep' },
-  { id: 'ing', kind: 'node', title: 'Ingesta', row: 'old', i: 1, fate: 'keep' },
+  { id: 'ing', kind: 'captura', title: 'Limpieza', row: 'old', i: 1, fate: 'keep' },
   { id: 'corpus', kind: 'postgres', title: 'Corpus clasificado', row: 'old', i: 2, fate: 'core' },
-  { id: 'rank', kind: 'fts + trigramas', title: 'Ranking por reglas', row: 'old', i: 3, fate: 'cut' },
-  { id: 'web', kind: 'astro', title: 'Interfaz web', row: 'old', i: 4, fate: 'cut' },
-  { id: 'emb', kind: 'openai', title: 'Chunking + embeddings', row: 'new', i: 2, fate: 'new' },
-  { id: 'vec', kind: 'pinecone', title: 'Índice vectorial', row: 'new', i: 3, fate: 'new' },
-  { id: 'bot', kind: 'telegram + cli', title: 'Donde ya preguntas', row: 'new', i: 4, fate: 'new' },
+  { id: 'rank', kind: 'reglas', title: 'Buscador', row: 'old', i: 3, fate: 'cut' },
+  { id: 'web', kind: 'sitio', title: 'Página web', row: 'old', i: 4, fate: 'cut' },
+  { id: 'emb', kind: 'ia', title: 'Búsqueda semántica', row: 'new', i: 2, fate: 'new' },
+  { id: 'vec', kind: 'índice', title: 'Memoria del corpus', row: 'new', i: 3, fate: 'new' },
+  { id: 'bot', kind: 'telegram', title: 'Donde ya preguntas', row: 'new', i: 4, fate: 'new' },
 ] as const;
 
 const EDGES = [
@@ -75,12 +75,12 @@ export const ACTS: Act[] = [
   {
     chip: 'lo que construí',
     title: 'Un motor de rutas',
-    sub: 'Capturar recursos, clasificarlos y responder «necesitas estas piezas, en este orden»',
+    sub: 'Capturar, clasificar y responder «necesitas estas piezas, en este orden». Funcionaba',
   },
   {
     chip: 'el dato',
     title: 'El valor no estaba donde lo diseñé',
-    sub: 'Lo que servía era el corpus de abajo: READMEs limpios, clasificados y con evidencia',
+    sub: 'Lo que servía no era la respuesta elaborada, sino el material limpio que había debajo',
   },
   {
     chip: 'el corte',
@@ -90,12 +90,12 @@ export const ACTS: Act[] = [
   {
     chip: 'lo que vino encima',
     title: 'El mismo corpus, otra salida',
-    sub: 'Embeddings, índice vectorial y la interfaz que ya está abierta en tu teléfono',
+    sub: 'Búsqueda semántica y la única interfaz que nadie tiene que abrir, porque ya está abierta',
   },
   {
     chip: 'hoy',
     title: 'En producción',
-    sub: 'Ingesta cada 6 h · salud cada 5 min · alertas por el mismo canal',
+    sub: 'Se alimenta y se vigila solo; si algo se rompe, avisa por el mismo chat',
   },
 ];
 

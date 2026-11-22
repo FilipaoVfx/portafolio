@@ -1,7 +1,7 @@
 {
   "slug": "indexer",
-  "name": "Indexer (antes del pivote)",
-  "description": "Arquitectura previa al pivote: motor de rutas con captura por extensión y búsqueda por reglas.",
+  "name": "Indexer",
+  "description": "Motor de conocimiento técnico: de bookmarks dispersos a rutas de implementación.",
   "repository": "FilipaoVfx/indexer",
   "branch": "main",
   "systemMap": {

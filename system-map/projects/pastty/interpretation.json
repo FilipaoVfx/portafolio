@@ -91,7 +91,8 @@
         "Wrangler"
       ],
       "paths": [
-        ".github/workflows/deploy-pages.yml"
+        ".github/workflows/deploy-cloudflare.yml",
+        "scripts/build.cjs"
       ]
     },
     {
@@ -106,13 +107,13 @@
         "Pages Functions"
       ],
       "paths": [
-        "public/_worker.js",
+        "cloudflare/worker.js",
         "wrangler.toml"
       ],
       "evidence": [
         {
           "pattern": {
-            "file": "public/_worker.js",
+            "file": "cloudflare/worker.js",
             "regex": "^function getCoordinator"
           }
         }
@@ -224,7 +225,7 @@
         },
         {
           "pattern": {
-            "file": "public/_worker.js",
+            "file": "cloudflare/worker.js",
             "regex": "if \\(url\\.pathname === WS_PATH\\)",
             "type": "route"
           }
@@ -240,14 +241,14 @@
       "evidence": [
         {
           "pattern": {
-            "file": "public/_worker.js",
+            "file": "cloudflare/worker.js",
             "regex": "const id = env\\.CLIPPY_COORDINATOR\\.idFromName"
           }
         },
         {
           "pattern": {
             "file": "wrangler.toml",
-            "regex": "^script_name = \"clippy-realtime\"",
+            "regex": "^class_name = \"ClippyCoordinator\"",
             "type": "config"
           }
         }
@@ -306,8 +307,8 @@
       "evidence": [
         {
           "pattern": {
-            "file": ".github/workflows/deploy-pages.yml",
-            "regex": "run: npm run cf:realtime:deploy",
+            "file": ".github/workflows/deploy-cloudflare.yml",
+            "regex": "run: npm run deploy",
             "type": "deployment"
           }
         }
@@ -322,8 +323,8 @@
       "evidence": [
         {
           "pattern": {
-            "file": ".github/workflows/deploy-pages.yml",
-            "regex": "npx wrangler pages deploy \\./public",
+            "file": ".github/workflows/deploy-cloudflare.yml",
+            "regex": "run: npm run deploy",
             "type": "deployment"
           }
         }
@@ -338,15 +339,16 @@
       "evidence": [
         {
           "pattern": {
-            "file": ".github/workflows/deploy-pages.yml",
-            "regex": "sed -i \"s/__BUILD_ID__/",
-            "type": "deployment"
+            "file": "scripts/build.cjs",
+            "regex": "__BUILD_ID__",
+            "type": "source"
           }
         },
         {
           "pattern": {
-            "file": "public/sw.js",
-            "regex": "^const BUILD_ID = '__BUILD_ID__'"
+            "file": "scripts/build.cjs",
+            "regex": "__BUILD_ID__",
+            "type": "source"
           }
         }
       ]
@@ -464,7 +466,7 @@
           "evidence": [
             {
               "pattern": {
-                "file": "public/_worker.js",
+                "file": "cloudflare/worker.js",
                 "regex": "^function cacheControlFor"
               }
             }
@@ -689,9 +691,9 @@
         },
         {
           "pattern": {
-            "file": ".github/workflows/deploy-pages.yml",
-            "regex": "sed -i \"s/__BUILD_ID__/",
-            "type": "deployment"
+            "file": "scripts/build.cjs",
+            "regex": "__BUILD_ID__",
+            "type": "source"
           }
         }
       ]

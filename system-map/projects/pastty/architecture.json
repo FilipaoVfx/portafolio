@@ -2,10 +2,10 @@
   "schemaVersion": "0.1",
   "generatorVersion": "system-map/0.1.0",
   "analysisVersion": "static-facts/1",
-  "generatedAt": "2026-09-23T20:17:10.506Z",
+  "generatedAt": "2026-11-22T14:35:42.957Z",
   "project": {
-    "slug": "clippy",
-    "name": "Clippy",
+    "slug": "pastty",
+    "name": "Pastty",
     "summary": "Portapapeles compartido en tiempo real: dispositivos emparejados por código, un canal WebSocket y nada que sobreviva al TTL.",
     "description": "PWA sin framework servida desde Cloudflare Pages. Un router en el edge envía cada conexión al Durable Object de su código de sesión, que coordina hasta 5 dispositivos, hiberna cuando no hay tráfico y limpia por alarma. Un servidor Node implementa el mismo protocolo para self-host y desarrollo.",
     "technologies": [
@@ -22,78 +22,159 @@
     "repository": "FilipaoVfx/clippy",
     "url": "https://github.com/FilipaoVfx/clippy",
     "branch": "main",
-    "commit": "444e540cba31e004cf125f2b6b273495481fd93e",
-    "committedAt": "2026-08-31T18:47:05-05:00"
+    "commit": "5058bbb58e252c5965b4bdcbc9588e5b2e55159c",
+    "committedAt": "2026-11-21T21:36:25-05:00"
   },
   "analysis": {
-    "filesScanned": 33,
+    "filesScanned": 134,
     "excluded": {
       "secret": 1,
-      "binary": 3,
-      "lockfile": 1,
+      "binary": 29,
+      "lockfile": 2,
       "too-large": 0,
-      "ignored-dir": 1,
+      "ignored-dir": 8,
       "project-exclude": 0
     },
     "languages": {
       "YAML": {
         "files": 1,
-        "lines": 65
+        "lines": 45
+      },
+      "JSON": {
+        "files": 8,
+        "lines": 728
       },
       "Markdown": {
-        "files": 5,
-        "lines": 1179
+        "files": 11,
+        "lines": 1970
       },
       "JavaScript": {
-        "files": 19,
-        "lines": 6404
+        "files": 47,
+        "lines": 11423
       },
       "TOML": {
         "files": 2,
-        "lines": 36
+        "lines": 60
       },
-      "JSON": {
-        "files": 1,
-        "lines": 36
-      },
-      "CSS": {
-        "files": 1,
-        "lines": 1160
+      "TypeScript": {
+        "files": 26,
+        "lines": 1925
       },
       "HTML": {
-        "files": 1,
-        "lines": 266
+        "files": 21,
+        "lines": 2035
+      },
+      "CSS": {
+        "files": 2,
+        "lines": 2152
       }
     },
     "factsByKind": {
-      "dependency": 5,
-      "env": 8,
-      "heading": 65,
-      "host": 13,
-      "import": 28,
-      "package": 1,
-      "route": 7,
-      "script": 11,
+      "call": 1,
+      "dependency": 17,
+      "env": 12,
+      "heading": 117,
+      "host": 319,
+      "import": 259,
+      "package": 2,
+      "route": 8,
+      "script": 20,
       "workflow": 1,
-      "workflow-run": 3,
+      "workflow-run": 4,
       "workflow-uses": 2
     },
     "coverage": {
-      "codeFiles": 21,
-      "mappedFiles": 14,
+      "codeFiles": 94,
+      "mappedFiles": 27,
       "unmappedFiles": [
+        "motion/remotion.config.ts",
+        "motion/scripts/e2e.mjs",
+        "motion/scripts/render.mjs",
+        "motion/scripts/stills.mjs",
+        "motion/src/Root.tsx",
+        "motion/src/components/Device.tsx",
+        "motion/src/components/Hub.tsx",
+        "motion/src/components/Packet.tsx",
+        "motion/src/components/Scene.tsx",
+        "motion/src/components/Screens.tsx",
+        "motion/src/components/Stage.tsx",
+        "motion/src/components/Strand.tsx",
+        "motion/src/components/Sync.tsx",
+        "motion/src/components/Type.tsx",
+        "motion/src/compositions/BrandIntro.tsx",
+        "motion/src/compositions/DataTransfer.tsx",
+        "motion/src/compositions/DeviceConnection.tsx",
+        "motion/src/compositions/DevicePairing.tsx",
+        "motion/src/compositions/HeroIntro.tsx",
+        "motion/src/compositions/MultiDevice.tsx",
+        "motion/src/compositions/Reconnect.tsx",
+        "motion/src/compositions/SessionCreated.tsx",
+        "motion/src/compositions/SyncConfirmation.tsx",
+        "motion/src/compositions/TransferSequence.tsx",
+        "motion/src/fonts.ts",
+        "motion/src/index.ts",
+        "motion/src/lib/anim.ts",
+        "motion/src/lib/geometry.ts",
+        "motion/src/theme.ts",
+        "public/404.html",
+        "public/airdrop-alternative.html",
+        "public/android-to-pc.html",
+        "public/copy-text-from-phone-to-computer.html",
+        "public/es/alternativa-a-airdrop.html",
+        "public/es/android-a-pc.html",
+        "public/es/como-funciona.html",
+        "public/es/copiar-texto-del-celular-a-la-computadora.html",
+        "public/es/enviar-fotos-del-celular-a-la-computadora.html",
+        "public/es/index.html",
+        "public/es/iphone-a-windows.html",
+        "public/es/limites.html",
+        "public/es/preguntas-frecuentes.html",
+        "public/es/privacidad.html",
+        "public/faq.html",
+        "public/how-it-works.html",
+        "public/iphone-to-windows.html",
+        "public/limits.html",
+        "public/privacy.html",
+        "public/send-photos-from-phone-to-computer.html",
+        "scripts/build-site.mjs",
+        "scripts/e2e-visual.mjs",
+        "scripts/seo-check.mjs",
+        "scripts/vendor-three.mjs",
+        "site/config.mjs",
+        "site/layout.mjs",
+        "site/pages/en.mjs",
+        "site/pages/es.mjs",
         "tests/__mocks__/cloudflare-workers.js",
         "tests/client/qr.test.js",
+        "tests/client/visual-state.test.js",
         "tests/client/ws.test.js",
         "tests/cloudflare/coordinator.test.js",
+        "tests/cloudflare/worker.test.js",
         "tests/server/imageValidation.test.js",
         "tests/server/sessionManager.test.js",
+        "tests/site/site.test.js",
         "vitest.config.js"
       ]
     },
     "externalHosts": [
       {
+        "host": "clippy-realtime.example.workers.dev",
+        "component": null
+      },
+      {
         "host": "clippy.internal",
+        "component": null
+      },
+      {
+        "host": "clippy.test",
+        "component": null
+      },
+      {
+        "host": "pastty.com",
+        "component": null
+      },
+      {
+        "host": "www.pastty.com",
         "component": null
       }
     ],
@@ -137,8 +218,8 @@
         "public/manifest.webmanifest"
       ],
       "metrics": {
-        "files": 7,
-        "lines": 3557
+        "files": 21,
+        "lines": 6838
       },
       "confidence": "confirmed",
       "evidence": [
@@ -147,27 +228,27 @@
           "path": "public/js/ws.js",
           "lines": "63",
           "excerpt": "socket = new WebSocket(url);",
-          "url": "https://github.com/FilipaoVfx/clippy/blob/444e540cba31e004cf125f2b6b273495481fd93e/public/js/ws.js#L63"
+          "url": "https://github.com/FilipaoVfx/clippy/blob/5058bbb58e252c5965b4bdcbc9588e5b2e55159c/public/js/ws.js#L63"
         },
         {
           "type": "source",
           "path": "public/index.html",
-          "note": "266 líneas",
-          "url": "https://github.com/FilipaoVfx/clippy/blob/444e540cba31e004cf125f2b6b273495481fd93e/public/index.html"
+          "note": "365 líneas",
+          "url": "https://github.com/FilipaoVfx/clippy/blob/5058bbb58e252c5965b4bdcbc9588e5b2e55159c/public/index.html"
         },
         {
           "type": "source",
           "path": "public/js",
           "dir": true,
-          "note": "4 archivos",
-          "url": "https://github.com/FilipaoVfx/clippy/tree/444e540cba31e004cf125f2b6b273495481fd93e/public/js"
+          "note": "17 archivos",
+          "url": "https://github.com/FilipaoVfx/clippy/tree/5058bbb58e252c5965b4bdcbc9588e5b2e55159c/public/js"
         },
         {
           "type": "source",
           "path": "public/css",
           "dir": true,
-          "note": "1 archivos",
-          "url": "https://github.com/FilipaoVfx/clippy/tree/444e540cba31e004cf125f2b6b273495481fd93e/public/css"
+          "note": "2 archivos",
+          "url": "https://github.com/FilipaoVfx/clippy/tree/5058bbb58e252c5965b4bdcbc9588e5b2e55159c/public/css"
         }
       ]
     },
@@ -186,7 +267,7 @@
       ],
       "metrics": {
         "files": 1,
-        "lines": 109
+        "lines": 125
       },
       "confidence": "confirmed",
       "evidence": [
@@ -195,7 +276,7 @@
           "path": "public/sw.js",
           "lines": "6",
           "excerpt": "* - install: precache the app shell, then skipWaiting() so the new SW",
-          "url": "https://github.com/FilipaoVfx/clippy/blob/444e540cba31e004cf125f2b6b273495481fd93e/public/sw.js#L6"
+          "url": "https://github.com/FilipaoVfx/clippy/blob/5058bbb58e252c5965b4bdcbc9588e5b2e55159c/public/sw.js#L6"
         }
       ]
     },
@@ -211,19 +292,26 @@
         "Wrangler"
       ],
       "paths": [
-        ".github/workflows/deploy-pages.yml"
+        ".github/workflows/deploy-cloudflare.yml",
+        "scripts/build.cjs"
       ],
       "metrics": {
-        "files": 1,
-        "lines": 65
+        "files": 2,
+        "lines": 68
       },
       "confidence": "confirmed",
       "evidence": [
         {
           "type": "source",
-          "path": ".github/workflows/deploy-pages.yml",
-          "note": "65 líneas",
-          "url": "https://github.com/FilipaoVfx/clippy/blob/444e540cba31e004cf125f2b6b273495481fd93e/.github/workflows/deploy-pages.yml"
+          "path": ".github/workflows/deploy-cloudflare.yml",
+          "note": "45 líneas",
+          "url": "https://github.com/FilipaoVfx/clippy/blob/5058bbb58e252c5965b4bdcbc9588e5b2e55159c/.github/workflows/deploy-cloudflare.yml"
+        },
+        {
+          "type": "source",
+          "path": "scripts/build.cjs",
+          "note": "23 líneas",
+          "url": "https://github.com/FilipaoVfx/clippy/blob/5058bbb58e252c5965b4bdcbc9588e5b2e55159c/scripts/build.cjs"
         }
       ]
     },
@@ -239,27 +327,27 @@
         "Pages Functions"
       ],
       "paths": [
-        "public/_worker.js",
+        "cloudflare/worker.js",
         "wrangler.toml"
       ],
       "metrics": {
         "files": 2,
-        "lines": 103
+        "lines": 163
       },
       "confidence": "confirmed",
       "evidence": [
         {
           "type": "source",
-          "path": "public/_worker.js",
-          "lines": "11",
+          "path": "cloudflare/worker.js",
+          "lines": "15",
           "excerpt": "function getCoordinator(env, request) {",
-          "url": "https://github.com/FilipaoVfx/clippy/blob/444e540cba31e004cf125f2b6b273495481fd93e/public/_worker.js#L11"
+          "url": "https://github.com/FilipaoVfx/clippy/blob/5058bbb58e252c5965b4bdcbc9588e5b2e55159c/cloudflare/worker.js#L15"
         },
         {
           "type": "source",
           "path": "wrangler.toml",
-          "note": "13 líneas",
-          "url": "https://github.com/FilipaoVfx/clippy/blob/444e540cba31e004cf125f2b6b273495481fd93e/wrangler.toml"
+          "note": "37 líneas",
+          "url": "https://github.com/FilipaoVfx/clippy/blob/5058bbb58e252c5965b4bdcbc9588e5b2e55159c/wrangler.toml"
         }
       ]
     },
@@ -288,14 +376,14 @@
           "path": "cloudflare/realtime/src/index.js",
           "lines": "168",
           "excerpt": "export class ClippyCoordinator extends DurableObject {",
-          "url": "https://github.com/FilipaoVfx/clippy/blob/444e540cba31e004cf125f2b6b273495481fd93e/cloudflare/realtime/src/index.js#L168"
+          "url": "https://github.com/FilipaoVfx/clippy/blob/5058bbb58e252c5965b4bdcbc9588e5b2e55159c/cloudflare/realtime/src/index.js#L168"
         },
         {
           "type": "source",
           "path": "cloudflare/realtime",
           "dir": true,
           "note": "2 archivos",
-          "url": "https://github.com/FilipaoVfx/clippy/tree/444e540cba31e004cf125f2b6b273495481fd93e/cloudflare/realtime"
+          "url": "https://github.com/FilipaoVfx/clippy/tree/5058bbb58e252c5965b4bdcbc9588e5b2e55159c/cloudflare/realtime"
         }
       ]
     },
@@ -321,7 +409,7 @@
           "path": "cloudflare/realtime/wrangler.toml",
           "lines": "22",
           "excerpt": "new_sqlite_classes = [\"ClippyCoordinator\"]",
-          "url": "https://github.com/FilipaoVfx/clippy/blob/444e540cba31e004cf125f2b6b273495481fd93e/cloudflare/realtime/wrangler.toml#L22"
+          "url": "https://github.com/FilipaoVfx/clippy/blob/5058bbb58e252c5965b4bdcbc9588e5b2e55159c/cloudflare/realtime/wrangler.toml#L22"
         }
       ]
     },
@@ -342,7 +430,7 @@
       ],
       "metrics": {
         "files": 5,
-        "lines": 958,
+        "lines": 969,
         "routes": 1
       },
       "confidence": "confirmed",
@@ -350,23 +438,23 @@
         {
           "type": "dependency",
           "path": "package.json",
-          "lines": "30",
+          "lines": "33",
           "excerpt": "\"ws\": \"^8.18.0\"",
-          "url": "https://github.com/FilipaoVfx/clippy/blob/444e540cba31e004cf125f2b6b273495481fd93e/package.json#L30"
+          "url": "https://github.com/FilipaoVfx/clippy/blob/5058bbb58e252c5965b4bdcbc9588e5b2e55159c/package.json#L33"
         },
         {
           "type": "source",
           "path": "server/index.js",
-          "lines": "36",
+          "lines": "47",
           "excerpt": "const wss = new WebSocketServer({ server, path: '/ws' });",
-          "url": "https://github.com/FilipaoVfx/clippy/blob/444e540cba31e004cf125f2b6b273495481fd93e/server/index.js#L36"
+          "url": "https://github.com/FilipaoVfx/clippy/blob/5058bbb58e252c5965b4bdcbc9588e5b2e55159c/server/index.js#L47"
         },
         {
           "type": "source",
           "path": "server",
           "dir": true,
           "note": "5 archivos",
-          "url": "https://github.com/FilipaoVfx/clippy/tree/444e540cba31e004cf125f2b6b273495481fd93e/server"
+          "url": "https://github.com/FilipaoVfx/clippy/tree/5058bbb58e252c5965b4bdcbc9588e5b2e55159c/server"
         }
       ]
     }
@@ -385,9 +473,9 @@
         {
           "type": "source",
           "path": "public/index.html",
-          "lines": "256",
+          "lines": "354",
           "excerpt": "navigator.serviceWorker.register('/sw.js').then((reg) => {",
-          "url": "https://github.com/FilipaoVfx/clippy/blob/444e540cba31e004cf125f2b6b273495481fd93e/public/index.html#L256"
+          "url": "https://github.com/FilipaoVfx/clippy/blob/5058bbb58e252c5965b4bdcbc9588e5b2e55159c/public/index.html#L354"
         }
       ]
     },
@@ -406,14 +494,14 @@
           "path": "public/js/ws.js",
           "lines": "60",
           "excerpt": "const url = `${protocol}//${window.location.host}/ws?code=${encodeURIComponent(currentCode)}`;",
-          "url": "https://github.com/FilipaoVfx/clippy/blob/444e540cba31e004cf125f2b6b273495481fd93e/public/js/ws.js#L60"
+          "url": "https://github.com/FilipaoVfx/clippy/blob/5058bbb58e252c5965b4bdcbc9588e5b2e55159c/public/js/ws.js#L60"
         },
         {
           "type": "route",
-          "path": "public/_worker.js",
-          "lines": "65",
+          "path": "cloudflare/worker.js",
+          "lines": "100",
           "excerpt": "if (url.pathname === WS_PATH) {",
-          "url": "https://github.com/FilipaoVfx/clippy/blob/444e540cba31e004cf125f2b6b273495481fd93e/public/_worker.js#L65"
+          "url": "https://github.com/FilipaoVfx/clippy/blob/5058bbb58e252c5965b4bdcbc9588e5b2e55159c/cloudflare/worker.js#L100"
         }
       ]
     },
@@ -424,22 +512,36 @@
       "type": "http",
       "label": "Shard por código",
       "description": "idFromName(código) sobre el binding del Durable Object del Worker clippy-realtime.",
-      "detected": false,
+      "detected": true,
       "confidence": "confirmed",
       "evidence": [
         {
           "type": "source",
-          "path": "public/_worker.js",
-          "lines": "14",
-          "excerpt": "const id = env.CLIPPY_COORDINATOR.idFromName(coordinatorName);",
-          "url": "https://github.com/FilipaoVfx/clippy/blob/444e540cba31e004cf125f2b6b273495481fd93e/public/_worker.js#L14"
+          "path": "cloudflare/worker.js",
+          "lines": "16",
+          "excerpt": "const id = env.CLIPPY_COORDINATOR.idFromName(coordinatorNameFor(request));",
+          "url": "https://github.com/FilipaoVfx/clippy/blob/5058bbb58e252c5965b4bdcbc9588e5b2e55159c/cloudflare/worker.js#L16"
         },
         {
           "type": "config",
           "path": "wrangler.toml",
-          "lines": "12",
-          "excerpt": "script_name = \"clippy-realtime\"",
-          "url": "https://github.com/FilipaoVfx/clippy/blob/444e540cba31e004cf125f2b6b273495481fd93e/wrangler.toml#L12"
+          "lines": "32",
+          "excerpt": "class_name = \"ClippyCoordinator\"",
+          "url": "https://github.com/FilipaoVfx/clippy/blob/5058bbb58e252c5965b4bdcbc9588e5b2e55159c/wrangler.toml#L32"
+        },
+        {
+          "type": "import",
+          "path": "cloudflare/worker.js",
+          "lines": "1",
+          "excerpt": "import { coordinatorNameFor } from \"./realtime/src/index.js\";",
+          "url": "https://github.com/FilipaoVfx/clippy/blob/5058bbb58e252c5965b4bdcbc9588e5b2e55159c/cloudflare/worker.js#L1"
+        },
+        {
+          "type": "import",
+          "path": "cloudflare/worker.js",
+          "lines": "2",
+          "excerpt": "export { ClippyCoordinator } from \"./realtime/src/index.js\";",
+          "url": "https://github.com/FilipaoVfx/clippy/blob/5058bbb58e252c5965b4bdcbc9588e5b2e55159c/cloudflare/worker.js#L2"
         }
       ]
     },
@@ -458,14 +560,14 @@
           "path": "cloudflare/realtime/src/index.js",
           "lines": "1098",
           "excerpt": "await this.ctx.storage.put(\"state\", this.stateData);",
-          "url": "https://github.com/FilipaoVfx/clippy/blob/444e540cba31e004cf125f2b6b273495481fd93e/cloudflare/realtime/src/index.js#L1098"
+          "url": "https://github.com/FilipaoVfx/clippy/blob/5058bbb58e252c5965b4bdcbc9588e5b2e55159c/cloudflare/realtime/src/index.js#L1098"
         },
         {
           "type": "source",
           "path": "cloudflare/realtime/src/index.js",
           "lines": "1121",
           "excerpt": "await this.ctx.storage.setAlarm(Math.max(now + 1000, nextAlarm));",
-          "url": "https://github.com/FilipaoVfx/clippy/blob/444e540cba31e004cf125f2b6b273495481fd93e/cloudflare/realtime/src/index.js#L1121"
+          "url": "https://github.com/FilipaoVfx/clippy/blob/5058bbb58e252c5965b4bdcbc9588e5b2e55159c/cloudflare/realtime/src/index.js#L1121"
         }
       ]
     },
@@ -484,14 +586,14 @@
           "path": "public/js/ws.js",
           "lines": "60",
           "excerpt": "const url = `${protocol}//${window.location.host}/ws?code=${encodeURIComponent(currentCode)}`;",
-          "url": "https://github.com/FilipaoVfx/clippy/blob/444e540cba31e004cf125f2b6b273495481fd93e/public/js/ws.js#L60"
+          "url": "https://github.com/FilipaoVfx/clippy/blob/5058bbb58e252c5965b4bdcbc9588e5b2e55159c/public/js/ws.js#L60"
         },
         {
           "type": "route",
           "path": "server/index.js",
-          "lines": "36",
+          "lines": "47",
           "excerpt": "const wss = new WebSocketServer({ server, path: '/ws' });",
-          "url": "https://github.com/FilipaoVfx/clippy/blob/444e540cba31e004cf125f2b6b273495481fd93e/server/index.js#L36"
+          "url": "https://github.com/FilipaoVfx/clippy/blob/5058bbb58e252c5965b4bdcbc9588e5b2e55159c/server/index.js#L47"
         }
       ]
     },
@@ -507,10 +609,10 @@
       "evidence": [
         {
           "type": "deployment",
-          "path": ".github/workflows/deploy-pages.yml",
-          "lines": "50",
-          "excerpt": "run: npm run cf:realtime:deploy",
-          "url": "https://github.com/FilipaoVfx/clippy/blob/444e540cba31e004cf125f2b6b273495481fd93e/.github/workflows/deploy-pages.yml#L50"
+          "path": ".github/workflows/deploy-cloudflare.yml",
+          "lines": "44",
+          "excerpt": "run: npm run deploy",
+          "url": "https://github.com/FilipaoVfx/clippy/blob/5058bbb58e252c5965b4bdcbc9588e5b2e55159c/.github/workflows/deploy-cloudflare.yml#L44"
         }
       ]
     },
@@ -526,10 +628,10 @@
       "evidence": [
         {
           "type": "deployment",
-          "path": ".github/workflows/deploy-pages.yml",
-          "lines": "64",
-          "excerpt": "npx wrangler pages deploy ./public --project-name \"$PROJECT_NAME\"",
-          "url": "https://github.com/FilipaoVfx/clippy/blob/444e540cba31e004cf125f2b6b273495481fd93e/.github/workflows/deploy-pages.yml#L64"
+          "path": ".github/workflows/deploy-cloudflare.yml",
+          "lines": "44",
+          "excerpt": "run: npm run deploy",
+          "url": "https://github.com/FilipaoVfx/clippy/blob/5058bbb58e252c5965b4bdcbc9588e5b2e55159c/.github/workflows/deploy-cloudflare.yml#L44"
         }
       ]
     },
@@ -544,18 +646,11 @@
       "confidence": "confirmed",
       "evidence": [
         {
-          "type": "deployment",
-          "path": ".github/workflows/deploy-pages.yml",
-          "lines": "55",
-          "excerpt": "sed -i \"s/__BUILD_ID__/${BUILD_ID}/g\" public/sw.js",
-          "url": "https://github.com/FilipaoVfx/clippy/blob/444e540cba31e004cf125f2b6b273495481fd93e/.github/workflows/deploy-pages.yml#L55"
-        },
-        {
           "type": "source",
-          "path": "public/sw.js",
-          "lines": "19",
-          "excerpt": "const BUILD_ID = '__BUILD_ID__';",
-          "url": "https://github.com/FilipaoVfx/clippy/blob/444e540cba31e004cf125f2b6b273495481fd93e/public/sw.js#L19"
+          "path": "scripts/build.cjs",
+          "lines": "21",
+          "excerpt": "writeFileSync(swPath, sw.replaceAll('__BUILD_ID__', buildId));",
+          "url": "https://github.com/FilipaoVfx/clippy/blob/5058bbb58e252c5965b4bdcbc9588e5b2e55159c/scripts/build.cjs#L21"
         }
       ]
     }
@@ -576,9 +671,9 @@
             {
               "type": "source",
               "path": "public/js/app.js",
-              "lines": "160",
+              "lines": "175",
               "excerpt": "state.pendingIntent = { type: 'create' };",
-              "url": "https://github.com/FilipaoVfx/clippy/blob/444e540cba31e004cf125f2b6b273495481fd93e/public/js/app.js#L160"
+              "url": "https://github.com/FilipaoVfx/clippy/blob/5058bbb58e252c5965b4bdcbc9588e5b2e55159c/public/js/app.js#L175"
             }
           ],
           "relationship": "pwa--edge-router"
@@ -602,7 +697,7 @@
               "path": "cloudflare/realtime/src/index.js",
               "lines": "477",
               "excerpt": "this.sendById(socketId, { type: \"code_taken\", code });",
-              "url": "https://github.com/FilipaoVfx/clippy/blob/444e540cba31e004cf125f2b6b273495481fd93e/cloudflare/realtime/src/index.js#L477"
+              "url": "https://github.com/FilipaoVfx/clippy/blob/5058bbb58e252c5965b4bdcbc9588e5b2e55159c/cloudflare/realtime/src/index.js#L477"
             }
           ],
           "component": "coordinator"
@@ -616,9 +711,9 @@
             {
               "type": "source",
               "path": "public/js/app.js",
-              "lines": "535",
+              "lines": "560",
               "excerpt": "UI.showPairingQR(`${location.origin}/?code=${encodeURIComponent(data.code)}`);",
-              "url": "https://github.com/FilipaoVfx/clippy/blob/444e540cba31e004cf125f2b6b273495481fd93e/public/js/app.js#L535"
+              "url": "https://github.com/FilipaoVfx/clippy/blob/5058bbb58e252c5965b4bdcbc9588e5b2e55159c/public/js/app.js#L560"
             }
           ],
           "component": "pwa"
@@ -634,7 +729,7 @@
               "path": "cloudflare/realtime/src/index.js",
               "lines": "547",
               "excerpt": "if (connectedDevices >= this.config.maxDevices) {",
-              "url": "https://github.com/FilipaoVfx/clippy/blob/444e540cba31e004cf125f2b6b273495481fd93e/cloudflare/realtime/src/index.js#L547"
+              "url": "https://github.com/FilipaoVfx/clippy/blob/5058bbb58e252c5965b4bdcbc9588e5b2e55159c/cloudflare/realtime/src/index.js#L547"
             }
           ],
           "component": "coordinator"
@@ -650,7 +745,7 @@
               "path": "cloudflare/realtime/src/index.js",
               "lines": "658",
               "excerpt": "async handleSendClip(socketId, data) {",
-              "url": "https://github.com/FilipaoVfx/clippy/blob/444e540cba31e004cf125f2b6b273495481fd93e/cloudflare/realtime/src/index.js#L658"
+              "url": "https://github.com/FilipaoVfx/clippy/blob/5058bbb58e252c5965b4bdcbc9588e5b2e55159c/cloudflare/realtime/src/index.js#L658"
             }
           ],
           "component": "coordinator"
@@ -703,10 +798,10 @@
           "evidence": [
             {
               "type": "source",
-              "path": "public/_worker.js",
-              "lines": "21",
+              "path": "cloudflare/worker.js",
+              "lines": "29",
               "excerpt": "function cacheControlFor(pathname) {",
-              "url": "https://github.com/FilipaoVfx/clippy/blob/444e540cba31e004cf125f2b6b273495481fd93e/public/_worker.js#L21"
+              "url": "https://github.com/FilipaoVfx/clippy/blob/5058bbb58e252c5965b4bdcbc9588e5b2e55159c/cloudflare/worker.js#L29"
             }
           ],
           "component": "edge-router"
@@ -736,9 +831,9 @@
             {
               "type": "source",
               "path": "public/js/app.js",
-              "lines": "763",
+              "lines": "817",
               "excerpt": "type: 'send_clip',",
-              "url": "https://github.com/FilipaoVfx/clippy/blob/444e540cba31e004cf125f2b6b273495481fd93e/public/js/app.js#L763"
+              "url": "https://github.com/FilipaoVfx/clippy/blob/5058bbb58e252c5965b4bdcbc9588e5b2e55159c/public/js/app.js#L817"
             }
           ],
           "component": "pwa",
@@ -764,7 +859,7 @@
               "path": "cloudflare/realtime/src/index.js",
               "lines": "9",
               "excerpt": "rateLimitMax: 30,",
-              "url": "https://github.com/FilipaoVfx/clippy/blob/444e540cba31e004cf125f2b6b273495481fd93e/cloudflare/realtime/src/index.js#L9"
+              "url": "https://github.com/FilipaoVfx/clippy/blob/5058bbb58e252c5965b4bdcbc9588e5b2e55159c/cloudflare/realtime/src/index.js#L9"
             }
           ],
           "component": "coordinator",
@@ -781,7 +876,7 @@
               "path": "cloudflare/realtime/src/index.js",
               "lines": "1136",
               "excerpt": "broadcastToPeers(code, excludeSocketId, payload) {",
-              "url": "https://github.com/FilipaoVfx/clippy/blob/444e540cba31e004cf125f2b6b273495481fd93e/cloudflare/realtime/src/index.js#L1136"
+              "url": "https://github.com/FilipaoVfx/clippy/blob/5058bbb58e252c5965b4bdcbc9588e5b2e55159c/cloudflare/realtime/src/index.js#L1136"
             }
           ],
           "component": "coordinator",
@@ -798,7 +893,7 @@
               "path": "cloudflare/realtime/src/index.js",
               "lines": "1160",
               "excerpt": "sendRawById(socketId, buffer) {",
-              "url": "https://github.com/FilipaoVfx/clippy/blob/444e540cba31e004cf125f2b6b273495481fd93e/cloudflare/realtime/src/index.js#L1160"
+              "url": "https://github.com/FilipaoVfx/clippy/blob/5058bbb58e252c5965b4bdcbc9588e5b2e55159c/cloudflare/realtime/src/index.js#L1160"
             }
           ],
           "component": "coordinator",
@@ -813,9 +908,9 @@
             {
               "type": "source",
               "path": "public/js/app.js",
-              "lines": "600",
+              "lines": "629",
               "excerpt": "WS.on('receive_clip', (data) => {",
-              "url": "https://github.com/FilipaoVfx/clippy/blob/444e540cba31e004cf125f2b6b273495481fd93e/public/js/app.js#L600"
+              "url": "https://github.com/FilipaoVfx/clippy/blob/5058bbb58e252c5965b4bdcbc9588e5b2e55159c/public/js/app.js#L629"
             }
           ],
           "component": "pwa",
@@ -841,14 +936,14 @@
           "path": "cloudflare/realtime/src/index.js",
           "lines": "1188-1193",
           "excerpt": "* Route each session to its own Durable Object, keyed by the pairing code.",
-          "url": "https://github.com/FilipaoVfx/clippy/blob/444e540cba31e004cf125f2b6b273495481fd93e/cloudflare/realtime/src/index.js#L1188-L1193"
+          "url": "https://github.com/FilipaoVfx/clippy/blob/5058bbb58e252c5965b4bdcbc9588e5b2e55159c/cloudflare/realtime/src/index.js#L1188-L1193"
         },
         {
           "type": "source",
           "path": "cloudflare/realtime/src/index.js",
           "lines": "1194",
           "excerpt": "export function coordinatorNameFor(request) {",
-          "url": "https://github.com/FilipaoVfx/clippy/blob/444e540cba31e004cf125f2b6b273495481fd93e/cloudflare/realtime/src/index.js#L1194"
+          "url": "https://github.com/FilipaoVfx/clippy/blob/5058bbb58e252c5965b4bdcbc9588e5b2e55159c/cloudflare/realtime/src/index.js#L1194"
         }
       ]
     },
@@ -868,14 +963,14 @@
           "path": "cloudflare/realtime/src/index.js",
           "lines": "466-468",
           "excerpt": "// The code is chosen by the client and encoded in the connection URL, which",
-          "url": "https://github.com/FilipaoVfx/clippy/blob/444e540cba31e004cf125f2b6b273495481fd93e/cloudflare/realtime/src/index.js#L466-L468"
+          "url": "https://github.com/FilipaoVfx/clippy/blob/5058bbb58e252c5965b4bdcbc9588e5b2e55159c/cloudflare/realtime/src/index.js#L466-L468"
         },
         {
           "type": "source",
           "path": "cloudflare/realtime/src/index.js",
           "lines": "477",
           "excerpt": "this.sendById(socketId, { type: \"code_taken\", code });",
-          "url": "https://github.com/FilipaoVfx/clippy/blob/444e540cba31e004cf125f2b6b273495481fd93e/cloudflare/realtime/src/index.js#L477"
+          "url": "https://github.com/FilipaoVfx/clippy/blob/5058bbb58e252c5965b4bdcbc9588e5b2e55159c/cloudflare/realtime/src/index.js#L477"
         }
       ]
     },
@@ -894,21 +989,21 @@
           "path": "cloudflare/realtime/src/index.js",
           "lines": "265-267",
           "excerpt": "// Hibernation API: the runtime holds the connection open while this object",
-          "url": "https://github.com/FilipaoVfx/clippy/blob/444e540cba31e004cf125f2b6b273495481fd93e/cloudflare/realtime/src/index.js#L265-L267"
+          "url": "https://github.com/FilipaoVfx/clippy/blob/5058bbb58e252c5965b4bdcbc9588e5b2e55159c/cloudflare/realtime/src/index.js#L265-L267"
         },
         {
           "type": "source",
           "path": "cloudflare/realtime/src/index.js",
           "lines": "268",
           "excerpt": "this.ctx.acceptWebSocket(server, [socketId]);",
-          "url": "https://github.com/FilipaoVfx/clippy/blob/444e540cba31e004cf125f2b6b273495481fd93e/cloudflare/realtime/src/index.js#L268"
+          "url": "https://github.com/FilipaoVfx/clippy/blob/5058bbb58e252c5965b4bdcbc9588e5b2e55159c/cloudflare/realtime/src/index.js#L268"
         },
         {
           "type": "documentation",
           "path": "cloudflare/realtime/src/index.js",
           "lines": "198-200",
           "excerpt": "// Answer client keepalives in the runtime itself: this keeps mobile",
-          "url": "https://github.com/FilipaoVfx/clippy/blob/444e540cba31e004cf125f2b6b273495481fd93e/cloudflare/realtime/src/index.js#L198-L200"
+          "url": "https://github.com/FilipaoVfx/clippy/blob/5058bbb58e252c5965b4bdcbc9588e5b2e55159c/cloudflare/realtime/src/index.js#L198-L200"
         }
       ]
     },
@@ -928,7 +1023,7 @@
           "path": "cloudflare/realtime/src/index.js",
           "lines": "191-193",
           "excerpt": "// In-flight transfers. Deliberately NOT in stateData: stateData is what",
-          "url": "https://github.com/FilipaoVfx/clippy/blob/444e540cba31e004cf125f2b6b273495481fd93e/cloudflare/realtime/src/index.js#L191-L193"
+          "url": "https://github.com/FilipaoVfx/clippy/blob/5058bbb58e252c5965b4bdcbc9588e5b2e55159c/cloudflare/realtime/src/index.js#L191-L193"
         }
       ]
     },
@@ -949,14 +1044,14 @@
           "path": "public/sw.js",
           "lines": "6-10",
           "excerpt": "* - install: precache the app shell, then skipWaiting() so the new SW",
-          "url": "https://github.com/FilipaoVfx/clippy/blob/444e540cba31e004cf125f2b6b273495481fd93e/public/sw.js#L6-L10"
+          "url": "https://github.com/FilipaoVfx/clippy/blob/5058bbb58e252c5965b4bdcbc9588e5b2e55159c/public/sw.js#L6-L10"
         },
         {
-          "type": "deployment",
-          "path": ".github/workflows/deploy-pages.yml",
-          "lines": "55",
-          "excerpt": "sed -i \"s/__BUILD_ID__/${BUILD_ID}/g\" public/sw.js",
-          "url": "https://github.com/FilipaoVfx/clippy/blob/444e540cba31e004cf125f2b6b273495481fd93e/.github/workflows/deploy-pages.yml#L55"
+          "type": "source",
+          "path": "scripts/build.cjs",
+          "lines": "21",
+          "excerpt": "writeFileSync(swPath, sw.replaceAll('__BUILD_ID__', buildId));",
+          "url": "https://github.com/FilipaoVfx/clippy/blob/5058bbb58e252c5965b4bdcbc9588e5b2e55159c/scripts/build.cjs#L21"
         }
       ]
     },
@@ -973,15 +1068,15 @@
         {
           "type": "dependency",
           "path": "package.json",
-          "note": "36 líneas",
-          "url": "https://github.com/FilipaoVfx/clippy/blob/444e540cba31e004cf125f2b6b273495481fd93e/package.json"
+          "note": "43 líneas",
+          "url": "https://github.com/FilipaoVfx/clippy/blob/5058bbb58e252c5965b4bdcbc9588e5b2e55159c/package.json"
         },
         {
           "type": "source",
           "path": "public/js",
           "dir": true,
-          "note": "4 archivos",
-          "url": "https://github.com/FilipaoVfx/clippy/tree/444e540cba31e004cf125f2b6b273495481fd93e/public/js"
+          "note": "17 archivos",
+          "url": "https://github.com/FilipaoVfx/clippy/tree/5058bbb58e252c5965b4bdcbc9588e5b2e55159c/public/js"
         }
       ]
     },
@@ -999,23 +1094,23 @@
         {
           "type": "documentation",
           "path": "README.md",
-          "lines": "116-117",
+          "lines": "128-129",
           "excerpt": "- **Two runtimes** → the protocol has to stay in sync in two places. The tests cover both",
-          "url": "https://github.com/FilipaoVfx/clippy/blob/444e540cba31e004cf125f2b6b273495481fd93e/README.md#L116-L117"
+          "url": "https://github.com/FilipaoVfx/clippy/blob/5058bbb58e252c5965b4bdcbc9588e5b2e55159c/README.md#L128-L129"
         },
         {
           "type": "source",
           "path": "tests/cloudflare",
           "dir": true,
-          "note": "1 archivos",
-          "url": "https://github.com/FilipaoVfx/clippy/tree/444e540cba31e004cf125f2b6b273495481fd93e/tests/cloudflare"
+          "note": "2 archivos",
+          "url": "https://github.com/FilipaoVfx/clippy/tree/5058bbb58e252c5965b4bdcbc9588e5b2e55159c/tests/cloudflare"
         },
         {
           "type": "source",
           "path": "tests/server",
           "dir": true,
           "note": "2 archivos",
-          "url": "https://github.com/FilipaoVfx/clippy/tree/444e540cba31e004cf125f2b6b273495481fd93e/tests/server"
+          "url": "https://github.com/FilipaoVfx/clippy/tree/5058bbb58e252c5965b4bdcbc9588e5b2e55159c/tests/server"
         }
       ]
     }
@@ -1030,16 +1125,16 @@
         {
           "type": "documentation",
           "path": "README.md",
-          "lines": "43",
+          "lines": "55",
           "excerpt": "│ In-memory session map │",
-          "url": "https://github.com/FilipaoVfx/clippy/blob/444e540cba31e004cf125f2b6b273495481fd93e/README.md#L43"
+          "url": "https://github.com/FilipaoVfx/clippy/blob/5058bbb58e252c5965b4bdcbc9588e5b2e55159c/README.md#L55"
         },
         {
           "type": "source",
           "path": "cloudflare/realtime/src/index.js",
           "lines": "1098",
           "excerpt": "await this.ctx.storage.put(\"state\", this.stateData);",
-          "url": "https://github.com/FilipaoVfx/clippy/blob/444e540cba31e004cf125f2b6b273495481fd93e/cloudflare/realtime/src/index.js#L1098"
+          "url": "https://github.com/FilipaoVfx/clippy/blob/5058bbb58e252c5965b4bdcbc9588e5b2e55159c/cloudflare/realtime/src/index.js#L1098"
         }
       ]
     }

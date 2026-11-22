@@ -1,7 +1,6 @@
 ---
 import Base from '@/layouts/Base.astro';
 import PivotFlow from '@/components/pivot/PivotFlow.tsx';
-import BeforeAfter from '@/components/pivot/BeforeAfter.astro';
 import { projects } from '@/data/projects';
 
 export function getStaticPaths() {
@@ -52,50 +51,90 @@ const sectionPath = (id: string) => `${baseUrl}#${id}`;
 
         {project.pivot && (
           <section class="not-prose">
-            <div class="max-w-3xl">
+            <div class="max-w-2xl">
               <h2 class="heading-display text-3xl md:text-5xl leading-tight">
-                La decisión que no se ve en el código.
+                Saber cuándo matar lo que funciona.
               </h2>
-              <p class="mt-5 text-white/70 text-lg leading-relaxed">
-                Cualquiera aprende un stack. Lo caro de aprender es mirar algo
-                que funciona, que costó meses, y aceptar que la mitad sobra. Este
-                proyecto existe porque hice ese corte — y el video de abajo es
-                exactamente dónde lo hice.
-              </p>
             </div>
 
-            <div class="mt-10">
+            <div class="mt-8 grid gap-10 lg:grid-cols-12">
+              <div class="lg:col-span-6 grid gap-5 text-white/75 text-lg leading-relaxed">
+                <p>
+                  Indexer hacía lo que prometía. La extensión capturaba, el
+                  backend clasificaba y la página web respondía con la ruta de
+                  herramientas que le pidieras. Meses de trabajo, y funcionaba.
+                </p>
+                <p>
+                  El problema apareció usándolo: <span class="text-white">yo
+                  mismo no lo abría</span>. Tenía una duda de diez segundos y
+                  resolverla costaba abrir una pestaña, recordar la dirección y
+                  escribir la consulta. Es poquísimo. Es suficiente para no
+                  hacerlo nunca.
+                </p>
+              </div>
+              <div class="lg:col-span-6 grid gap-5 text-white/75 text-lg leading-relaxed">
+                <p>
+                  Lo cómodo habría sido arreglar la web: rediseñarla, acelerarla,
+                  ponerle atajos. Lo difícil fue admitir que la web no era el
+                  problema — el problema era que me había enamorado de la forma
+                  del producto en vez del valor que ya estaba produciendo. Y ese
+                  valor no era la respuesta elaborada: era el material limpio que
+                  había debajo.
+                </p>
+                <p>
+                  Así que no lo reescribí. <span class="text-white">Lo corté.</span>
+                  {' '}La captura y el corpus se quedaron intactos. El buscador por
+                  reglas y la página entera se fueron. En su lugar entró búsqueda
+                  semántica y la única interfaz que nadie tiene que abrir, porque
+                  ya la tiene abierta: el chat.
+                </p>
+              </div>
+            </div>
+
+            <div class="mt-14">
               <PivotFlow client:visible />
             </div>
 
-            <div class="mt-10 grid gap-5 md:grid-cols-3">
+            <div class="mt-14 grid gap-8 md:grid-cols-3">
               <div class="border-l-2 border-white/15 pl-5">
                 <div class="font-mono text-[10px] uppercase tracking-[0.2em] text-white/55">lo que conservé</div>
-                <p class="mt-2.5 text-sm leading-relaxed text-white/75">
-                  La ingesta y el corpus: READMEs extraídos, limpiados y
-                  clasificados con evidencia trazable. Meses de trabajo que
-                  siguen corriendo hoy bajo otra fachada.
+                <p class="mt-3 text-sm leading-relaxed text-white/75">
+                  Todo lo que producía valor sin que yo lo notara: la captura y
+                  el corpus limpio. Meses de trabajo que siguen corriendo hoy,
+                  debajo de otra fachada.
                 </p>
               </div>
               <div class="border-l-2 border-white/15 pl-5">
                 <div class="font-mono text-[10px] uppercase tracking-[0.2em] text-white/55">lo que corté</div>
-                <p class="mt-2.5 text-sm leading-relaxed text-white/75">
-                  El ranking por reglas y la interfaz web entera. Funcionaban.
-                  Ese era el problema: funcionar no es lo mismo que servir.
+                <p class="mt-3 text-sm leading-relaxed text-white/75">
+                  La mitad visible, la que se enseña en una demo. Funcionaba, y
+                  ese era justamente el problema: funcionar no es lo mismo que
+                  servir.
                 </p>
               </div>
               <div class="border-l-2 border-accent-lime/70 pl-5">
                 <div class="font-mono text-[10px] uppercase tracking-[0.2em] text-accent-lime">lo que aprendí</div>
-                <p class="mt-2.5 text-sm leading-relaxed text-white/75">
-                  Pivotar rápido no es cambiar de idea rápido: es tener el
-                  sistema suficientemente separado como para poder cortar por
-                  una junta y no por el medio.
+                <p class="mt-3 text-sm leading-relaxed text-white/75">
+                  Pivotar rápido no es cambiar de idea rápido. Es haber
+                  construido el sistema con juntas, para poder cortar por una de
+                  ellas en vez de por el medio.
                 </p>
               </div>
             </div>
 
-            <div class="mt-20 md:mt-24">
-              <BeforeAfter />
+            <div class="mt-14 flex flex-wrap items-center justify-between gap-6 border-t border-white/10 pt-8">
+              <p class="max-w-xl text-white/65 leading-relaxed">
+                Eso que quedó después del corte vive hoy en producción, y se le
+                pregunta desde Telegram.
+              </p>
+              <a
+                href="https://github.com/FilipaoVfx/botRepos"
+                target="_blank"
+                rel="noreferrer"
+                class="btn-ghost text-xs"
+              >
+                Ver botRepos ↗
+              </a>
             </div>
           </section>
         )}

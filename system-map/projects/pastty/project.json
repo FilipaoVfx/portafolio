@@ -1,0 +1,13 @@
+{
+  "slug": "pastty",
+  "name": "Pastty",
+  "description": "Portapapeles compartido entre dispositivos, en tiempo real y sin cuentas.",
+  "repository": "FilipaoVfx/clippy",
+  "branch": "main",
+  "systemMap": {
+    "enabled": true,
+    "artifact": "architecture.json",
+    "generatedAt": "2026-11-22T14:35:42.957Z",
+    "commit": "5058bbb58e252c5965b4bdcbc9588e5b2e55159c"
+  }
+}
